@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\SuperAdmin\AuthController;
+use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SuperAdmin\TenantController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,9 +22,12 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
         
         // 儀表板
-        Route::get('dashboard', function () {
-            return view('superadmin.dashboard');
-        })->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // 租戶管理
+        Route::resource('tenants', TenantController::class);
+        Route::post('tenants/{tenant}/suspend', [TenantController::class, 'suspend'])->name('tenants.suspend');
+        Route::post('tenants/{tenant}/activate', [TenantController::class, 'activate'])->name('tenants.activate');
     });
 });
 
