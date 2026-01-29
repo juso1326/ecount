@@ -52,49 +52,107 @@
 ## 📅 開發階段規劃
 
 ### ✅ Phase 1: 環境建置與基礎架構 (Week 1-2)
-**狀態**: 已完成 80%
+**狀態**: ✅ 已完成 100%
 
 **已完成項目**:
 - [x] 建立 Laravel 12 專案
-- [x] 安裝核心套件（Tenancy, Permission, Sanctum）
+- [x] 安裝核心套件（Tenancy, Permission, Sanctum, Query Builder）
 - [x] 配置資料庫 (MariaDB Port 3307)
 - [x] 建立中央資料庫 `ecount_central`
 - [x] 執行基礎 Migration (17 張表)
-- [x] 自訂 Tenant Model
+- [x] 自訂 Tenant Model（含 name, email, plan, status, settings）
+- [x] 建立租戶快速建立流程
+  - CreateTenantJob：自動建立資料庫、執行 Migrations、建立管理員
+  - TenantService：同步/非同步建立、停用、啟用、刪除功能
+- [x] 超級管理員認證系統
+  - SuperAdmin Model + Migration
+  - Web 登入（Session）+ API 登入（Sanctum Token）
+  - 預設帳號：admin@ecount.com / admin123456
+- [x] TenancyServiceProvider 註冊
+- [x] 測試驗證：成功建立測試租戶，資料庫自動建立
+
+---
+
+### 🚧 Phase 2: 核心資料表設計與 CRUD (Week 3-4)
+**狀態**: 🚧 進行中 60%
+
+**已完成項目**:
+- [x] 設計租戶資料庫結構（7 張核心表）
+  - codes：程式碼/分類碼系統
+  - companies：公司資料表
+  - departments：部門資料表（支援階層結構）
+  - projects：專案資料表（含預算管理）
+  - receivables：應收帳款表
+  - payables：應付帳款表
+  - project_members：專案成員表（多對多）
+- [x] 建立 Models 與 Relationships
+  - Code、Company、Department、Project、Receivable、Payable
+  - 完整的 Eloquent 關聯（belongsTo, hasMany, belongsToMany）
+  - 自動計算屬性（預算使用率、付款進度、部門路徑）
+- [x] 測試資料建立成功
 
 **待完成**:
-- [ ] 租戶快速建立流程 (Job Queue)
-- [ ] 超級管理員認證系統
+- [ ] 建立 CRUD Controllers
+- [ ] 建立 Blade Views（列表、新增、編輯）
+- [ ] 建立 API Endpoints
 
 ---
 
 ### 📋 Phase 2-8: 詳細規劃
 
-請參閱各階段文件：
-- **Phase 2**: 資料庫結構設計 (Week 2-3)
-- **Phase 3**: 超級管理員功能 (Week 3-4)
-- **Phase 4**: 租戶系統核心 (Week 4-6)
-- **Phase 5**: 業務邏輯遷移 (Week 6-8)
+- ✅ **Phase 1**: 環境建置與基礎架構 - **已完成**
+- 🚧 **Phase 2**: 核心資料表設計與 CRUD - **進行中 (60%)**
+- **Phase 3**: 超級管理員功能 (Week 5-6)
+- **Phase 4**: 租戶系統核心 (Week 6-8)
+- **Phase 5**: 業務邏輯遷移 (Week 8-10)
 - **Phase 6**: 測試開發 (貫穿全程)
-- **Phase 7**: API 層開發 (Week 9-11)
+- **Phase 7**: API 層開發 (Week 10-11)
 - **Phase 8**: 部署與文件 (Week 11-12)
 
 ---
 
 ## 🎯 目前進度
 
-### ✅ 已完成
-- Laravel 12.49.0 專案建立
-- 多租戶套件安裝與配置
-- 資料庫連線設定 (MariaDB Port 3307)
-- 基礎 Migration 執行（17 張表）
-- Tenant Model 建立
-- Git Repository 初始化
+### ✅ Phase 1 已完成
+- ✅ Laravel 12.49.0 專案建立
+- ✅ 多租戶套件完整配置
+- ✅ 資料庫連線設定 (MariaDB Port 3307)
+- ✅ 基礎 Migration 執行（17 張中央資料庫表）
+- ✅ Tenant Model 自訂欄位
+- ✅ **租戶快速建立系統**
+  - TenantService：完整租戶生命週期管理
+  - CreateTenantJob：自動化建立流程
+  - 測試：成功建立 3 個租戶（abc123, shop999, demo2026）
+- ✅ **超級管理員系統**
+  - SuperAdmin Model + Migration
+  - 雙重認證：Web（Session）+ API（Sanctum）
+  - 測試：API 登入成功，Token 正常
+
+### 🚧 Phase 2 進行中 (60%)
+- ✅ 租戶資料庫結構設計（7 張核心表）
+- ✅ 6 個核心 Models 建立
+  - Code、Company、Department、Project、Receivable、Payable
+- ✅ 完整 Eloquent 關聯設定
+- ✅ 測試資料建立成功
+- 🚧 CRUD Controllers 開發中
+- ⏳ Blade Views 待開發
+- ⏳ API Endpoints 待開發
+
+### 📊 統計數據
+- **Git Commits**: 3 個主要 commits
+- **資料表總數**: 
+  - 中央資料庫：18 張表（含 super_admins）
+  - 租戶資料庫：11 張表（含 7 張業務表）
+- **Models**: 12 個（6 個中央 + 6 個租戶）
+- **測試租戶**: 3 個（abc123, shop999, demo2026）
+- **測試資料**: 1 家公司、1 個部門、1 個專案
 
 ### 🚧 下一步
-1. 建立租戶快速建立 Job
-2. 開發超級管理員認證
-3. 設計租戶資料庫 Schema
+1. ✅ ~~建立租戶核心資料表~~ 
+2. ✅ ~~建立 Models 與關聯~~
+3. 🔄 開發公司管理 CRUD（進行中）
+4. ⏳ 開發部門管理 CRUD
+5. ⏳ 開發專案管理 CRUD
 
 ---
 
@@ -103,7 +161,7 @@
 ```bash
 # Clone 專案
 git clone https://github.com/juso1326/ecount.git
-cd ecount/ecount-laravel
+cd ecount
 
 # 安裝依賴
 composer install
@@ -112,12 +170,36 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
+# 配置資料庫（.env）
+DB_CONNECTION=central
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=ecount_central
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
 # 執行 Migration
 php artisan migrate
 
+# 建立超級管理員
+php artisan db:seed --class=SuperAdminSeeder
+
 # 啟動開發伺服器
 php artisan serve
+# 或使用 Laravel Herd/Valet: http://ecount.test
 ```
+
+### 測試登入
+- **超級管理員 Web**: http://ecount.test/superadmin/login
+  - Email: `admin@ecount.com`
+  - Password: `admin123456`
+  
+- **超級管理員 API**: 
+  ```bash
+  curl -X POST http://ecount.test/api/superadmin/login \
+    -H "Content-Type: application/json" \
+    -d '{"email":"admin@ecount.com","password":"admin123456"}'
+  ```
 
 ---
 
@@ -132,6 +214,10 @@ php artisan serve
 
 ---
 
-**最後更新**: 2026-01-29  
-**版本**: 1.0.0  
-**狀態**: Phase 1 開發中 (80%)
+**最後更新**: 2026-01-29 22:30  
+**版本**: 1.1.0  
+**狀態**: Phase 2 開發中 (60%)  
+**Git Commits**: 3 個主要功能提交
+- `10a2914` - Phase 2 核心資料表與 Models 完成
+- `84121a1` - Phase 1 超級管理員認證系統完成
+- `134f6a8` - Phase 1 租戶快速建立流程完成
