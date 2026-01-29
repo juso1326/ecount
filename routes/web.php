@@ -34,3 +34,15 @@ Route::prefix('api/superadmin')->name('api.superadmin.')->group(function () {
         Route::post('logout', [AuthController::class, 'apiLogout']);
     });
 });
+
+// 租戶路由（需要租戶識別）
+Route::middleware(['web'])->prefix('tenant')->name('tenant.')->group(function () {
+    // 公司管理
+    Route::resource('companies', \App\Http\Controllers\Tenant\CompanyController::class);
+    
+    // 部門管理
+    Route::resource('departments', \App\Http\Controllers\Tenant\DepartmentController::class);
+    
+    // 專案管理
+    Route::resource('projects', \App\Http\Controllers\Tenant\ProjectController::class);
+});
