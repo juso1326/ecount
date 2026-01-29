@@ -73,8 +73,8 @@
 
 ---
 
-### 🚧 Phase 2: 核心資料表設計與 CRUD (Week 3-4)
-**狀態**: 🚧 進行中 60%
+### ✅ Phase 2: 核心資料表設計與 CRUD (Week 3-4)
+**狀態**: ✅ 已完成 100%
 
 **已完成項目**:
 - [x] 設計租戶資料庫結構（7 張核心表）
@@ -89,19 +89,23 @@
   - Code、Company、Department、Project、Receivable、Payable
   - 完整的 Eloquent 關聯（belongsTo, hasMany, belongsToMany）
   - 自動計算屬性（預算使用率、付款進度、部門路徑）
+- [x] 建立 CRUD Controllers（3 個完整控制器）
+  - CompanyController：公司管理
+  - DepartmentController：部門管理（含階層結構）
+  - ProjectController：專案管理（含預算追蹤）
+- [x] 建立 Blade Views（13 個視圖）
+  - 1 個共用 Layout（含導航）
+  - 12 個功能 Views（每個模組 4 個：index, create, edit, show）
+  - 完整的 CRUD 界面（搜尋、篩選、分頁）
+- [x] 雙模式回應支援（Web + API）
 - [x] 測試資料建立成功
-
-**待完成**:
-- [ ] 建立 CRUD Controllers
-- [ ] 建立 Blade Views（列表、新增、編輯）
-- [ ] 建立 API Endpoints
 
 ---
 
 ### 📋 Phase 2-8: 詳細規劃
 
-- ✅ **Phase 1**: 環境建置與基礎架構 - **已完成**
-- 🚧 **Phase 2**: 核心資料表設計與 CRUD - **進行中 (60%)**
+- ✅ **Phase 1**: 環境建置與基礎架構 - **已完成 100%**
+- ✅ **Phase 2**: 核心資料表設計與 CRUD - **已完成 100%**
 - **Phase 3**: 超級管理員功能 (Week 5-6)
 - **Phase 4**: 租戶系統核心 (Week 6-8)
 - **Phase 5**: 業務邏輯遷移 (Week 8-10)
