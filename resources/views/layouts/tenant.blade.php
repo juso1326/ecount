@@ -16,6 +16,9 @@
                         <span class="text-xl font-bold text-gray-800">ECount 管理系統</span>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{{ route('tenant.dashboard') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            儀表板
+                        </a>
                         <a href="{{ route('tenant.companies.index') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             公司管理
                         </a>

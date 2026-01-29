@@ -42,12 +42,28 @@ Route::prefix('api/superadmin')->name('api.superadmin.')->group(function () {
 
 // 租戶路由（需要租戶識別）
 Route::middleware(['web'])->prefix('tenant')->name('tenant.')->group(function () {
-    // 公司管理
-    Route::resource('companies', \App\Http\Controllers\Tenant\CompanyController::class);
-    
-    // 部門管理
-    Route::resource('departments', \App\Http\Controllers\Tenant\DepartmentController::class);
-    
-    // 專案管理
-    Route::resource('projects', \App\Http\Controllers\Tenant\ProjectController::class);
+    // 認證路由（不需登入）
+    Route::middleware('guest')->group(function () {
+        Route::get('login', [\App\Http\Controllers\Tenant\AuthController::class, 'showLogin'])->name('login');
+        Route::post('login', [\App\Http\Controllers\Tenant\AuthController::class, 'login']);
+        Route::get('register', [\App\Http\Controllers\Tenant\AuthController::class, 'showRegister'])->name('register');
+        Route::post('register', [\App\Http\Controllers\Tenant\AuthController::class, 'register']);
+    });
+
+    // 需要認證的路由
+    Route::middleware('auth')->group(function () {
+        Route::post('logout', [\App\Http\Controllers\Tenant\AuthController::class, 'logout'])->name('logout');
+        
+        // 儀表板
+        Route::get('dashboard', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])->name('dashboard');
+        
+        // 公司管理
+        Route::resource('companies', \App\Http\Controllers\Tenant\CompanyController::class);
+        
+        // 部門管理
+        Route::resource('departments', \App\Http\Controllers\Tenant\DepartmentController::class);
+        
+        // 專案管理
+        Route::resource('projects', \App\Http\Controllers\Tenant\ProjectController::class);
+    });
 });
