@@ -1,0 +1,60 @@
+@charset "utf-8";
+/* CSS Document */
+
+.side-content .box .box-content .box-head ul.btn input.green{
+	background-color:#00A300;
+	border:1px solid #00A300;
+}
+.side-content .box .box-content .box-head ul.btn input.red{
+	background-color:#bd362f;
+	border:1px solid #bd362f;
+}
+.side-content .box .box-content .box-head ul.btn input.weakblue{
+	background-color:#49afcd;
+	border:1px solid #49afcd;
+}
+.side-content .box .box-content .box-head ul.btn input.blue{
+	background-color:#357ebd;
+	border:1px solid #357ebd;
+}
+.side-content .box .box-content .box-head ul.btn input.gray{
+	background-color:#a7a9aa;
+	border:1px solid #a7a9aa;
+}
+
+
+.block.blue{	
+	background-color:#5bc0de;
+}
+.block.red{
+	background-color:#EB3C00;
+}
+.block.black{
+	background-color:#1F1818;
+}
+.block.green{
+	background-color:#5BE56B;
+}
+.block.gary{
+	background-color:#797979;
+}
+.gary{
+	background-color:#6B6B6B;
+}
+.pink{
+	background-color:#E87CE4;
+}
+.whitetxt{
+	color:#FBFBFB;
+}
+
+.redfont{
+	color:#F00;
+}
+
+.btn.red{
+	background-color: red;
+	color: white;
+}
+
+

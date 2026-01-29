@@ -1,0 +1,122 @@
+<?php
+//*****************************************************************************************
+//		日期: 20141120
+//		程式功能：
+//		使用參數：
+//*****************************************************************************************
+	header ('Content-Type: text/html; charset=utf-8');
+	session_start();
+//函式庫
+	include_once($_SERVER['DOCUMENT_ROOT'] . "/config.ini.php");
+//參數
+	$GetFileCode = GetFileCode(__FILE__);
+	$success = true;
+	$prjm01_no = xRequest("prjm01_no");
+	
+//資料庫連線
+	$NewSql = new mysql();
+	
+
+		$Sql = " 
+			Select *
+			From found_t01
+		";
+		$initRun = $NewSql -> db_query($Sql) or die("SQL ERROR");
+		$i = 0;
+		while($Data = $NewSql -> db_field($initRun)){		
+			switch ($Data -> name){
+				case 'foundt01_no':
+					break;
+				default:
+					$RowArr[$i] = $Data -> name;
+					$Arr[$i] = xRequest($Data -> name);
+					break;			
+			}
+			if($RowArr[$i] != ""){
+				$i ++;
+			}	
+		}
+	
+		//新增資料
+		Insert($NewSql,"found_t01",$RowArr,$Arr);
+		
+		$LastAutoId = LastAutoId($NewSql);
+		if(xRequest("foundt01_times") == "1"){
+			unset($RowArr);
+			unset($Arr);
+			$Sql = " Select *
+					From found_t02
+			";
+			$initRun = $NewSql -> db_query($Sql) or die("SQL ERROR");
+			$i = 0;
+			while($Data = $NewSql -> db_field($initRun)){
+				switch ($Data -> name){
+					case 'foundt02_no':
+						break;
+					case 'foundt01_no':
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i]	 = $LastAutoId;			
+						break;
+					case 'foundt02_content';
+						$RowArr[$i] = $Data -> name;
+						if(xRequest("foundt01_type") == '1'){
+							$Arr[$i]	 = "應加 - " . xRequest("foundt01_content");
+						}else{
+							$Arr[$i]	 = "應扣 - " . xRequest("foundt01_content");							
+						}
+						
+						break;
+					case 'foundt02_total':
+						$RowArr[$i] = $Data -> name;
+						if (xRequest("foundt01_type") == "2"){
+							$Arr[$i]	 = xRequest("foundt01_total") * -1;							
+						}else{
+							$Arr[$i]	 = xRequest("foundt01_total");
+						}
+						break;
+					case 'foundt01_remark':
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i]	 = xRequest("foundt01_remark");
+						break;
+					case 'foundt02_date':
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i]	 = xRequest("foundt01_DateSt");
+						break;								
+					case 'ALTER_ID':
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i]	 = $_SESSION["MemNO"];
+						break;
+					case 'ALTER_DATE':
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i]	 = DspDate(date('Ymd'));
+						break;
+					case 'ALTER_TIME':					
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i] = DspTime(date('His'));				
+						break;											
+					default:
+						$RowArr[$i] = $Data -> name;
+						$Arr[$i]	 = xRequest($Data -> name);
+						break;			
+				}
+				if($RowArr[$i] != ""){
+					$i ++;
+				}				
+			}
+		
+			//新增資料
+			Insert($NewSql,"found_t02",$RowArr,$Arr);
+		}
+	
+//關閉資料庫連線
+	$NewSql -> db_close();
+	header ('Content-Type: text/html; charset=utf-8');
+	echo '<Response>';
+	if($success){
+		echo '<resu>1</resu>';
+	}else{
+		echo '<resu>0</resu>';		
+	}
+	echo '</Response>';	
+	exit();
+?>

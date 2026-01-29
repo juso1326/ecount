@@ -1,0 +1,69 @@
+#sb-title-inner,#sb-info-inner,#sb-loading-inner,div.sb-message{font: 13px/13px "敺株�迤暺��",Arial, Helvetica, sans-serif; color:#fff;}
+#sb-container{ position:fixed; margin:0; padding:0; top:0; left:0; z-index:99999; text-align:left; visibility:hidden; display:none;}
+#sb-overlay{position:relative;height:100%;width:100%;}
+#sb-wrapper{
+	position: absolute;
+	visibility: hidden;
+	-moz-box-shadow: 0 0 10px #666;
+	-webkit-box-shadow: 0 0 10px #666;
+	box-shadow: 0 0 10px #666;
+	behavior: url(PIE/PIE.htc);
+}
+#sb-wrapper-inner{
+	position: relative;
+	overflow: hidden;
+	-moz-border-radius: 0 0 3px 3px;
+	-webkit-border-radius: 0 0 3px 3px;
+	border-radius: 0 0 3px 3px;
+	behavior: url(PIE/PIE.htc);
+}
+#sb-body{position:relative;height:100%;}
+#sb-body-inner{position:absolute;height:100%;width:100%;}
+#sb-player.html{height:100%;overflow:auto;}
+#sb-body img{border:none;}
+#sb-loading{position:relative;height:100%;}
+#sb-loading-inner{position:absolute;font-size:14px;line-height:24px;height:24px;top:50%;margin-top:-12px;width:100%;text-align:center;}
+#sb-loading-inner span{background:url(../images/loading.gif) no-repeat;padding-left:34px;display:inline-block;}
+#sb-body,#sb-loading{background-color:#fff;}
+#sb-title,#sb-info{ position:relative;margin:0;padding:0;overflow:hidden;}
+#sb-title {
+	-moz-border-radius: 3px 3px 0 0;
+	-webkit-border-radius: 3px 3px 0 0;
+	border-radius: 3px 3px 0 0;
+	behavior: url(PIE/PIE.htc);
+}
+#sb-title-inner { padding: 0 0 0 20px;}
+#sb-title,#sb-title-inner {
+	height: 50px;
+	background: #656565;
+}
+#sb-title-inner {
+	font: 18px/50px Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, \5FAE\8EDF\6B63\9ED1\9AD4, 'Microsoft JhengHei', "敺株�迤暺��", sans-serif;
+	color: #fff;
+}
+#sb-info,#sb-info-inner{ display: none;}
+#sb-info-inner{ font-size: 12px;}
+#sb-nav {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 22px;
+	height: 22px;
+	padding: 14px 0;
+}
+#sb-nav a {
+	float: right;
+	display: block;
+	width: 22px;
+	height: 22px;
+	margin: 0 20px 0 0;
+	cursor: pointer;
+	background-repeat: no-repeat;
+}
+#sb-nav-close{ background-image:url(../MaintainImages/icon-close.png);}
+#sb-counter{float:left;width:45%;}
+#sb-counter a{padding:0 4px 0 0;text-decoration:none;cursor:pointer;color:#fff;}
+#sb-counter a.sb-counter-current{text-decoration:underline;}
+div.sb-message{font-size:12px;padding:10px;text-align:center;}
+div.sb-message a:link,div.sb-message a:visited{color:#fff;text-decoration:underline;}

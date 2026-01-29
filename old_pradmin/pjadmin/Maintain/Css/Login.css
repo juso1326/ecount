@@ -1,0 +1,94 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+	overflow:hidden;
+	background:url(../MaintainImages/bg-login.jpg);	
+}
+#LoginPage{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+#LoginPage .Loginblock{
+	margin-top:20px;
+	margin:100px auto;
+	width:400px;
+	height:auto;
+	border:3px solid #BCBCBC;
+	background-color:#FFFFFF;	
+}
+#LoginPage .Loginblock .icon{
+	height:37px;
+}
+#LoginPage .Loginblock h2{
+	color:#646464;
+	margin-left:30px;
+	font-family:monaco;
+	font-weight:normal;
+}
+#LoginPage .Loginblock ul{
+	margin-top:30px;
+}
+#LoginPage .Loginblock ul li{
+	line-height:50px;	
+	margin-left:30px;
+	display:inline-block;
+}
+#LoginPage .Loginblock ul li input[type="text"]{
+	padding-left:30px;
+	margin-left:-30px;
+	background:none;
+	border:1px solid #DCDCDC !important;
+	border-left:none;
+	width:300px;
+	height:30px;
+}
+#LoginPage .Loginblock ul li input[type="password"]{
+	padding-left:30px;
+	margin-left:-30px;
+	background:none;
+	border:1px solid #DCDCDC !important;
+	border-left:none;
+	width:305px;
+	height:35px;
+}
+.user_b{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings.png) no-repeat ;
+	background-position:-168px 0px;
+	display:inline-block;
+	z-index:10px;
+	opacity:.3;
+}
+.pwd_b{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings.png) no-repeat ;
+	background-position:-287px -24px;
+	display:inline-block;
+	z-index:10px;
+	opacity:.3;
+}
+.loginbtn{
+	border:none;
+	width:61px;
+	height:34px;
+	background:#2D89EF;/*linear-gradient(to bottom, #badff3, #2D89EF);*/
+	color:#fff;
+	border:1px solid #08c;
+	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+	margin-left:270px;
+	cursor:pointer;
+}
+.loginbtn:hover{
+	background-color:#04c;
+}
+
+span{
+	float:left;
+	color:#FB080C;
+}

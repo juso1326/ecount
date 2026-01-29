@@ -1,0 +1,128 @@
+@charset "utf-8";
+/* CSS Document */
+.block{
+	padding: 4px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;		
+}
+.block:hover{
+	opacity:.8;
+}
+i{
+	padding-right:3px;
+}
+
+
+i.folder-off{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings-white.png);
+	background-position:-384px -120px;
+	display:inline-block;
+}
+i.folder-on{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings-white.png);
+	background-position:-408px -120px;
+	display:inline-block;
+}
+i.Dashboard{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings-white.png);
+	background-position:-384px -144px;
+	display:inline-block;
+}
+i.user{
+	position:absolute;
+	width:14px;
+	height:14px;
+	line-height:14px;
+	margin-top:2px;	
+	margin-left:-16px;	
+	background:url(../MaintainImages/glyphicons_halflings-white.png) no-repeat ;
+	background-position:-168px 0px;
+	text-indent:-9999px;
+}
+.down{
+	width:14px;
+	height:14px;
+	line-height:14px;
+	margin-top:2px;	
+	margin-left:-16px;	
+	background:url(../MaintainImages/glyphicons_halflings-white.png) no-repeat ;
+	background-position:-168px 0px;
+	display:inline-block;
+}
+.down-b{
+	width:14px;
+	height:14px;	
+	background:url(../MaintainImages/glyphicons_halflings.png) no-repeat ;
+	background-position:-312px -120px;
+	display:block;
+}
+.up-b{
+	width:14px;
+	height:14px;	
+	background:url(../MaintainImages/glyphicons_halflings.png) no-repeat ;
+	background-position:-288px -120px;
+	display:block;
+}
+.prev{
+	width:14px;
+	height:14px;
+	line-height:14px;
+	margin-top:2px;	
+	margin-left:-16px;	
+	background:url(../MaintainImages/glyphicons_halflings.png) no-repeat ;
+	background-position:-433px -72px;
+	display:inline-block;
+}
+.next{
+	width:14px;
+	height:14px;
+	line-height:14px;
+	margin-top:2px;	
+	margin-left:-16px;	
+	background:url(../MaintainImages/glyphicons_halflings.png) no-repeat ;
+	background-position:-458px -72px;
+	display:inline-block;
+}
+.edit{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings-white.png);
+	background-position:-96px -72px;
+	display:block;
+}
+.Setting{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings-white.png);
+	background-position:-360px -144px;
+	display:block;
+}
+
+.pen{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings.png);
+	background-position:0px -72px;
+	display:inline-block;	
+}
+.add{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings.png);
+	background-position:-404px -96px;
+	display:inline-block;
+}
+.remove{
+	width:14px;
+	height:14px;
+	background:url(../MaintainImages/glyphicons_halflings.png);
+	background-position:-312px 0px;
+	display:inline-block;	
+}

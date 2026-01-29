@@ -1,0 +1,355 @@
+// JavaScript Document
+
+	$(function(){
+		TaxList();
+	});
+	function prjfromcom(obj){
+		var Key = obj.value
+		$.post(
+			'PRJ02_PrjFromCom.php',
+			{DataKey:Key},
+			function(xml){
+				if($('resu',xml).text() == '1'){
+					$('#prjm01_no').find('option').remove();
+					$('#prjm01_no').append($('<option>', { value : '' }).text(''));
+					
+					$('Row',xml).each(function(){
+						$('#prjm01_no')
+							.append($('<option>', { value : $('no',this).text() ,t02:$('t02nm',this).text(), mem:$('mem',this).text()})
+							.text($('nm',this).text()));						
+					})
+					$(".chosen-select").trigger("chosen:updated");
+				}
+			}
+		);
+	}
+	function t02fromprj(obj){
+		$("#prj-t02").text("狀態：[ " + $(obj).find('option:selected').attr('t02') + " ]");
+		$("#ADD_ID").val($(obj).find('option:selected').attr('mem'))
+	}
+	
+	function pfrompay(obj){
+		var prj = $("#prjm01_no").find('option:selected').val()
+		$.post(
+			'PRJ02_pfrompay.php',
+			{DataKey:prj,type:obj.value},
+			function(xml){
+				if($('resu',xml).text() == '1'){
+					$('#memm01_no').find('option').remove();
+					$('#firmm01_no').find('option').remove();
+					GetTotal();
+					switch(obj.value){
+						case 'M':	
+							$('.custom').hide();	
+							$('#memm01_no_chosen').show();				
+							$('#memm01_no').append($('<option>', { value : '' }).text(''));
+							
+							$('M',xml).each(function(){
+								$('#memm01_no')
+									.append($('<option>', { value : $('no',this).text(), T1 :$('T1',this).text(), level: $('uplevel',this).text()})
+									.text($('nm',this).text()));						
+							})	
+							$('#firmm01_no_chosen').hide();
+							break;						
+						case 'F':
+							$('.custom').show();
+							$('#firmm01_no_chosen').show();								
+							$('#firmm01_no').append($('<option>', { value : '' }).text(''));
+							
+							$('F',xml).each(function(){
+								$('#firmm01_no')
+									.append($('<option>', { value : $('no',this).text(), acc : $('acc',this).text() , branch : $('branch',this).text(), T1 :$('T1',this).text()})
+									.text($('nm',this).text()));						
+							})
+							$('#memm01_no_chosen').hide();
+							break;
+						case 'P':
+							$('.custom').show();
+							$('#memm01_no_chosen').hide();
+							$('#firmm01_no_chosen').hide();
+							$("#paym01_discountTax").find('option').remove();
+							$('#paym01_discountTax')
+							.append($('<option>', { value : '.14', selected : 'selected'}).text('14% (具體發票)'))	
+							.append($('<option>', { value : '.07'}).text('77% (公積金)'));			
+							break;
+					}
+					$(".chosen-select").trigger("chosen:updated");
+				}
+			}
+		);		
+	}	
+	function TaxList(){
+		//var _paym01_discountTax = $("#paym01_discountTax option:selected").val();
+		var _paym01_discountTax = $("#paym01_discountTax").attr('value');
+		
+		console.log('_paym01_discountTax',_paym01_discountTax)
+		var FormType = $("#paym01_type1").find("option:selected").val();	
+		var T1 = '';
+		switch (FormType){
+			case 'M':
+				T1 = $('#memm01_no').find("option:selected").attr('t1');
+				uplevel = $('#memm01_no').find("option:selected").attr('level');
+				break;
+			case 'F':
+				T1 = $('#firmm01_no').find("option:selected").attr('t1')
+				break;
+			case 'P':
+				T1 = "C1"
+				break;
+		}
+		//console.log(T1,_paym01_discountTax);
+		switch (T1){
+			case 'P':
+				$("#paym01_discountTax").find('option').remove();
+				//2017制度更改
+				$('#paym01_discountTax')
+				.append($('<option value=".14" ' + (_paym01_discountTax == '.14' ? 'selected' : '') + '>').text('14% (具體發票)'))
+				.append($('<option value=".09" ' + (_paym01_discountTax == '.09' ? 'selected' : '') + '>').text('9%'))
+				.append($('<option value=".07" ' + (_paym01_discountTax == '.07' ? 'selected' : '') + '>').text('7% (公積金)'))
+				.append($('<option value="0" ' + (_paym01_discountTax == '0' ? 'selected' : '') + '>').text('0%'));
+				break;
+			case 'C':
+				$("#paym01_discountTax").find('option').remove();
+				//2017制度更改
+				$('#paym01_discountTax')
+				.append($('<option value=".14" ' + (_paym01_discountTax == '.14' ? 'selected' : '') + '>').text('14% (具體發票)'))
+				//.append($('<option value=".09" ' + (_paym01_discountTax == '.09' ? 'selected' : '') + '>').text('9%'))
+				.append($('<option value=".07" ' + (_paym01_discountTax == '.07' ? 'selected' : '') + '>').text('7% (公積金)'))
+				//.append($('<option value="0" ' + (_paym01_discountTax == '0' ? 'selected' : '') + '>').text('0'));
+				break;
+			case 'C1':
+				$("#paym01_discountTax").find('option').remove();
+				//2017制度更改
+				$('#paym01_discountTax')
+				.append($('<option value=".14" ' + (_paym01_discountTax == '.14' ? '' : '') + '>').text('14% (具體發票)'))
+				//.append($('<option value=".09" ' + (_paym01_discountTax == '.09' ? 'selected' : '') + '>').text('9%'))
+				.append($('<option value=".07" ' + (_paym01_discountTax == '.07' ? 'selected' : '') + '>').text('7% (公積金)'))
+				.append($('<option value="0" ' + (_paym01_discountTax == '0' ? '' : '') + '>').text('0%'));
+				
+				break;
+			default:
+				T1Per = 0
+				break;
+		}
+	}	
+
+	function GetTotal(){
+		var subTotal = $("#paym01_subtotal").val();
+		var hasTax = $("#paym01_hastax").find("option:selected").val();
+		var TaxPer = $("#paym01_taxper").val()
+		var FormType = $("#paym01_type1").find("option:selected").val();
+		var prjm01_no = $("#prjm01_no option:selected").attr('mem');
+		var T1
+		var T1Per
+		var hasTaxTotal
+		var uplevel
+		var paylearn
+		var _paym01_discountTax = $("#paym01_discountTax").attr('value');
+		
+		switch (FormType){
+			case 'M':
+				T1 = $('#memm01_no').find("option:selected").attr('t1');
+				uplevel = $('#memm01_no').find("option:selected").attr('level');
+				if (prjm01_no == uplevel){
+					uplevel = '';	
+				}
+				break;
+			case 'F':
+				T1 = $('#firmm01_no').find("option:selected").attr('t1')
+				break;
+			case 'P':
+				T1 = "C1"
+				break;
+		}
+		//2017新增教育費
+		if (uplevel != '' & prjm01_no != '' & uplevel != '19' & FormType != 'F'){
+			paylearn = 0.03;
+		}else{
+			paylearn = 0;
+		}
+		//$('#paym01_paylearn').val('0.03');
+		switch (T1){
+			case 'P':
+				$("#paym01_discountTax").find('option').remove();
+				//2017制度更改
+				$('#paym01_discountTax')
+				.append($('<option>', { value : '.14', selected : 'selected'}).text('14% (具體發票)'))
+				//.append($('<option>', { value : '.09', selected : 'selected'}).text('9'))
+				.append($('<option>', { value : '.07'}).text('7% (公積金)'))
+				//.append($('<option>', { value : '0'}).text('0'));
+				//強制為非含稅
+				$('#paym01_hastax').val('N');
+				hasTax = $("#paym01_hastax").find("option:selected").val();
+	
+				T1Per = $('#paym01_discountTax').find('option:selected').val()
+				break;
+			case 'C':
+				$("#paym01_discountTax").find('option').remove();
+				//2017制度更改
+				$('#paym01_discountTax').append($('<option>', { value : '.14', selected : 'selected'}).text('14% (具體發票)'))
+				.append($('<option value=".09" ' + (_paym01_discountTax == '.09' ? 'selected' : '') + '>').text('9%'))
+				.append($('<option value=".07" ' + (_paym01_discountTax == '.07' ? 'selected' : '') + '>').text('7% (公積金)'))
+				.append($('<option value="0" ' + (_paym01_discountTax == '0' ? 'selected' : '') + '>').text('0%'));
+				//$('#paym01_discountTax').append($('<option>', { value : '.12', selected : 'selected'}).text('12'));		
+				T1Per = $('#paym01_discountTax').find('option:selected').val();
+				break;
+			case 'C1':
+				$("#paym01_discountTax").find('option').remove();
+				//2017制度更改
+				/*
+				$('#paym01_discountTax').append($('<option>', { value : '.14', selected : 'selected'}).text('14'))	
+				.append($('<option>', { value : '.07'}).text('7'));			
+				*/
+				
+				if (_paym01_discountTax == undefined){
+					_paym01_discountTax = 0;
+				}
+				$('#paym01_discountTax')
+				.append($('<option value=".09" ' + (_paym01_discountTax == '.09' ? 'selected' : '') + '>').text('9%'))
+				.append($('<option value=".07" ' + (_paym01_discountTax == '.07' ? 'selected' : '') + '>').text('7% (公積金)'))
+				.append($('<option value="0" ' + (_paym01_discountTax == '0' ? 'selected' : '') + '>').text('0%'));
+				
+				T1Per = $('#paym01_discountTax').find('option:selected').val()
+				break;
+			default:
+				T1Per = 0
+				break;
+		}
+		if(FormType == 'M'){	
+			
+			//alert('subTotal ' + Math.round(hasTaxTotal*(1 - T1Per)))
+			switch(hasTax){
+				case 'Y':		
+					tax = Math.round(subTotal * (TaxPer/100))
+					hasTaxTotal = parseInt(tax) + parseInt(subTotal)
+					$("#paym01_tax").val(tax)
+					$("#hasTaxTotal").text(hasTaxTotal)
+					break;
+				case 'N':
+					$("#paym01_tax").val(0);
+					hasTaxTotal = subTotal * (1 - paylearn);
+					//alert("金額 " + hasTaxTotal);
+					$("#hasTaxTotal").text(hasTaxTotal);	
+					//$("#hasTaxTotal").text(hasTaxTotal * (1 - $('#paym01_paylearn').val()) );						
+					break;				
+			}
+			$('#paym01_paylearn').val(subTotal - hasTaxTotal);
+			$("#paym01_paytotalTEXT").text(Math.round(hasTaxTotal*(1 - T1Per)));
+			$("#paym01_paytotal").val(Math.round(hasTaxTotal*(1 - T1Per)));
+		}else if (FormType == 'F'){
+			var tax = 0;
+			switch(hasTax){
+				case 'Y':		
+					tax = Math.round(subTotal * (TaxPer/100))
+					hasTaxTotal = parseInt(tax) + parseInt(subTotal);
+					$("#paym01_tax").val(tax);
+					$("#hasTaxTotal").text(hasTaxTotal)
+					hasTaxTotal = parseInt(subTotal);					
+					break;
+				case 'N':
+					$("#paym01_tax").val(0);
+					hasTaxTotal = subTotal;
+					//hasTaxTotal = subTotal * (1 - paylearn);
+					$("#hasTaxTotal").text(hasTaxTotal);			
+					break;				
+			}
+			//bug異動 107/5/30
+			discountTax();
+			//$("#paym01_paytotalTEXT").text(Math.round(hasTaxTotal*(1 - T1Per) + tax));
+			//$("#paym01_paytotal").val(Math.round(hasTaxTotal*(1 - T1Per) + tax));	
+			
+			//$("#paym01_paytotalTEXT").text(Math.round(hasTaxTotal*(1 - T1Per)));
+			//$("#paym01_paytotal").val(Math.round(hasTaxTotal*(1 - T1Per)));	
+			
+			
+			//console.log(hasTaxTotal)
+		}else if(FormType == 'P'){
+			$('#paym01_paylearn').val(0);
+			/*
+			switch(hasTax){
+				case 'Y':		
+					tax = Math.round(subTotal * (TaxPer/100))
+					hasTaxTotal = parseInt(tax) + parseInt(subTotal)
+					$("#paym01_tax").val(tax)
+					$("#hasTaxTotal").text(hasTaxTotal)
+					$("#paym01_paytotalTEXT").text(Math.round(subTotal*T1Per))
+					$("#paym01_paytotal").val(Math.round(subTotal*T1Per))						
+					break;
+				case 'N':
+					$("#paym01_tax").val(0)
+					$("#hasTaxTotal").text(0)		
+					$("#paym01_paytotalTEXT").text(0)
+					$("#paym01_paytotal").val(0)							
+					break;				
+			}
+			*/
+			switch(hasTax){
+				case 'Y':		
+					tax = Math.round(subTotal * (TaxPer/100))
+					hasTaxTotal = parseInt(tax) + parseInt(subTotal)
+					$("#paym01_tax").val(tax)
+					$("#hasTaxTotal").text(hasTaxTotal)
+					
+					$("#paym01_paytotalTEXT").text(hasTaxTotal - Math.round(subTotal*T1Per))
+					$("#paym01_paytotal").val(hasTaxTotal - Math.round(subTotal*T1Per))	
+					break;
+				case 'N':
+					hasTaxTotal = subTotal
+					$("#paym01_tax").val(0)
+					$("#hasTaxTotal").text(0)	
+					
+					$("#paym01_paytotalTEXT").text(hasTaxTotal)
+					$("#paym01_paytotal").val(hasTaxTotal)			
+					break;				
+			}		
+		}
+	}
+	
+	/* 帶入內容*/
+	function content(){	
+		var T1 = $("#comm01_no").find("option:selected");
+		var T2 = $("#prjm01_no").find("option:selected");
+		var content
+	}		
+	
+	/* 帶入 分行 帳號*/
+	function firmChange(obj){
+		/*
+		2017刪除
+		$('#paym01_paybrunch').val($(obj).find('option:selected').attr('branch'));
+		$('#paym01_payacc').val($(obj).find('option:selected').attr('acc'));
+		*/
+	}
+	
+	function discountTax(){
+		var total = $("#paym01_subtotal").val() - parseInt(($('#paym01_paylearn').val() != '' ? $('#paym01_paylearn').val() : '0'));
+		var discountTax = $("#paym01_discountTax").find('option:selected').val();
+		var Tax = Math.round($('#paym01_tax').val());
+		var val = Math.round(total*(1-discountTax)) + Tax;
+		//paym01_subtotal
+		$("#paym01_paytotalTEXT").text(val);
+		$("#paym01_paytotal").val(val);
+		
+	}
+	//檢查給付日期是否已經結帳
+	function ChkPayDate(){
+		var val = $("#paym01_paydate").val()
+		var mem = $("#ADD_ID").val() + '，' + $("#memm01_no").val()
+		if(val != ""){
+			$.post(
+				'Post_PRJ02.php',
+				{date:val,mem:mem},
+				function(xml){
+					if($('resu',xml).text() == '1'){
+					}else{
+						$("#paym01_paydate").val('')
+						if($('rtMeg',xml).text() != ''){
+							alert($('rtMeg',xml).text())
+						}else{
+							alert("請選擇正確資料");
+						}
+					}
+				}
+			);
+		}
+	}	

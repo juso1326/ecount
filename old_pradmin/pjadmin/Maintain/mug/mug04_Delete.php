@@ -1,0 +1,38 @@
+<?php
+//*****************************************************************************************
+//		日期: 20141120
+//		程式功能：
+//		使用參數：
+//*****************************************************************************************
+	header ('Content-Type: text/html; charset=utf-8');
+	session_start();
+//函式庫
+	include_once($_SERVER['DOCUMENT_ROOT'] . "/config.ini.php");
+	LoginChk(GetFileCode(__FILE__),"3");
+//參數
+	$GetFileCode = GetFileCode(__FILE__);	
+	$DataKey = xRequest("DataKey");	
+//資料庫連線
+	$NewSql = new mysql();	
+	
+	$where = '';
+	$j = 0;
+
+	if ($DataCount > 0){
+		while($j < $DataCount){
+			$j ++;
+		if(xRequest("check" . $j) != ''){			
+
+			$where = ' where 1 = 1 ';
+			$where .= "and MUG01_NO = '" . $DataKey . "'";
+			$where .= "and MUG04_NO = '" . xRequest("check" . $j) . "'";
+			
+			Delete($NewSql,"mug_04",$where);		
+			}
+		}
+	}
+
+
+	
+	header("Location: " . $GetFileCode . ".php?DataKey=" . $DataKey);
+?>
