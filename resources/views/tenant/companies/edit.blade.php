@@ -1,0 +1,107 @@
+@extends('layouts.tenant')
+
+@section('title', '編輯公司')
+
+@section('content')
+<div class="mb-6">
+    <h1 class="text-2xl font-semibold text-gray-900">編輯公司</h1>
+</div>
+
+<div class="bg-white shadow-md rounded-lg p-6">
+    <form method="POST" action="{{ route('tenant.companies.update', $company) }}">
+        @csrf
+        @method('PUT')
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 公司代碼 -->
+            <div>
+                <label for="code" class="block text-sm font-medium text-gray-700">公司代碼 <span class="text-red-500">*</span></label>
+                <input type="text" name="code" id="code" value="{{ old('code', $company->code) }}" required
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('code') border-red-500 @enderror">
+                @error('code')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- 公司名稱 -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">公司名稱 <span class="text-red-500">*</span></label>
+                <input type="text" name="name" id="name" value="{{ old('name', $company->name) }}" required
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror">
+                @error('name')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- 統一編號 -->
+            <div>
+                <label for="tax_id" class="block text-sm font-medium text-gray-700">統一編號</label>
+                <input type="text" name="tax_id" id="tax_id" value="{{ old('tax_id', $company->tax_id) }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('tax_id') border-red-500 @enderror">
+                @error('tax_id')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- 聯絡電話 -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">聯絡電話</label>
+                <input type="text" name="phone" id="phone" value="{{ old('phone', $company->phone) }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('phone') border-red-500 @enderror">
+                @error('phone')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- 傳真 -->
+            <div>
+                <label for="fax" class="block text-sm font-medium text-gray-700">傳真</label>
+                <input type="text" name="fax" id="fax" value="{{ old('fax', $company->fax) }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="email" value="{{ old('email', $company->email) }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-500 @enderror">
+                @error('email')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- 地址 -->
+            <div class="md:col-span-2">
+                <label for="address" class="block text-sm font-medium text-gray-700">地址</label>
+                <input type="text" name="address" id="address" value="{{ old('address', $company->address) }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 描述 -->
+            <div class="md:col-span-2">
+                <label for="description" class="block text-sm font-medium text-gray-700">描述</label>
+                <textarea name="description" id="description" rows="3"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('description', $company->description) }}</textarea>
+            </div>
+
+            <!-- 狀態 -->
+            <div>
+                <label class="flex items-center">
+                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $company->is_active) ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    <span class="ml-2 text-sm text-gray-600">啟用</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-3">
+            <a href="{{ route('tenant.companies.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                取消
+            </a>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                更新
+            </button>
+        </div>
+    </form>
+</div>
+@endsection
