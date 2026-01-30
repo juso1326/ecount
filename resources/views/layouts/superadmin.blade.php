@@ -28,16 +28,15 @@
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside 
-            x-show="sidebarOpen" 
-            @click.away="sidebarOpen = false"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="-translate-x-full"
+            x-show="sidebarOpen || window.innerWidth >= 1024" 
+            @click.away="if (window.innerWidth < 1024) sidebarOpen = false"
+            x-transition:enter="transition ease-out duration-200 lg:transition-none"
+            x-transition:enter-start="-translate-x-full lg:translate-x-0"
             x-transition:enter-end="translate-x-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="translate-x-0"
-            x-transition:leave-end="-translate-x-full"
-            class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg lg:static lg:translate-x-0"
-            x-cloak
+            x-transition:leave="transition ease-in duration-150 lg:transition-none"
+            x-transition:leave-start="translate-x-0 lg:translate-x-0"
+            x-transition:leave-end="-translate-x-full lg:translate-x-0"
+            class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg"
         >
             <!-- Logo -->
             <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
