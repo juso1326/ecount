@@ -218,11 +218,3 @@
     </div>
 </body>
 </html>
-                </div>
-            @endif
-
-            @yield('content')
-        </div>
-    </main>
-</body>
-</html>
