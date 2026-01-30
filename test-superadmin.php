@@ -102,10 +102,10 @@ echo "【測試 5】驗證超級管理員密碼\n";
 echo "----------------------------------------\n";
 $admin = SuperAdmin::first();
 if ($admin) {
-    $testPassword = 'password';
+    $testPassword = 'admin123456';
     $isValid = Hash::check($testPassword, $admin->password);
     if ($isValid) {
-        echo "✓ 密碼驗證成功 (測試密碼: {$testPassword})\n";
+        echo "✓ 密碼驗證成功\n";
         echo "  登入資訊:\n";
         echo "    Email: {$admin->email}\n";
         echo "    密碼: {$testPassword}\n";
@@ -114,7 +114,7 @@ if ($admin) {
         echo "  提示: 請使用以下指令重設密碼:\n";
         echo "  php artisan tinker\n";
         echo "  \$admin = App\\Models\\SuperAdmin::first();\n";
-        echo "  \$admin->password = Hash::make('password');\n";
+        echo "  \$admin->password = Hash::make('admin123456');\n";
         echo "  \$admin->save();\n";
     }
 }
@@ -158,6 +158,6 @@ echo "\n";
 echo "========================================\n";
 echo "  測試完成！\n";
 echo "========================================\n";
-echo "\n登入網址: http://ecount.test/superadmin/login\n";
+echo "\n登入網址: https://ecount.test/superadmin/login\n";
 echo "登入帳號: {$admin->email}\n";
-echo "登入密碼: password\n\n";
+echo "登入密碼: admin123456\n\n";
