@@ -221,13 +221,8 @@
         </div>
     </div>
 </div>
-@endsection
-<div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">儀表板</h1>
-    <p class="mt-2 text-gray-600">系統總覽與統計資訊</p>
-</div>
 
-<!-- 統計卡片 -->
+<!-- 系統資訊 -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
     <!-- 總租戶數 -->
     <div class="bg-white rounded-lg shadow p-6">
