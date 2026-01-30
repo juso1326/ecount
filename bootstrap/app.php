@@ -20,6 +20,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
+        
+        // 設定認證重定向路由 - 針對不同守衛
+        $middleware->redirectGuestsTo(function ($request) {
+            // 如果是 superadmin 路由，重定向到 superadmin.login
+            if ($request->is('superadmin') || $request->is('superadmin/*')) {
+                return route('superadmin.login');
+            }
+            // 如果是 tenant 路由，重定向到 tenant.login
+            if ($request->is('tenant') || $request->is('tenant/*')) {
+                return route('tenant.login');
+            }
+            // 預設重定向到首頁
+            return '/';
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
