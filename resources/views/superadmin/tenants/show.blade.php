@@ -100,6 +100,103 @@
     </div>
 </div>
 
+<!-- 方案資訊 -->
+<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">方案資訊</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-500">方案開始時間</label>
+            <p class="mt-1 text-lg text-gray-900">
+                {{ $tenant->plan_started_at ? $tenant->plan_started_at->format('Y-m-d H:i') : '未設定' }}
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500">方案到期時間</label>
+            <p class="mt-1 text-lg text-gray-900">
+                @if($tenant->plan_ends_at)
+                    {{ $tenant->plan_ends_at->format('Y-m-d H:i') }}
+                    @if($tenant->isPlanExpired())
+                        <span class="ml-2 px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">已過期</span>
+                    @elseif($tenant->isPlanExpiringSoon())
+                        <span class="ml-2 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">即將到期</span>
+                    @endif
+                @else
+                    未設定
+                @endif
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500">剩餘天數</label>
+            <p class="mt-1 text-lg font-bold {{ $tenant->planDaysRemaining() < 7 ? 'text-red-600' : 'text-green-600' }}">
+                {{ $tenant->planDaysRemaining() > 365 ? '∞' : $tenant->planDaysRemaining() }} 天
+            </p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <label class="flex items-center">
+            <input type="checkbox" {{ $tenant->auto_renew ? 'checked' : '' }} disabled class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+            <span class="ml-2 text-sm text-gray-700">自動續約</span>
+        </label>
+    </div>
+</div>
+
+<!-- 租用記錄 -->
+@if($tenant->subscriptions->count() > 0)
+<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">租用記錄</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">方案</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">價格</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">開始時間</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">結束時間</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">狀態</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">自動續約</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @foreach($tenant->subscriptions as $subscription)
+                <tr>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full
+                            @if($subscription->plan === 'basic') bg-blue-100 text-blue-800
+                            @elseif($subscription->plan === 'professional') bg-indigo-100 text-indigo-800
+                            @else bg-purple-100 text-purple-800
+                            @endif">
+                            {{ $subscription->plan_name }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                        ${{ number_format($subscription->price, 2) }}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ $subscription->started_at->format('Y-m-d') }}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ $subscription->ends_at->format('Y-m-d') }}
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs rounded-full
+                            @if($subscription->status === 'active') bg-green-100 text-green-800
+                            @elseif($subscription->status === 'expired') bg-red-100 text-red-800
+                            @else bg-gray-100 text-gray-800
+                            @endif">
+                            {{ $subscription->status_name }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {{ $subscription->auto_renew ? '是' : '否' }}
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
 <!-- 資料統計 -->
 <div class="bg-white shadow-md rounded-lg p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">資料統計</h2>

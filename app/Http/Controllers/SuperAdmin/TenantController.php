@@ -140,7 +140,9 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        $tenant->load('domains');
+        $tenant->load(['domains', 'subscriptions' => function($query) {
+            $query->latest('created_at');
+        }]);
         
         // 取得租戶資料庫統計
         $stats = $tenant->run(function () {
@@ -154,7 +156,10 @@ class TenantController extends Controller
 
         if (request()->wantsJson()) {
             return response()->json([
-                'data' => array_merge($tenant->toArray(), ['stats' => $stats])
+                'data' => array_merge($tenant->toArray(), [
+                    'stats' => $stats,
+                    'subscriptions' => $tenant->subscriptions
+                ])
             ]);
         }
 

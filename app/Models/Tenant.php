@@ -19,6 +19,9 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'name',
         'email',
         'plan',
+        'plan_started_at',
+        'plan_ends_at',
+        'auto_renew',
         'status',
         'settings',
     ];
@@ -28,6 +31,9 @@ class Tenant extends BaseTenant implements TenantWithDatabase
      */
     protected $casts = [
         'settings' => 'array',
+        'plan_started_at' => 'datetime',
+        'plan_ends_at' => 'datetime',
+        'auto_renew' => 'boolean',
     ];
 
     /**
@@ -66,5 +72,67 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     public function getFullDomainAttribute(): string
     {
         return $this->domains->first()?->domain ?? '';
+    }
+
+    /**
+     * 訂閱記錄關聯
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(TenantSubscription::class);
+    }
+
+    /**
+     * 當前訂閱
+     */
+    public function currentSubscription()
+    {
+        return $this->hasOne(TenantSubscription::class)->where('status', 'active')->latest('ends_at');
+    }
+
+    /**
+     * 檢查方案是否過期
+     */
+    public function isPlanExpired(): bool
+    {
+        if (!$this->plan_ends_at) {
+            return false;
+        }
+        return $this->plan_ends_at < now();
+    }
+
+    /**
+     * 檢查方案是否即將到期（7天內）
+     */
+    public function isPlanExpiringSoon(): bool
+    {
+        if (!$this->plan_ends_at) {
+            return false;
+        }
+        return $this->plan_ends_at->isBetween(now(), now()->addDays(7));
+    }
+
+    /**
+     * 方案剩餘天數
+     */
+    public function planDaysRemaining(): int
+    {
+        if (!$this->plan_ends_at) {
+            return 999;
+        }
+        return max(0, now()->diffInDays($this->plan_ends_at, false));
+    }
+
+    /**
+     * 方案名稱
+     */
+    public function getPlanNameAttribute(): string
+    {
+        return match($this->plan) {
+            'basic' => '基礎方案',
+            'professional' => '專業方案',
+            'enterprise' => '企業方案',
+            default => $this->plan,
+        };
     }
 }

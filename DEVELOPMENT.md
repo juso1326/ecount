@@ -286,3 +286,9 @@ php artisan serve
 - ✅ 雙模式回應（Web + API）
 - ✅ 視覺化狀態標籤與統計資料
 - ⏳ 待測試：資料庫連線與功能驗證
+
+  超級管理員登入:
+
+    - URL: http://ecount.test/superadmin/login
+    - Email: admin@ecount.com
+    - Password: admin123456
