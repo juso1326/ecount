@@ -16,19 +16,41 @@ class Company extends Model
     protected $fillable = [
         'code',
         'name',
+        'short_name',
+        'type',
+        'is_outsource',
         'tax_id',
+        'is_tax_entity',
+        'invoice_title',
+        'invoice_type',
         'representative',
+        'contact_person',
         'phone',
+        'mobile',
         'fax',
         'email',
         'address',
         'website',
+        'facebook',
+        'line_id',
+        'instagram',
+        'business_hours',
+        'industry',
+        'capital',
+        'bank_name',
+        'bank_branch',
+        'bank_account',
+        'bank_account_name',
+        'logo_path',
+        'brand_color',
         'note',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_outsource' => 'boolean',
+        'is_tax_entity' => 'boolean',
     ];
 
     /**

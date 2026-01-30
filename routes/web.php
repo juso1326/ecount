@@ -62,6 +62,11 @@ Route::middleware(['web'])->prefix('tenant')->name('tenant.')->group(function ()
         // 儀表板
         Route::get('dashboard', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])->name('dashboard');
         
+        // 公司設定
+        Route::get('settings/company', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'index'])->name('settings.company');
+        Route::put('settings/company/{company}', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'update'])->name('settings.company.update');
+        Route::delete('settings/company/{company}/logo', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'deleteLogo'])->name('settings.company.logo.delete');
+        
         // 公司管理
         Route::resource('companies', \App\Http\Controllers\Tenant\CompanyController::class);
         
