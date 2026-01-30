@@ -27,6 +27,13 @@ class DashboardController extends Controller
             ->get()
             ->pluck('count', 'plan')
             ->toArray();
+        
+        // 確保所有方案都有鍵值（即使是 0）
+        $planStats = array_merge([
+            'basic' => 0,
+            'professional' => 0,
+            'enterprise' => 0,
+        ], $planStats);
 
         // 最近建立的租戶
         $recentTenants = Tenant::orderBy('created_at', 'desc')->take(5)->get();
