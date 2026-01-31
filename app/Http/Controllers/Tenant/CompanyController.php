@@ -21,14 +21,20 @@ class CompanyController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('short_name', 'like', "%{$search}%")
                   ->orWhere('code', 'like', "%{$search}%")
                   ->orWhere('tax_id', 'like', "%{$search}%");
             });
         }
 
-        // 狀態篩選
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
+        // 類型篩選 - 客戶
+        if ($request->filled('is_client')) {
+            $query->where('is_client', true);
+        }
+
+        // 類型篩選 - 外製
+        if ($request->filled('is_outsource')) {
+            $query->where('is_outsource', true);
         }
 
         $companies = $query->orderBy('created_at', 'desc')->paginate(15);
