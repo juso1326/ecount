@@ -63,23 +63,21 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code' => 'required|string|max:50|unique:companies,code',
             'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:100',
+            'type' => 'required|in:company,individual',
             'tax_id' => 'nullable|string|max:20',
-            'representative' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'fax' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
-            'note' => 'nullable|string',
-            'is_active' => 'boolean',
+            'is_client' => 'boolean',
+            'is_outsource' => 'boolean',
         ], [
-            'code.required' => '公司代碼為必填',
-            'code.unique' => '公司代碼已存在',
-            'name.required' => '公司名稱為必填',
+            'name.required' => '名稱為必填',
+            'short_name.required' => '簡稱為必填',
+            'type.required' => '類型為必填',
             'email.email' => 'Email 格式不正確',
-            'website.url' => '網址格式不正確',
         ]);
 
         if ($validator->fails()) {
@@ -92,7 +90,16 @@ class CompanyController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $company = Company::create($request->all());
+        $companyData = $request->only([
+            'name', 'short_name', 'type', 'tax_id', 
+            'phone', 'fax', 'email', 'address'
+        ]);
+        
+        $companyData['is_client'] = $request->boolean('is_client');
+        $companyData['is_outsource'] = $request->boolean('is_outsource');
+        $companyData['is_active'] = true;
+
+        $company = Company::create($companyData);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -102,7 +109,7 @@ class CompanyController extends Controller
         }
 
         return redirect()->route('tenant.companies.index')
-            ->with('success', '公司建立成功');
+            ->with('success', '客戶/廠商建立成功');
     }
 
     /**

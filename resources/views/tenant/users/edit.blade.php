@@ -21,10 +21,11 @@
     </nav>
 </div>
 
-<div class="grid grid-cols-1 gap-9">
-    <div class="flex flex-col gap-9">
-        <!-- 表單 -->
-        <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+<div class="mx-auto max-w-full">
+    <div class="grid grid-cols-1 gap-9">
+        <div class="flex flex-col gap-9">
+            <!-- 表單 -->
+            <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <form method="POST" action="{{ route('tenant.users.update', $user) }}">
                 @csrf
                 @method('PUT')
@@ -369,6 +370,7 @@
                 </div>
             </form>
         </div>
+    </div>
     </div>
 </div>
 
