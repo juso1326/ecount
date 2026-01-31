@@ -68,11 +68,11 @@
             <div>
                 <label for="manager_id" class="block text-sm font-medium text-gray-700">專案經理</label>
                 <select name="manager_id" id="manager_id"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 select2">
                     <option value="">請選擇</option>
                     @foreach($managers as $manager)
                         <option value="{{ $manager->id }}" {{ old('manager_id', $project->manager_id) == $manager->id ? 'selected' : '' }}>
-                            {{ $manager->name }}
+                            {{ $manager->name }} ({{ $manager->email }})
                         </option>
                     @endforeach
                 </select>
@@ -156,4 +156,21 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#manager_id').select2({
+        placeholder: '搜尋專案經理...',
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
+@endpush
 @endsection

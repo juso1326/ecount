@@ -86,6 +86,12 @@
             @forelse($companies as $company)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <a href="{{ route('tenant.companies.show', $company) }}" 
+                       class="text-primary hover:text-primary-dark font-medium">
+                        查看
+                    </a>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <a href="{{ route('tenant.companies.edit', $company) }}" 
                        class="text-primary hover:text-primary-dark font-medium">
                         編輯
@@ -118,7 +124,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="10" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何客戶/廠商資料
                 </td>
             </tr>
