@@ -40,12 +40,8 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // 預算總覽
-        $budgetOverview = [
-            'total_budget' => Project::sum('budget'),
-            'total_actual_cost' => Project::sum('actual_cost'),
-        ];
-        $budgetOverview['remaining_budget'] = $budgetOverview['total_budget'] - $budgetOverview['total_actual_cost'];
+        // 進行中專案數量
+        $activeProjects = $stats['active_projects'];
 
         // 獲取系統公告
         $announcement = Announcement::getActive();
@@ -55,12 +51,12 @@ class DashboardController extends Controller
                 'stats' => $stats,
                 'project_stats' => $projectStats,
                 'recent_projects' => $recentProjects,
-                'budget_overview' => $budgetOverview,
+                'active_projects' => $activeProjects,
                 'announcement' => $announcement,
             ]);
         }
 
-        return view('tenant.dashboard', compact('stats', 'projectStats', 'recentProjects', 'budgetOverview', 'announcement'));
+        return view('tenant.dashboard', compact('stats', 'projectStats', 'recentProjects', 'activeProjects', 'announcement'));
     }
 
     /**
