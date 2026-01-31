@@ -88,7 +88,7 @@
                     </a>
 
                     <!-- Users (with permission check) -->
-                    @can('manage-users')
+                    @can('users.view')
                     <a href="{{ route('tenant.users.index') }}" 
                        class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary hover:text-white transition {{ request()->routeIs('tenant.users.*') ? 'bg-primary text-white' : '' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
