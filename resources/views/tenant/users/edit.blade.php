@@ -1,14 +1,15 @@
 @extends('layouts.tenant')
 
-@section('title', '新增使用者')
+@section('title', '編輯使用者')
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">新增使用者</h1>
+    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">編輯使用者</h1>
 </div>
 
 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-    <form method="POST" action="{{ route('tenant.users.store') }}">
+    <form method="POST">
+        @method('PUT') action="{{ route('tenant.users.update', $user) }}">
         @csrf
         
         <div class="space-y-6">

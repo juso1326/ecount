@@ -53,7 +53,10 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('tenant.users.create');
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $supervisors = User::where('is_active', true)->orderBy('name')->get();
+        
+        return view('tenant.users.create', compact('departments', 'supervisors'));
     }
 
     /**
@@ -64,16 +67,41 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:6',
+            'role' => 'required|string',
             'is_active' => 'boolean',
+            // 員工資訊
+            'employee_no' => 'nullable|string|max:50',
+            'short_name' => 'nullable|string|max:50',
+            'position' => 'nullable|string|max:100',
+            'department_id' => 'nullable|exists:departments,id',
+            'supervisor_id' => 'nullable|exists:users,id',
+            // 個人資料
+            'id_number' => 'nullable|string|max:20',
+            'birth_date' => 'nullable|date',
+            'phone' => 'nullable|string|max:20',
+            'mobile' => 'nullable|string|max:20',
+            'backup_email' => 'nullable|email',
+            // 銀行資訊
+            'bank_name' => 'nullable|string|max:100',
+            'bank_branch' => 'nullable|string|max:100',
+            'bank_account' => 'nullable|string|max:50',
+            // 緊急聯絡人
+            'emergency_contact_name' => 'nullable|string|max:50',
+            'emergency_contact_phone' => 'nullable|string|max:20',
+            // 任職資訊
+            'hire_date' => 'nullable|date',
+            'resign_date' => 'nullable|date',
+            'suspend_date' => 'nullable|date',
+            'note' => 'nullable|string',
         ], [
             'name.required' => '姓名為必填',
             'email.required' => 'Email 為必填',
             'email.email' => 'Email 格式不正確',
             'email.unique' => 'Email 已被使用',
             'password.required' => '密碼為必填',
-            'password.min' => '密碼至少需要 8 個字元',
-            'password.confirmed' => '密碼確認不一致',
+            'password.min' => '密碼至少需要 6 個字元',
+            'role.required' => '角色為必填',
         ]);
 
         if ($validator->fails()) {
@@ -86,12 +114,16 @@ class UserController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_active' => $request->boolean('is_active', true),
-        ]);
+        $userData = $request->except(['role', 'password']);
+        $userData['password'] = Hash::make($request->password);
+        $userData['is_active'] = $request->boolean('is_active', true);
+
+        $user = User::create($userData);
+
+        // 分配角色
+        if ($request->role) {
+            $user->assignRole($request->role);
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
