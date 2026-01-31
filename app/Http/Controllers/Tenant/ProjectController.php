@@ -17,7 +17,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::with(['company', 'department', 'manager']);
+        $query = Project::with(['company', 'department', 'manager', 'members', 'receivables', 'payables']);
 
         // 搜尋
         if ($request->filled('search')) {
@@ -43,7 +43,30 @@ class ProjectController extends Controller
             $query->where('department_id', $request->department_id);
         }
 
+        // 專案類型篩選
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
         $projects = $query->orderBy('start_date', 'desc')->paginate(15);
+        
+        // 計算每個專案的財務統計（使用已載入的關聯）
+        $projects->getCollection()->transform(function ($project) {
+            // 應收總額
+            $project->total_receivable = $project->receivables->sum('amount');
+            // 已收金額
+            $project->total_received = $project->receivables->sum('paid_amount');
+            // 應付總額（專案支出）
+            $project->total_payable = $project->payables->sum('amount');
+            // 已付金額
+            $project->total_paid = $project->payables->sum('paid_amount');
+            // 扣繳稅額
+            $project->withholding_tax = $project->receivables->sum('tax_amount');
+            // 累計收入（已收 - 已付）
+            $project->accumulated_income = $project->total_received - $project->total_paid;
+            
+            return $project;
+        });
 
         if ($request->wantsJson()) {
             return response()->json([

@@ -78,7 +78,8 @@
                         <span class="font-medium">客戶廠商</span>
                     </a>
 
-                    <!-- Departments -->
+                    <!-- Departments (with permission check) -->
+                    @can('departments.view')
                     <a href="{{ route('tenant.departments.index') }}" 
                        class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary hover:text-white transition {{ request()->routeIs('tenant.departments.*') ? 'bg-primary text-white' : '' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,6 +87,7 @@
                         </svg>
                         <span class="font-medium">部門管理</span>
                     </a>
+                    @endcan
 
                     <!-- Users (with permission check) -->
                     @can('users.view')
@@ -105,7 +107,8 @@
                         專案管理
                     </div>
                     
-                    <!-- Projects -->
+                    <!-- Projects (with permission check) -->
+                    @can('projects.view')
                     <a href="{{ route('tenant.projects.index') }}" 
                        class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary hover:text-white transition {{ request()->routeIs('tenant.projects.*') ? 'bg-primary text-white' : '' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,6 +116,7 @@
                         </svg>
                         <span class="font-medium">專案列表</span>
                     </a>
+                    @endcan
                 </div>
 
                 <!-- Financial Management Section -->
@@ -121,7 +125,8 @@
                         財務管理
                     </div>
                     
-                    <!-- Accounts Receivable -->
+                    <!-- Accounts Receivable (with permission check) -->
+                    @can('finance.view')
                     <a href="#" 
                        class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary hover:text-white transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +136,6 @@
                     </a>
 
                     <!-- Accounts Payable (with permission check) -->
-                    @can('manage-finance')
                     <a href="#" 
                        class="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary hover:text-white transition">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +147,8 @@
                 </div>
 
                 <!-- System Settings Section (Collapsible) -->
-                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700" x-data="{ settingsOpen: false }">
+                @can('settings.view')
+                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700" x-data="{ settingsOpen: {{ request()->routeIs('tenant.settings.*') ? 'true' : 'false' }} }">
                     <div class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         系統設定
                     </div>
@@ -164,26 +169,40 @@
 
                     <!-- Settings Submenu -->
                     <div x-show="settingsOpen" x-collapse class="ml-4 mt-2 space-y-1">
-                        <a href="#" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        <a href="{{ route('tenant.settings.company') }}" 
+                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.company*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                             <span>公司設定</span>
                         </a>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        <a href="{{ route('tenant.settings.system') }}" 
+                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.system*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                             </svg>
                             <span>系統設定</span>
                         </a>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        <a href="{{ route('tenant.settings.account') }}" 
+                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.account*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                             <span>帳號設定</span>
                         </a>
+                        
+                        @can('roles.view')
+                        <a href="#" 
+                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <span>角色權限</span>
+                        </a>
+                        @endcan
                     </div>
                 </div>
+                @endcan
             </nav>
         </aside>
 
@@ -250,13 +269,31 @@
                                     <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
                                         {{ auth()->user()->email }}
                                     </div>
+                                    @if(auth()->user()->roles->first())
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        {{ auth()->user()->roles->first()->display_name }}
+                                    </div>
+                                    @endif
                                 </div>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    個人資料
+                                <a href="{{ route('tenant.settings.account') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        <span>個人資料</span>
+                                    </div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    設定
+                                @can('settings.view')
+                                <a href="{{ route('tenant.settings.system') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        <span>系統設定</span>
+                                    </div>
                                 </a>
+                                @endcan
                                 <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
                                 <form method="POST" action="{{ route('tenant.logout') }}">
                                     @csrf
@@ -272,6 +309,47 @@
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-900 p-6">
+                <!-- Breadcrumbs -->
+                @if(isset($breadcrumbs) && count($breadcrumbs) > 0)
+                <nav class="mb-6 flex" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{{ route('tenant.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary dark:text-gray-400 dark:hover:text-white">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                                </svg>
+                                首頁
+                            </a>
+                        </li>
+                        @foreach($breadcrumbs as $breadcrumb)
+                            @if(!$loop->last)
+                                <li>
+                                    <div class="flex items-center">
+                                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <a href="{{ $breadcrumb['url'] }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary md:ml-2 dark:text-gray-400 dark:hover:text-white">
+                                            {{ $breadcrumb['label'] }}
+                                        </a>
+                                    </div>
+                                </li>
+                            @else
+                                <li aria-current="page">
+                                    <div class="flex items-center">
+                                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">
+                                            {{ $breadcrumb['label'] }}
+                                        </span>
+                                    </div>
+                                </li>
+                            @endif
+                        @endforeach
+                    </ol>
+                </nav>
+                @endif
+
                 <!-- Alerts -->
                 @if(session('success'))
                     <div class="mb-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 p-4 rounded-r-lg">
