@@ -2,20 +2,38 @@
 
 @section('title', '專案管理')
 
+@section('page-title', '專案管理')
+
 @section('content')
+<!-- 麵包屑 -->
+<div class="mb-4">
+    <p class="text-sm text-gray-600 dark:text-gray-400">專案帳戶管理 &gt; 專案管理</p>
+</div>
+
+<!-- 頁面標題與按鈕 -->
 <div class="mb-6 flex justify-between items-center">
-    <h1 class="text-2xl font-semibold text-gray-900">專案管理</h1>
-    <a href="{{ route('tenant.projects.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">專案管理</h1>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            第 {{ $projects->currentPage() }} / {{ $projects->lastPage() }} 頁，每頁15筆，共{{ $projects->total() }}筆
+        </p>
+    </div>
+    <a href="{{ route('tenant.projects.create') }}" 
+       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增專案
     </a>
 </div>
 
 <!-- 搜尋與篩選 -->
-<div class="bg-white rounded-lg shadow p-4 mb-4">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
     <form method="GET" action="{{ route('tenant.projects.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="搜尋專案代碼、名稱..." class="border rounded px-3 py-2">
+        <!-- 搜尋框 -->
+        <input type="text" name="search" value="{{ request('search') }}" 
+               placeholder="搜尋專案代碼、名稱..." 
+               class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
         
-        <select name="status" class="border rounded px-3 py-2">
+        <!-- 狀態篩選 -->
+        <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             <option value="">全部狀態</option>
             <option value="planning" {{ request('status') === 'planning' ? 'selected' : '' }}>規劃中</option>
             <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>進行中</option>
@@ -24,27 +42,32 @@
             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>已取消</option>
         </select>
         
-        <select name="company_id" class="border rounded px-3 py-2">
-            <option value="">全部公司</option>
+        <!-- 公司篩選 -->
+        <select name="company_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option value="">全部客戶</option>
             @foreach(\App\Models\Company::where('is_active', true)->orderBy('name')->get() as $company)
                 <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
             @endforeach
         </select>
         
-        <select name="department_id" class="border rounded px-3 py-2">
+        <!-- 部門篩選 -->
+        <select name="department_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             <option value="">全部部門</option>
             @foreach(\App\Models\Department::where('is_active', true)->orderBy('name')->get() as $dept)
                 <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
             @endforeach
         </select>
         
+        <!-- 按鈕 -->
         <div class="flex gap-2">
-            <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex-1">
+            <button type="submit" 
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg flex-1">
                 搜尋
             </button>
             
             @if(request()->hasAny(['search', 'status', 'company_id', 'department_id']))
-                <a href="{{ route('tenant.projects.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                <a href="{{ route('tenant.projects.index') }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
                     清除
                 </a>
             @endif
@@ -53,63 +76,74 @@
 </div>
 
 <!-- 資料表格 -->
-<div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">專案代碼</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">專案名稱</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">公司</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">狀態</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">預算</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">開始日期</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案代碼</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案名稱</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日期</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案負責人</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總額</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
             </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($projects as $project)
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $project->code }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $project->name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $project->company->name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    @php
-                        $statusColors = [
-                            'planning' => 'bg-gray-100 text-gray-800',
-                            'in_progress' => 'bg-blue-100 text-blue-800',
-                            'on_hold' => 'bg-yellow-100 text-yellow-800',
-                            'completed' => 'bg-green-100 text-green-800',
-                            'cancelled' => 'bg-red-100 text-red-800',
-                        ];
-                        $statusNames = [
-                            'planning' => '規劃中',
-                            'in_progress' => '進行中',
-                            'on_hold' => '暫停',
-                            'completed' => '已完成',
-                            'cancelled' => '已取消',
-                        ];
-                    @endphp
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$project->status] ?? 'bg-gray-100 text-gray-800' }}">
-                        {{ $statusNames[$project->status] ?? $project->status }}
-                    </span>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <a href="{{ route('tenant.projects.edit', $project) }}" 
+                       class="text-primary hover:text-primary-dark font-medium">
+                        編輯
+                    </a>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($project->budget) }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ $project->start_date ? $project->start_date->format('Y-m-d') : '-' }}
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    {{ $project->code }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{{ route('tenant.projects.show', $project) }}" class="text-blue-600 hover:text-blue-900 mr-3">查看</a>
-                    <a href="{{ route('tenant.projects.edit', $project) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">編輯</a>
-                    <form action="{{ route('tenant.projects.destroy', $project) }}" method="POST" class="inline" onsubmit="return confirm('確定要刪除此專案嗎？');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-900">刪除</button>
-                    </form>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    {{ $project->name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    {{ $project->company?->name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    {{ $project->start_date?->format('Y-m-d') }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    {{ $project->manager?->name }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    {{ number_format($project->budget, 0) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    @if($project->status === 'in_progress')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            進行中
+                        </span>
+                    @elseif($project->status === 'completed')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            已完成
+                        </span>
+                    @elseif($project->status === 'planning')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                            規劃中
+                        </span>
+                    @elseif($project->status === 'on_hold')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                            暫停
+                        </span>
+                    @else
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                            已取消
+                        </span>
+                    @endif
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何專案資料
                 </td>
             </tr>
@@ -119,7 +153,7 @@
 </div>
 
 <!-- 分頁 -->
-<div class="mt-4">
-    {{ $projects->links() }}
+<div class="mt-6">
+    {{ $projects->appends(request()->except('page'))->links() }}
 </div>
 @endsection

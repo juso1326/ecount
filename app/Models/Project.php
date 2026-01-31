@@ -35,8 +35,8 @@ class Project extends Model
         'is_active' => 'boolean',
         'start_date' => 'date',
         'end_date' => 'date',
-        'budget' => 'decimal:2',
-        'actual_cost' => 'decimal:2',
+        'budget' => 'integer',
+        'actual_cost' => 'integer',
     ];
 
     /**
