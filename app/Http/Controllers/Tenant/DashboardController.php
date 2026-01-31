@@ -64,11 +64,15 @@ class DashboardController extends Controller
     }
 
     /**
-     * 更新系統公告（僅管理員）
+     * 更新系統公告（僅管理員或經理）
      */
     public function updateAnnouncement(Request $request)
     {
-        $this->authorize('settings.manage');
+        // 檢查權限：admin 或 manager 角色可以編輯
+        $user = auth()->user();
+        if (!$user->hasAnyRole(['admin', 'manager'])) {
+            abort(403, '您沒有編輯系統公告的權限');
+        }
 
         $validated = $request->validate([
             'content' => 'required|string',

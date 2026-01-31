@@ -26,13 +26,13 @@
             </svg>
             系統公告
         </h2>
-        @can('settings.manage')
+        @if(auth()->user()->hasAnyRole(['admin', 'manager']))
         <button @click="editing = !editing" 
                 class="text-sm text-primary hover:text-primary-dark font-medium" 
                 x-text="editing ? '取消' : '編輯'">
             編輯
         </button>
-        @endcan
+        @endif
     </div>
 
     <!-- Display Mode -->
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Edit Mode -->
-    @can('settings.manage')
+    @if(auth()->user()->hasAnyRole(['admin', 'manager']))
     <form x-show="editing" method="POST" action="{{ route('tenant.dashboard.announcement') }}" x-cloak>
         @csrf
         <textarea 
@@ -68,7 +68,7 @@
             </button>
         </div>
     </form>
-    @endcan
+    @endif
 </div>
 @endif
 
