@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\Announcement;
 use App\Models\Company;
 use App\Models\Department;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -45,15 +47,44 @@ class DashboardController extends Controller
         ];
         $budgetOverview['remaining_budget'] = $budgetOverview['total_budget'] - $budgetOverview['total_actual_cost'];
 
+        // 獲取系統公告
+        $announcement = Announcement::getActive();
+
         if (request()->wantsJson()) {
             return response()->json([
                 'stats' => $stats,
                 'project_stats' => $projectStats,
                 'recent_projects' => $recentProjects,
                 'budget_overview' => $budgetOverview,
+                'announcement' => $announcement,
             ]);
         }
 
-        return view('tenant.dashboard', compact('stats', 'projectStats', 'recentProjects', 'budgetOverview'));
+        return view('tenant.dashboard', compact('stats', 'projectStats', 'recentProjects', 'budgetOverview', 'announcement'));
+    }
+
+    /**
+     * 更新系統公告（僅管理員）
+     */
+    public function updateAnnouncement(Request $request)
+    {
+        $this->authorize('settings.manage');
+
+        $validated = $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $announcement = Announcement::getActive();
+        
+        if (!$announcement) {
+            $announcement = new Announcement();
+            $announcement->created_by = auth()->id();
+        }
+
+        $announcement->content = $validated['content'];
+        $announcement->updated_by = auth()->id();
+        $announcement->save();
+
+        return back()->with('success', '系統公告已更新');
     }
 }
