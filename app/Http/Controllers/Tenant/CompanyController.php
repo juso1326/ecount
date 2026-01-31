@@ -54,7 +54,35 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('tenant.companies.create');
+        // 產生下一個公司代碼
+        $nextCode = $this->generateNextCode();
+        
+        return view('tenant.companies.create', compact('nextCode'));
+    }
+
+    /**
+     * Generate next company code
+     */
+    private function generateNextCode(): string
+    {
+        $prefix = \App\Models\TenantSetting::get('company_code_prefix', 'C');
+        $length = \App\Models\TenantSetting::get('company_code_length', 4);
+        
+        // 找出最後一個公司代碼
+        $lastCompany = Company::where('code', 'like', $prefix . '%')
+            ->orderBy('code', 'desc')
+            ->first();
+        
+        if ($lastCompany) {
+            // 取得數字部分
+            $lastNumber = (int) str_replace($prefix, '', $lastCompany->code);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        
+        // 格式化代碼
+        return $prefix . str_pad((string)$nextNumber, $length, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -140,23 +168,21 @@ class CompanyController extends Controller
     public function update(Request $request, Company $company)
     {
         $validator = Validator::make($request->all(), [
-            'code' => 'required|string|max:50|unique:companies,code,' . $company->id,
             'name' => 'required|string|max:255',
+            'short_name' => 'required|string|max:100',
+            'type' => 'required|in:company,individual',
             'tax_id' => 'nullable|string|max:20',
-            'representative' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'fax' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
-            'note' => 'nullable|string',
-            'is_active' => 'boolean',
+            'is_client' => 'boolean',
+            'is_outsource' => 'boolean',
         ], [
-            'code.required' => '公司代碼為必填',
-            'code.unique' => '公司代碼已存在',
-            'name.required' => '公司名稱為必填',
+            'name.required' => '名稱為必填',
+            'short_name.required' => '簡稱為必填',
+            'type.required' => '類型為必填',
             'email.email' => 'Email 格式不正確',
-            'website.url' => '網址格式不正確',
         ]);
 
         if ($validator->fails()) {
@@ -169,7 +195,15 @@ class CompanyController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $company->update($request->all());
+        $companyData = $request->only([
+            'name', 'short_name', 'type', 'tax_id', 
+            'phone', 'fax', 'email', 'address'
+        ]);
+        
+        $companyData['is_client'] = $request->boolean('is_client');
+        $companyData['is_outsource'] = $request->boolean('is_outsource');
+
+        $company->update($companyData);
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -179,7 +213,7 @@ class CompanyController extends Controller
         }
 
         return redirect()->route('tenant.companies.index')
-            ->with('success', '公司更新成功');
+            ->with('success', '客戶/廠商更新成功');
     }
 
     /**

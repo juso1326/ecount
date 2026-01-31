@@ -447,6 +447,7 @@ php artisan serve
 - URL: https://ecount.test/superadmin/login
 - Email: admin@ecount.com
 - Password: admin123456
+- https://demo.tailadmin.com/faq
 
 **租戶測試（abc123）**:
 - URL: https://abc123.ecount.test/login
@@ -456,3 +457,5 @@ php artisan serve
 - 員工: employee@abc123.com / password123（4 權限）
 
 **下一個任務**: 開始 Phase 4.1 - 建立租戶側認證系統
+
+

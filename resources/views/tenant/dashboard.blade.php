@@ -37,7 +37,7 @@
 
     <!-- Display Mode -->
     <div x-show="!editing" class="prose dark:prose-invert max-w-none">
-        <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $announcement->content }}</div>
+        <div class="text-gray-700 dark:text-gray-300">{!! nl2br(e($announcement->content)) !!}</div>
         @if($announcement->updated_at)
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
             最後更新：{{ $announcement->updated_at->format('Y-m-d H:i') }}
