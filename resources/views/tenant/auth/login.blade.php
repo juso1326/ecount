@@ -3,71 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>登入 - 租戶系統</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>登入 - Ecount 專案管理系統</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 dark:bg-gray-900">
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
+            <!-- Logo -->
             <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    登入租戶系統
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+                    Ecount 專案管理系統
                 </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    或
-                    <a href="{{ route('tenant.register') }}" class="font-medium text-blue-600 hover:text-blue-500">
-                        建立新帳號
-                    </a>
+                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+                    登入您的帳號
                 </p>
             </div>
 
-            <form class="mt-8 space-y-6" method="POST" action="{{ route('tenant.login') }}">
-                @csrf
+            <!-- Login Form -->
+            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+                <form class="space-y-6" action="{{ route('tenant.login.submit') }}" method="POST">
+                    @csrf
 
-                @if($errors->any())
-                    <div class="rounded-md bg-red-50 p-4">
-                        <div class="text-sm text-red-700">
-                            @foreach($errors->all() as $error)
-                                <p>{{ $error }}</p>
-                            @endforeach
+                    <!-- Error Messages -->
+                    @if ($errors->any())
+                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-400 px-4 py-3 rounded relative" role="alert">
+                            <ul class="list-disc list-inside text-sm">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Email
+                        </label>
+                        <div class="mt-1">
+                            <input id="email" 
+                                   name="email" 
+                                   type="email" 
+                                   autocomplete="email" 
+                                   required 
+                                   value="{{ old('email') }}"
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                         </div>
                     </div>
-                @endif
 
-                <div class="rounded-md shadow-sm -space-y-px">
+                    <!-- Password -->
                     <div>
-                        <label for="email" class="sr-only">Email</label>
-                        <input id="email" name="email" type="email" autocomplete="email" required
-                            value="{{ old('email') }}"
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                            placeholder="Email 地址">
-                    </div>
-                    <div>
-                        <label for="password" class="sr-only">密碼</label>
-                        <input id="password" name="password" type="password" autocomplete="current-password" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                            placeholder="密碼">
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember" name="remember" type="checkbox"
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <label for="remember" class="ml-2 block text-sm text-gray-900">
-                            記住我
+                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            密碼
                         </label>
+                        <div class="mt-1">
+                            <input id="password" 
+                                   name="password" 
+                                   type="password" 
+                                   autocomplete="current-password" 
+                                   required
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <button type="submit"
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        登入
-                    </button>
-                </div>
-            </form>
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember" 
+                                   name="remember" 
+                                   type="checkbox"
+                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <label for="remember" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                                記住我
+                            </label>
+                        </div>
+
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+                                忘記密碼？
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit"
+                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800">
+                            登入
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <p class="text-center text-xs text-gray-500 dark:text-gray-400">
+                © 2026 Ecount. All rights reserved.
+            </p>
         </div>
     </div>
 </body>
