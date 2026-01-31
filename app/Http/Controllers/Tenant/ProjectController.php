@@ -250,4 +250,37 @@ class ProjectController extends Controller
         return redirect()->route('tenant.projects.index')
             ->with('success', '專案刪除成功');
     }
+    
+    /**
+     * Add member to project
+     */
+    public function addMember(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role' => 'nullable|string|max:50',
+        ]);
+        
+        // 檢查是否已經是成員
+        if ($project->members()->where('user_id', $validated['user_id'])->exists()) {
+            return back()->with('error', '該使用者已經是專案成員');
+        }
+        
+        $project->members()->attach($validated['user_id'], [
+            'role' => $validated['role'] ?? null,
+            'joined_at' => now(),
+        ]);
+        
+        return back()->with('success', '成員新增成功');
+    }
+    
+    /**
+     * Remove member from project
+     */
+    public function removeMember(Project $project, User $user)
+    {
+        $project->members()->detach($user->id);
+        
+        return back()->with('success', '成員移除成功');
+    }
 }

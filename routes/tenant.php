@@ -73,6 +73,10 @@ Route::middleware([
             'destroy' => 'tenant.projects.destroy',
         ]);
         
+        // 專案成員管理
+        Route::post('projects/{project}/members', [\App\Http\Controllers\Tenant\ProjectController::class, 'addMember'])->name('tenant.projects.members.add');
+        Route::delete('projects/{project}/members/{user}', [\App\Http\Controllers\Tenant\ProjectController::class, 'removeMember'])->name('tenant.projects.members.remove');
+        
         // 使用者管理
         Route::resource('users', \App\Http\Controllers\Tenant\UserController::class)->names([
             'index' => 'tenant.users.index',
@@ -87,20 +91,21 @@ Route::middleware([
 
         // 設定管理
         Route::prefix('settings')->name('tenant.settings.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Tenant\SettingsController::class, 'index'])->name('index');
+            
             // 公司設定
-            Route::get('company', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'index'])->name('company.index');
-            Route::put('company/{company}', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'update'])->name('company.update');
-            Route::delete('company/{company}/logo', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'deleteLogo'])->name('company.delete-logo');
-
+            Route::get('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'company'])->name('company');
+            
+            // 代碼管理設定
+            Route::get('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'codes'])->name('codes');
+            Route::post('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateCodes'])->name('codes.update');
+            
             // 系統設定
-            Route::get('system', [\App\Http\Controllers\Tenant\SystemSettingController::class, 'index'])->name('system.index');
-            Route::put('system', [\App\Http\Controllers\Tenant\SystemSettingController::class, 'update'])->name('system.update');
-
+            Route::get('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'system'])->name('system');
+            
             // 帳號設定
-            Route::get('account', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'index'])->name('account.index');
-            Route::put('account/profile', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'updateProfile'])->name('account.update-profile');
-            Route::put('account/password', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'updatePassword'])->name('account.update-password');
-            Route::put('account/notifications', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'updateNotifications'])->name('account.update-notifications');
+            Route::get('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'account'])->name('account');
+            Route::put('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateAccount'])->name('account.update');
         });
     });
 });
