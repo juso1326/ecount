@@ -156,7 +156,11 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('tenant.users.edit', compact('user'));
+        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $supervisors = User::where('is_active', true)->where('id', '!=', $user->id)->orderBy('name')->get();
+        $currentRole = $user->roles->first()?->name ?? '';
+        
+        return view('tenant.users.edit', compact('user', 'departments', 'supervisors', 'currentRole'));
     }
 
     /**
