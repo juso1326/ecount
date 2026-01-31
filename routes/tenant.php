@@ -71,5 +71,17 @@ Route::middleware([
             'update' => 'tenant.projects.update',
             'destroy' => 'tenant.projects.destroy',
         ]);
+        
+        // 使用者管理
+        Route::resource('users', \App\Http\Controllers\Tenant\UserController::class)->names([
+            'index' => 'tenant.users.index',
+            'create' => 'tenant.users.create',
+            'store' => 'tenant.users.store',
+            'show' => 'tenant.users.show',
+            'edit' => 'tenant.users.edit',
+            'update' => 'tenant.users.update',
+            'destroy' => 'tenant.users.destroy',
+        ]);
+        Route::post('users/{user}/toggle-active', [\App\Http\Controllers\Tenant\UserController::class, 'toggleActive'])->name('tenant.users.toggle-active');
     });
 });
