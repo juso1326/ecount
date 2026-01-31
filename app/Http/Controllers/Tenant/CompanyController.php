@@ -91,6 +91,7 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'code' => 'required|string|max:50|unique:companies,code',
             'name' => 'required|string|max:255',
             'short_name' => 'required|string|max:100',
             'type' => 'required|in:company,individual',
@@ -102,6 +103,8 @@ class CompanyController extends Controller
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
         ], [
+            'code.required' => '公司代碼為必填',
+            'code.unique' => '公司代碼已存在',
             'name.required' => '名稱為必填',
             'short_name.required' => '簡稱為必填',
             'type.required' => '類型為必填',
@@ -168,6 +171,7 @@ class CompanyController extends Controller
     public function update(Request $request, Company $company)
     {
         $validator = Validator::make($request->all(), [
+            'code' => 'required|string|max:50|unique:companies,code,' . $company->id,
             'name' => 'required|string|max:255',
             'short_name' => 'required|string|max:100',
             'type' => 'required|in:company,individual',
@@ -179,6 +183,8 @@ class CompanyController extends Controller
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
         ], [
+            'code.required' => '公司代碼為必填',
+            'code.unique' => '公司代碼已存在',
             'name.required' => '名稱為必填',
             'short_name.required' => '簡稱為必填',
             'type.required' => '類型為必填',
