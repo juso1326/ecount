@@ -83,5 +83,23 @@ Route::middleware([
             'destroy' => 'tenant.users.destroy',
         ]);
         Route::post('users/{user}/toggle-active', [\App\Http\Controllers\Tenant\UserController::class, 'toggleActive'])->name('tenant.users.toggle-active');
+
+        // 設定管理
+        Route::prefix('settings')->name('tenant.settings.')->group(function () {
+            // 公司設定
+            Route::get('company', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'index'])->name('company.index');
+            Route::put('company/{company}', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'update'])->name('company.update');
+            Route::delete('company/{company}/logo', [\App\Http\Controllers\Tenant\CompanySettingController::class, 'deleteLogo'])->name('company.delete-logo');
+
+            // 系統設定
+            Route::get('system', [\App\Http\Controllers\Tenant\SystemSettingController::class, 'index'])->name('system.index');
+            Route::put('system', [\App\Http\Controllers\Tenant\SystemSettingController::class, 'update'])->name('system.update');
+
+            // 帳號設定
+            Route::get('account', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'index'])->name('account.index');
+            Route::put('account/profile', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'updateProfile'])->name('account.update-profile');
+            Route::put('account/password', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'updatePassword'])->name('account.update-password');
+            Route::put('account/notifications', [\App\Http\Controllers\Tenant\AccountSettingController::class, 'updateNotifications'])->name('account.update-notifications');
+        });
     });
 });
