@@ -39,7 +39,7 @@
                 <select name="parent_id" id="parent_id"
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <option value="">無（頂層部門）</option>
-                    @foreach($parents as $parent)
+                    @foreach($parentDepartments as $parent)
                         <option value="{{ $parent->id }}" {{ old('parent_id', $department->parent_id) == $parent->id ? 'selected' : '' }}>
                             {{ $parent->name }}
                         </option>
