@@ -122,6 +122,13 @@
                 <input type="email" name="email" id="email" value="{{ old('email', $company->email) }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
+
+            <!-- 備註 -->
+            <div class="md:col-span-2">
+                <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備註</label>
+                <textarea name="note" id="note" rows="3"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $company->note) }}</textarea>
+            </div>
         </div>
 
         <div class="mt-6 flex justify-end space-x-3">
