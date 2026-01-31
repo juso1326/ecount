@@ -46,7 +46,7 @@ Route::prefix('api/superadmin')->name('api.superadmin.')->group(function () {
 });
 
 // 租戶路由（根路徑，由子域名識別）
-Route::middleware(['web', 'universal'])->group(function () {
+Route::middleware(['web'])->group(function () {
     // 認證路由（不需登入）
     Route::middleware('guest')->group(function () {
         Route::get('login', [\App\Http\Controllers\Tenant\AuthController::class, 'showLogin'])->name('tenant.login');
