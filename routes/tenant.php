@@ -38,6 +38,7 @@ Route::middleware([
         // 儀表板
         Route::get('/', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])->name('tenant.dashboard');
         Route::get('dashboard', [\App\Http\Controllers\Tenant\DashboardController::class, 'index']);
+        Route::post('dashboard/announcement', [\App\Http\Controllers\Tenant\DashboardController::class, 'updateAnnouncement'])->name('tenant.dashboard.announcement');
         
         // 公司管理
         Route::resource('companies', \App\Http\Controllers\Tenant\CompanyController::class)->names([

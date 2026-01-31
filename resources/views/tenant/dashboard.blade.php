@@ -2,6 +2,8 @@
 
 @section('title', '儀表板')
 
+@section('page-title', '儀表板')
+
 @section('content')
 <!-- Page Header -->
 <div class="mb-6 flex items-center justify-between">
@@ -13,6 +15,62 @@
         {{ now()->format('Y-m-d H:i') }}
     </div>
 </div>
+
+<!-- System Announcement -->
+@if($announcement)
+<div class="mb-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm" x-data="{ editing: false }">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+            <svg class="w-6 h-6 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+            </svg>
+            系統公告
+        </h2>
+        @can('settings.manage')
+        <button @click="editing = !editing" 
+                class="text-sm text-primary hover:text-primary-dark font-medium" 
+                x-text="editing ? '取消' : '編輯'">
+            編輯
+        </button>
+        @endcan
+    </div>
+
+    <!-- Display Mode -->
+    <div x-show="!editing" class="prose dark:prose-invert max-w-none">
+        <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $announcement->content }}</div>
+        @if($announcement->updated_at)
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
+            最後更新：{{ $announcement->updated_at->format('Y-m-d H:i') }}
+            @if($announcement->updater)
+                by {{ $announcement->updater->name }}
+            @endif
+        </p>
+        @endif
+    </div>
+
+    <!-- Edit Mode -->
+    @can('settings.manage')
+    <form x-show="editing" method="POST" action="{{ route('tenant.dashboard.announcement') }}" x-cloak>
+        @csrf
+        <textarea 
+            name="content" 
+            rows="6" 
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="輸入系統公告內容...">{{ $announcement->content }}</textarea>
+        <div class="mt-4 flex justify-end space-x-3">
+            <button type="button" @click="editing = false" 
+                    class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                取消
+            </button>
+            <button type="submit" 
+                    class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark">
+                儲存
+            </button>
+        </div>
+    </form>
+    @endcan
+</div>
+@endif
 
 <!-- Stats Grid -->
 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7 mb-6">
