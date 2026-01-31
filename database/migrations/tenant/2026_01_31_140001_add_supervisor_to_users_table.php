@@ -11,20 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            // 新增上層主管欄位
-            if (!Schema::hasColumn('users', 'supervisor_id')) {
-                $table->foreignId('supervisor_id')->nullable()->after('department_id')->constrained('users')->nullOnDelete()->comment('上層主管');
-            }
-            
-            // 重新命名欄位（如果需要）
-            if (Schema::hasColumn('users', 'emergency_contact_name') && !Schema::hasColumn('users', 'emergency_contact')) {
-                $table->renameColumn('emergency_contact_name', 'emergency_contact');
-            }
-            if (Schema::hasColumn('users', 'suspend_date') && !Schema::hasColumn('users', 'suspended_at')) {
-                $table->renameColumn('suspend_date', 'suspended_at');
+        // 檢查 department_id 是否存在
+        $hasDepartmentId = Schema::hasColumn('users', 'department_id');
+        
+        Schema::table('users', function (Blueprint $table) use ($hasDepartmentId) {
+            // 如果 department_id 不存在，先創建它
+            if (!$hasDepartmentId) {
+                $table->foreignId('department_id')->nullable()->after('email')->comment('所屬部門');
             }
         });
+        
+        // 新增 supervisor_id
+        if (!Schema::hasColumn('users', 'supervisor_id')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->foreignId('supervisor_id')->nullable()->after('department_id')->constrained('users')->nullOnDelete()->comment('上層主管');
+            });
+        }
     }
 
     /**
