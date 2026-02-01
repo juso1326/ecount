@@ -35,7 +35,7 @@
     <form method="GET" action="{{ route('tenant.receivables.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
         <!-- 搜尋框 -->
         <input type="text" name="search" value="{{ request('search') }}" 
-               placeholder="搜尋單號、內容、發票號碼..." 
+               placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 
                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
         
         <!-- 專案篩選 -->

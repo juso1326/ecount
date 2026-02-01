@@ -19,12 +19,20 @@ class ProjectController extends Controller
     {
         $query = Project::with(['company', 'department', 'manager', 'members', 'receivables', 'payables']);
 
-        // 搜尋
+        // 搜尋（包含客戶、部門名稱）
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%");
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhereHas('company', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('short_name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('department', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('code', 'like', "%{$search}%");
+                  });
             });
         }
 

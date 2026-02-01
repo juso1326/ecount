@@ -29,7 +29,7 @@
     <form method="GET" action="{{ route('tenant.projects.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <!-- 搜尋框 -->
         <input type="text" name="search" value="{{ request('search') }}" 
-               placeholder="搜尋專案代碼、名稱..." 
+               placeholder="搜尋專案代碼、名稱、客戶、部門..." 
                class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
         
         <!-- 狀態篩選 -->

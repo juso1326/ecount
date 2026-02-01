@@ -3,24 +3,24 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
-use App\Models\Receivable;
+use App\Models\Payable;
 use App\Models\Project;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ReceivableController extends Controller
+class PayableController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Receivable::with(['project', 'company', 'responsibleUser']);
+        $query = Payable::with(['project', 'company', 'responsibleUser']);
 
         // 搜尋（包含專案代碼和名稱）
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('receipt_no', 'like', "%{$search}%")
+                $q->where('payment_no', 'like', "%{$search}%")
                   ->orWhere('content', 'like', "%{$search}%")
                   ->orWhere('invoice_no', 'like', "%{$search}%")
                   ->orWhereHas('project', function($q) use ($search) {
@@ -39,7 +39,7 @@ class ReceivableController extends Controller
             $query->where('project_id', $request->project_id);
         }
 
-        // 客戶篩選
+        // 廠商篩選
         if ($request->filled('company_id')) {
             $query->where('company_id', $request->company_id);
         }
@@ -49,23 +49,28 @@ class ReceivableController extends Controller
             $query->where('status', $request->status);
         }
 
-        // 年月篩選（參考舊系統）
+        // 類型篩選
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // 年月篩選
         if ($request->filled('year') && $request->filled('month')) {
             $year = $request->year;
             $month = str_pad($request->month, 2, '0', STR_PAD_LEFT);
-            $query->whereYear('receipt_date', $year)
-                  ->whereMonth('receipt_date', $month);
+            $query->whereYear('payment_date', $year)
+                  ->whereMonth('payment_date', $month);
         }
 
-        $receivables = $query->orderBy('receipt_date', 'desc')
-                            ->orderBy('receipt_no', 'desc')
-                            ->paginate(15);
+        $payables = $query->orderBy('payment_date', 'desc')
+                          ->orderBy('payment_no', 'desc')
+                          ->paginate(15);
 
         // 計算總額
         $totalAmount = $query->sum('amount');
-        $totalReceived = $query->sum('received_amount');
+        $totalPaid = $query->sum('paid_amount');
 
-        return view('tenant.receivables.index', compact('receivables', 'totalAmount', 'totalReceived'));
+        return view('tenant.payables.index', compact('payables', 'totalAmount', 'totalPaid'));
     }
 
     public function create()
@@ -74,90 +79,86 @@ class ReceivableController extends Controller
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
 
-        return view('tenant.receivables.create', compact('projects', 'companies', 'users'));
+        return view('tenant.payables.create', compact('projects', 'companies', 'users'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'receipt_no' => 'required|string|max:50',
+            'payment_no' => 'required|string|max:50',
             'project_id' => 'nullable|exists:projects,id',
             'company_id' => 'nullable|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
-            'receipt_date' => 'required|date',
+            'payment_date' => 'required|date',
+            'invoice_date' => 'nullable|date',
             'due_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
-            'amount_before_tax' => 'nullable|numeric|min:0',
-            'tax_rate' => 'nullable|numeric|min:0|max:100',
-            'tax_amount' => 'nullable|numeric|min:0',
-            'withholding_tax' => 'nullable|numeric|min:0',
-            'received_amount' => 'nullable|numeric|min:0',
+            'deduction' => 'nullable|numeric|min:0',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'type' => 'required|in:purchase,expense,service,other',
             'status' => 'required|in:pending,partial,paid,overdue',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
-            'quote_no' => 'nullable|string|max:50',
             'content' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
 
-        Receivable::create($validated);
+        Payable::create($validated);
 
-        return redirect()->route('tenant.receivables.index')
-            ->with('success', '應收帳款新增成功');
+        return redirect()->route('tenant.payables.index')
+            ->with('success', '應付帳款新增成功');
     }
 
-    public function show(Receivable $receivable)
+    public function show(Payable $payable)
     {
-        $receivable->load(['project', 'company', 'responsibleUser']);
+        $payable->load(['project', 'company', 'responsibleUser']);
         
-        return view('tenant.receivables.show', compact('receivable'));
+        return view('tenant.payables.show', compact('payable'));
     }
 
-    public function edit(Receivable $receivable)
+    public function edit(Payable $payable)
     {
         $projects = Project::where('is_active', true)->orderBy('code')->get();
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
 
-        return view('tenant.receivables.edit', compact('receivable', 'projects', 'companies', 'users'));
+        return view('tenant.payables.edit', compact('payable', 'projects', 'companies', 'users'));
     }
 
-    public function update(Request $request, Receivable $receivable)
+    public function update(Request $request, Payable $payable)
     {
         $validated = $request->validate([
-            'receipt_no' => 'required|string|max:50',
+            'payment_no' => 'required|string|max:50',
             'project_id' => 'nullable|exists:projects,id',
             'company_id' => 'nullable|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
-            'receipt_date' => 'required|date',
+            'payment_date' => 'required|date',
+            'invoice_date' => 'nullable|date',
             'due_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
-            'amount_before_tax' => 'nullable|numeric|min:0',
-            'tax_rate' => 'nullable|numeric|min:0|max:100',
-            'tax_amount' => 'nullable|numeric|min:0',
-            'withholding_tax' => 'nullable|numeric|min:0',
-            'received_amount' => 'nullable|numeric|min:0',
+            'deduction' => 'nullable|numeric|min:0',
+            'paid_amount' => 'nullable|numeric|min:0',
+            'type' => 'required|in:purchase,expense,service,other',
             'status' => 'required|in:pending,partial,paid,overdue',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
-            'quote_no' => 'nullable|string|max:50',
             'content' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
 
-        $receivable->update($validated);
+        $payable->update($validated);
 
-        return redirect()->route('tenant.receivables.index')
-            ->with('success', '應收帳款更新成功');
+        return redirect()->route('tenant.payables.index')
+            ->with('success', '應付帳款更新成功');
     }
 
-    public function destroy(Receivable $receivable)
+    public function destroy(Payable $payable)
     {
-        $receivable->delete();
+        $payable->delete();
 
-        return redirect()->route('tenant.receivables.index')
-            ->with('success', '應收帳款刪除成功');
+        return redirect()->route('tenant.payables.index')
+            ->with('success', '應付帳款刪除成功');
     }
 }

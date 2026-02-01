@@ -107,6 +107,17 @@ Route::middleware([
             'destroy' => 'tenant.receivables.destroy',
         ]);
 
+        // 應付帳款管理
+        Route::resource('payables', \App\Http\Controllers\Tenant\PayableController::class)->names([
+            'index' => 'tenant.payables.index',
+            'create' => 'tenant.payables.create',
+            'store' => 'tenant.payables.store',
+            'show' => 'tenant.payables.show',
+            'edit' => 'tenant.payables.edit',
+            'update' => 'tenant.payables.update',
+            'destroy' => 'tenant.payables.destroy',
+        ]);
+
         // 代碼管理
         Route::get('codes', [\App\Http\Controllers\Tenant\CodeController::class, 'index'])->name('tenant.codes.index');
         Route::get('codes/{category}', [\App\Http\Controllers\Tenant\CodeController::class, 'category'])->name('tenant.codes.category');
