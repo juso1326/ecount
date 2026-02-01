@@ -43,6 +43,10 @@ class RolePermissionSeeder extends Seeder
             'finance.view',
             'finance.manage',
             
+            // 代碼管理
+            'codes.view',
+            'codes.manage',
+            
             // 角色權限管理
             'roles.view',
             'roles.manage',
@@ -70,6 +74,7 @@ class RolePermissionSeeder extends Seeder
             'departments.view', 'departments.create', 'departments.edit', 'departments.delete',
             'projects.view', 'projects.create', 'projects.edit', 'projects.delete',
             'finance.view', 'finance.manage',
+            'codes.view', 'codes.manage',
             'roles.view',
         ]);
 

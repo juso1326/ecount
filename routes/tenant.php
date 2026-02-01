@@ -96,6 +96,15 @@ Route::middleware([
         ]);
         Route::post('users/{user}/toggle-active', [\App\Http\Controllers\Tenant\UserController::class, 'toggleActive'])->name('tenant.users.toggle-active');
 
+        // 代碼管理
+        Route::get('codes', [\App\Http\Controllers\Tenant\CodeController::class, 'index'])->name('tenant.codes.index');
+        Route::get('codes/{category}', [\App\Http\Controllers\Tenant\CodeController::class, 'category'])->name('tenant.codes.category');
+        Route::get('codes/{category}/create', [\App\Http\Controllers\Tenant\CodeController::class, 'create'])->name('tenant.codes.create');
+        Route::post('codes/{category}', [\App\Http\Controllers\Tenant\CodeController::class, 'store'])->name('tenant.codes.store');
+        Route::get('codes/{category}/{code}/edit', [\App\Http\Controllers\Tenant\CodeController::class, 'edit'])->name('tenant.codes.edit');
+        Route::put('codes/{category}/{code}', [\App\Http\Controllers\Tenant\CodeController::class, 'update'])->name('tenant.codes.update');
+        Route::delete('codes/{category}/{code}', [\App\Http\Controllers\Tenant\CodeController::class, 'destroy'])->name('tenant.codes.destroy');
+
         // 設定管理
         Route::prefix('settings')->name('tenant.settings.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SettingsController::class, 'index'])->name('index');
