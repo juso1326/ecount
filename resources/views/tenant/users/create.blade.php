@@ -3,15 +3,48 @@
 @section('title', '新增使用者')
 
 @section('content')
-<div class="mb-6">
-    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">新增使用者</h1>
+<!-- 麵包屑 -->
+<div class="mb-4">
+    <p class="text-sm text-gray-600 dark:text-gray-400">專案帳戶管理 &gt; 使用者管理 &gt; 新增使用者</p>
 </div>
 
-<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-    <form method="POST" action="{{ route('tenant.users.store') }}">
-        @csrf
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- 頁面標題 -->
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增使用者</h1>
+</div>
+
+<form method="POST" action="{{ route('tenant.users.store') }}">
+    @csrf
+    
+    @include('tenant.users._form_personal', ['user' => null])
+    
+    @include('tenant.users._form_dates', ['user' => null])
+    
+    @include('tenant.users._form_emergency', ['user' => null])
+    
+    <div class="flex gap-3">
+        <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+            新增
+        </button>
+        <a href="{{ route('tenant.users.index') }}" 
+           class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
+            取消
+        </a>
+    </div>
+</form>
+
+<script>
+// 根據角色顯示/隱藏上層主管欄位
+document.getElementById('role').addEventListener('change', function() {
+    const supervisorField = document.getElementById('supervisor_field');
+    if (this.value && this.value !== 'admin') {
+        supervisorField.style.display = 'block';
+    } else {
+        supervisorField.style.display = 'none';
+    }
+});
+</script>
+@endsection
             <!-- 角色層級 -->
             <div>
                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
