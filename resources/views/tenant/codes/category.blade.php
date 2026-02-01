@@ -121,19 +121,11 @@
         </tbody>
     </table>
 </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Pagination -->
-        @if($codes->hasPages())
-        <div class="px-4 py-6 md:px-6 xl:px-7.5">
-            {{ $codes->links() }}
-        </div>
-        @endif
-    </div>
+<!-- 分頁 -->
+@if($codes->hasPages())
+<div class="mt-6">
+    {{ $codes->links() }}
 </div>
+@endif
 @endsection

@@ -99,7 +99,7 @@ class CompanyController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:50|unique:companies,code',
             'name' => 'required|string|max:255',
-            'short_name' => 'required|string|max:100',
+            'short_name' => 'nullable|string|max:100',
             'type' => 'required|in:company,individual',
             'tax_id' => 'nullable|string|max:20',
             'phone' => 'nullable|string|max:20',
@@ -112,7 +112,6 @@ class CompanyController extends Controller
             'code.required' => '公司代碼為必填',
             'code.unique' => '公司代碼已存在',
             'name.required' => '名稱為必填',
-            'short_name.required' => '簡稱為必填',
             'type.required' => '類型為必填',
             'email.email' => 'Email 格式不正確',
         ]);
@@ -128,9 +127,14 @@ class CompanyController extends Controller
         }
 
         $companyData = $request->only([
-            'name', 'short_name', 'type', 'tax_id', 
+            'code', 'name', 'short_name', 'type', 'tax_id', 
             'phone', 'fax', 'email', 'address'
         ]);
+        
+        // 如果沒有簡稱，使用名稱
+        if (empty($companyData['short_name'])) {
+            $companyData['short_name'] = $companyData['name'];
+        }
         
         $companyData['is_client'] = $request->boolean('is_client');
         $companyData['is_outsource'] = $request->boolean('is_outsource');
