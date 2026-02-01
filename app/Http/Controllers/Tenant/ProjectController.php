@@ -169,7 +169,9 @@ class ProjectController extends Controller
             'company', 
             'department', 
             'manager', 
-            'members',
+            'members.projects' => function($query) {
+                $query->where('status', 'in_progress');
+            },
             'receivables',
             'payables'
         ]);

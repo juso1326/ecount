@@ -207,7 +207,7 @@
                         
                         <!-- 成員的專案列表 -->
                         @php
-                            $memberProjects = $member->projects()->where('projects.id', '!=', $project->id)->where('status', 'in_progress')->get();
+                            $memberProjects = $member->projects->where('id', '!=', $project->id);
                         @endphp
                         @if($memberProjects->count() > 0)
                             <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
