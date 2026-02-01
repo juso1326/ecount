@@ -17,12 +17,30 @@ class Code extends Model
         'sort_order',
         'is_active',
         'description',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    /**
+     * 關聯：建立者
+     */
+    public function creator()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
+    }
+
+    /**
+     * 關聯：修改者
+     */
+    public function updater()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'updated_by');
+    }
 
     /**
      * 取得指定分類的所有程式碼

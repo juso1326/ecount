@@ -12,10 +12,16 @@ class CodeController extends Controller
      * 代碼分類定義
      */
     const CATEGORIES = [
+        // 原有分類
         'project_task' => '專案任務',
         'project_type' => '專案類型',
         'deduction_type' => '應扣類別',
         'payment_type' => '給付類別',
+        
+        // 從舊系統遷移的分類
+        'department_category' => '部門類別',
+        'expense_type' => '費用類別',
+        'status_code' => '狀態代碼',
     ];
 
     /**
@@ -118,6 +124,8 @@ class CodeController extends Controller
         
         $validated['category'] = $category;
         $validated['is_active'] = $request->has('is_active');
+        $validated['created_by'] = auth()->id();
+        $validated['updated_by'] = auth()->id();
         
         Code::create($validated);
         
@@ -176,6 +184,7 @@ class CodeController extends Controller
         }
         
         $validated['is_active'] = $request->has('is_active');
+        $validated['updated_by'] = auth()->id();
         
         $code->update($validated);
         
