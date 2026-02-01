@@ -23,6 +23,14 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
+    // 未登入時重定向到登入頁
+    Route::get('/', function () {
+        if (!auth()->check()) {
+            return redirect()->route('tenant.login');
+        }
+        return app(\App\Http\Controllers\Tenant\DashboardController::class)->index();
+    })->name('tenant.dashboard');
+
     // 認證路由（不需登入）
     Route::middleware('guest')->group(function () {
         Route::get('login', [\App\Http\Controllers\Tenant\AuthController::class, 'showLogin'])->name('tenant.login');
@@ -36,7 +44,6 @@ Route::middleware([
         Route::post('logout', [\App\Http\Controllers\Tenant\AuthController::class, 'logout'])->name('tenant.logout');
         
         // 儀表板
-        Route::get('/', [\App\Http\Controllers\Tenant\DashboardController::class, 'index'])->name('tenant.dashboard');
         Route::get('dashboard', [\App\Http\Controllers\Tenant\DashboardController::class, 'index']);
         Route::post('dashboard/announcement', [\App\Http\Controllers\Tenant\DashboardController::class, 'updateAnnouncement'])->name('tenant.dashboard.announcement');
         

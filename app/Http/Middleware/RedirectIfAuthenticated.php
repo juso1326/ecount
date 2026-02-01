@@ -21,13 +21,12 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 // 根據不同的 guard 重定向到不同的位置
-                $redirectTo = match($guard) {
-                    'superadmin' => '/superadmin/dashboard',
-                    'web' => '/dashboard',
-                    default => '/home',
-                };
+                if ($guard === 'superadmin') {
+                    return redirect('/superadmin/dashboard');
+                }
                 
-                return redirect($redirectTo);
+                // 租戶路由：重定向到根路徑（即 tenant.dashboard）
+                return redirect('/');
             }
         }
 
