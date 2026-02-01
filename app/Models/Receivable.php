@@ -17,15 +17,21 @@ class Receivable extends Model
         'receipt_no',
         'project_id',
         'company_id',
+        'responsible_user_id',
         'receipt_date',
         'due_date',
         'amount',
+        'amount_before_tax',
+        'tax_rate',
+        'tax_amount',
+        'withholding_tax',
         'received_amount',
-        'remaining_amount',
         'status',
         'payment_method',
         'paid_date',
         'invoice_no',
+        'content',
+        'quote_no',
         'note',
     ];
 
@@ -34,8 +40,11 @@ class Receivable extends Model
         'due_date' => 'date',
         'paid_date' => 'date',
         'amount' => 'decimal:2',
+        'amount_before_tax' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'withholding_tax' => 'decimal:2',
         'received_amount' => 'decimal:2',
-        'remaining_amount' => 'decimal:2',
     ];
 
     /**
@@ -61,6 +70,30 @@ class Receivable extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * 關聯：負責人
+     */
+    public function responsibleUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsible_user_id');
+    }
+
+    /**
+     * 計算屬性：未收金額
+     */
+    public function getRemainingAmountAttribute(): float
+    {
+        return round($this->amount - $this->received_amount, 2);
+    }
+
+    /**
+     * 計算屬性：實際入帳金額
+     */
+    public function getNetAmountAttribute(): float
+    {
+        return round($this->received_amount - $this->withholding_tax, 2);
     }
 
     /**
