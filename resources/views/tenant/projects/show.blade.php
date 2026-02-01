@@ -170,7 +170,7 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
             <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    專案成員 ({{ $project->members ? $project->members->count() : 0 }})
+                    專案成員 ({{ $project->members()->count() }})
                 </h2>
                 <button onclick="document.getElementById('addMemberModal').classList.remove('hidden')"
                         class="text-primary hover:text-primary-dark">
@@ -180,9 +180,13 @@
                 </button>
             </div>
             
-            @if($project->members && $project->members->count() > 0)
+            @php
+                $projectMembers = $project->members()->get();
+            @endphp
+            
+            @if($projectMembers->count() > 0)
                 <div class="space-y-3">
-                    @foreach($project->members as $member)
+                    @foreach($projectMembers as $member)
                     <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex-1">
