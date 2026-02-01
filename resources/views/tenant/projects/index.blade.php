@@ -143,7 +143,7 @@
                 <!-- 成員 -->
                 <td class="px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-1">
-                        @if($project->members->count() > 0)
+                        @if($project->members?->count() > 0)
                             <div class="flex -space-x-2">
                                 @foreach($project->members->take(3) as $member)
                                 <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-medium border-2 border-white dark:border-gray-800" 
