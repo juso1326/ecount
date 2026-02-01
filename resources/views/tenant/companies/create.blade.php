@@ -39,9 +39,9 @@
             <!-- 簡稱 -->
             <div>
                 <label for="short_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    簡稱 <span class="text-red-500">*</span>
+                    簡稱 <span class="text-gray-400 text-xs">(選填，未填則使用名稱)</span>
                 </label>
-                <input type="text" name="short_name" id="short_name" value="{{ old('short_name') }}" required
+                <input type="text" name="short_name" id="short_name" value="{{ old('short_name') }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('short_name') border-red-500 @enderror">
                 @error('short_name')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
