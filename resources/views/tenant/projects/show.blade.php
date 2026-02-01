@@ -170,7 +170,7 @@
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
             <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                    專案成員 ({{ $project->members->count() }})
+                    專案成員 ({{ $project->members ? $project->members->count() : 0 }})
                 </h2>
                 <button onclick="document.getElementById('addMemberModal').classList.remove('hidden')"
                         class="text-primary hover:text-primary-dark">
@@ -180,7 +180,7 @@
                 </button>
             </div>
             
-            @if($project->members->count() > 0)
+            @if($project->members && $project->members->count() > 0)
                 <div class="space-y-3">
                     @foreach($project->members as $member)
                     <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -248,7 +248,7 @@
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                         <option value="">請選擇</option>
                         @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $user)
-                            @if(!$project->members->contains($user->id))
+                            @if(!$project->members || !$project->members->contains($user->id))
                                 <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                             @endif
                         @endforeach

@@ -75,13 +75,6 @@ class ProjectController extends Controller
             
             return $project;
         });
-            // 扣繳稅額
-            $project->withholding_tax = $project->receivables->sum('tax_amount');
-            // 累計收入（已收 - 已付）
-            $project->accumulated_income = $project->total_received - $project->total_paid;
-            
-            return $project;
-        });
 
         if ($request->wantsJson()) {
             return response()->json([
