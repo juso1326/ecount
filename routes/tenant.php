@@ -96,6 +96,17 @@ Route::middleware([
         ]);
         Route::post('users/{user}/toggle-active', [\App\Http\Controllers\Tenant\UserController::class, 'toggleActive'])->name('tenant.users.toggle-active');
 
+        // 應收帳款管理
+        Route::resource('receivables', \App\Http\Controllers\Tenant\ReceivableController::class)->names([
+            'index' => 'tenant.receivables.index',
+            'create' => 'tenant.receivables.create',
+            'store' => 'tenant.receivables.store',
+            'show' => 'tenant.receivables.show',
+            'edit' => 'tenant.receivables.edit',
+            'update' => 'tenant.receivables.update',
+            'destroy' => 'tenant.receivables.destroy',
+        ]);
+
         // 代碼管理
         Route::get('codes', [\App\Http\Controllers\Tenant\CodeController::class, 'index'])->name('tenant.codes.index');
         Route::get('codes/{category}', [\App\Http\Controllers\Tenant\CodeController::class, 'category'])->name('tenant.codes.category');

@@ -17,11 +17,15 @@ class Payable extends Model
         'payment_no',
         'project_id',
         'company_id',
+        'responsible_user_id',
+        'type',
+        'content',
         'payment_date',
+        'invoice_date',
         'due_date',
         'amount',
+        'deduction',
         'paid_amount',
-        'remaining_amount',
         'status',
         'payment_method',
         'paid_date',
@@ -31,11 +35,12 @@ class Payable extends Model
 
     protected $casts = [
         'payment_date' => 'date',
+        'invoice_date' => 'date',
         'due_date' => 'date',
         'paid_date' => 'date',
         'amount' => 'decimal:2',
+        'deduction' => 'decimal:2',
         'paid_amount' => 'decimal:2',
-        'remaining_amount' => 'decimal:2',
     ];
 
     /**
@@ -61,6 +66,30 @@ class Payable extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * 關聯：負責人
+     */
+    public function responsibleUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'responsible_user_id');
+    }
+
+    /**
+     * 計算屬性：未付金額
+     */
+    public function getRemainingAmountAttribute(): float
+    {
+        return round($this->amount - $this->paid_amount, 2);
+    }
+
+    /**
+     * 計算屬性：實際支付金額
+     */
+    public function getNetAmountAttribute(): float
+    {
+        return round($this->paid_amount - $this->deduction, 2);
     }
 
     /**
