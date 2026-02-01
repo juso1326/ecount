@@ -61,13 +61,20 @@ class ProjectController extends Controller
         // 計算每個專案的財務統計（使用已載入的關聯）
         $projects->getCollection()->transform(function ($project) {
             // 應收總額
-            $project->total_receivable = $project->receivables->sum('amount');
+            $project->total_receivable = $project->receivables ? $project->receivables->sum('amount') : 0;
             // 已收金額
-            $project->total_received = $project->receivables->sum('paid_amount');
+            $project->total_received = $project->receivables ? $project->receivables->sum('received_amount') : 0;
+            // 扣繳稅額
+            $project->withholding_tax = $project->receivables ? $project->receivables->sum('withholding_tax') : 0;
             // 應付總額（專案支出）
-            $project->total_payable = $project->payables->sum('amount');
+            $project->total_payable = $project->payables ? $project->payables->sum('amount') : 0;
             // 已付金額
-            $project->total_paid = $project->payables->sum('paid_amount');
+            $project->total_paid = $project->payables ? $project->payables->sum('paid_amount') : 0;
+            // 累計收入（已收 - 扣繳 - 已付）
+            $project->accumulated_income = $project->total_received - $project->withholding_tax - $project->total_paid;
+            
+            return $project;
+        });
             // 扣繳稅額
             $project->withholding_tax = $project->receivables->sum('tax_amount');
             // 累計收入（已收 - 已付）
