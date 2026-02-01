@@ -104,4 +104,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'supervisor_id');
     }
+
+    /**
+     * 參與的專案（多對多關聯）
+     */
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_members')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
+    }
 }

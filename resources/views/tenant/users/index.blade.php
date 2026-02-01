@@ -67,6 +67,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">姓名</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">部門</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">參與專案</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
             </tr>
@@ -91,6 +92,26 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $user->department?->name }}
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    @if($user->projects && $user->projects->count() > 0)
+                        <div class="flex flex-wrap gap-1">
+                            @foreach($user->projects->take(3) as $project)
+                                <a href="{{ route('tenant.projects.show', $project) }}" 
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800"
+                                   title="{{ $project->name }}">
+                                    {{ $project->code }}
+                                </a>
+                            @endforeach
+                            @if($user->projects->count() > 3)
+                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                                    +{{ $user->projects->count() - 3 }}
+                                </span>
+                            @endif
+                        </div>
+                    @else
+                        <span class="text-gray-400 dark:text-gray-500">無</span>
+                    @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     @if($user->hasRole('admin'))
@@ -121,7 +142,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何使用者資料
                 </td>
             </tr>
