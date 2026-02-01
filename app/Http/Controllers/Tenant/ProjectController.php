@@ -302,7 +302,7 @@ class ProjectController extends Controller
             'joined_at' => now(),
         ]);
         
-        return back()->with('success', '成員新增成功');
+        return redirect()->route('tenant.projects.show', $project)->with('success', '成員新增成功');
     }
     
     /**
@@ -312,6 +312,6 @@ class ProjectController extends Controller
     {
         $project->members()->detach($user->id);
         
-        return back()->with('success', '成員移除成功');
+        return redirect()->route('tenant.projects.show', $project)->with('success', '成員移除成功');
     }
 }
