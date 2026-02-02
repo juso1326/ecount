@@ -109,14 +109,14 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     應收金額 <span class="text-red-500">*</span>
                 </label>
-                <input type="number" name="amount" value="{{ old('amount', $receivable->amount) }}" step="0.01" min="0" required
+                <input type="number" name="amount" value="{{ old('amount', $receivable->amount) }}" step="1" min="0" required
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
             <!-- 稅前金額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅前金額</label>
-                <input type="number" name="amount_before_tax" value="{{ old('amount_before_tax', $receivable->amount_before_tax) }}" step="0.01" min="0"
+                <input type="number" name="amount_before_tax" value="{{ old('amount_before_tax', $receivable->amount_before_tax) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
@@ -130,21 +130,21 @@
             <!-- 稅額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額</label>
-                <input type="number" name="tax_amount" value="{{ old('tax_amount', $receivable->tax_amount) }}" step="0.01" min="0"
+                <input type="number" name="tax_amount" value="{{ old('tax_amount', $receivable->tax_amount) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
             <!-- 扣繳稅額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">扣繳稅額</label>
-                <input type="number" name="withholding_tax" value="{{ old('withholding_tax', $receivable->withholding_tax) }}" step="0.01" min="0"
+                <input type="number" name="withholding_tax" value="{{ old('withholding_tax', $receivable->withholding_tax) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
             <!-- 已收金額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">已收金額</label>
-                <input type="number" name="received_amount" value="{{ old('received_amount', $receivable->received_amount) }}" step="0.01" min="0"
+                <input type="number" name="received_amount" value="{{ old('received_amount', $receivable->received_amount) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 

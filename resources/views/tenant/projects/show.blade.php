@@ -41,44 +41,44 @@
 @endif
 
 <!-- 內容區域 - 左右佈局 -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
     <!-- 左側：專案資訊 (2/3寬度) -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2 space-y-4">
         <!-- 基本資訊 -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 基本資訊
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">專案代碼</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->code }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">專案代碼</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->code }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">專案名稱</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->name }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">專案名稱</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->name }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">所屬客戶</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->company?->name ?? '-' }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">所屬客戶</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->company?->name ?? '-' }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">負責部門</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->department?->name ?? '-' }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">負責部門</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->department?->name ?? '-' }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">專案經理</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->manager?->name ?? '-' }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">專案經理</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->manager?->name ?? '-' }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">狀態</label>
-                    <p class="mt-1">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">狀態</label>
+                    <p class="mt-0.5">
                         @if($project->status === 'in_progress')
                             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                 進行中
@@ -104,72 +104,184 @@
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">開始日期</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->start_date?->format('Y-m-d') ?? '-' }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">開始日期</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->start_date?->format('Y-m-d') ?? '-' }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">結束日期</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->end_date?->format('Y-m-d') ?? '-' }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">結束日期</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->end_date?->format('Y-m-d') ?? '-' }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">預算金額</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ number_format($project->budget, 0) }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">預算金額</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">NT$ {{ number_format($project->budget, 0) }}</p>
                 </div>
 
                 <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">實際成本</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ number_format($project->actual_cost, 0) }}</p>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">實際成本</label>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">NT$ {{ number_format($project->actual_cost, 0) }}</p>
                 </div>
             </div>
         </div>
 
+        <!-- 應收帳款 -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                應收帳款
+            </h2>
+            
+            @php
+                $receivables = $project->receivables;
+                $totalReceivable = $receivables->sum('amount');
+                $totalReceived = $receivables->sum('received_amount');
+                $totalRemaining = $totalReceivable - $totalReceived;
+            @endphp
+            
+            @if($receivables->count() > 0)
+                <div class="mb-3 grid grid-cols-3 gap-2 text-xs">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                        <div class="text-gray-600 dark:text-gray-400">應收總額</div>
+                        <div class="text-blue-700 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalReceivable, 0) }}</div>
+                    </div>
+                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded">
+                        <div class="text-gray-600 dark:text-gray-400">已收金額</div>
+                        <div class="text-green-700 dark:text-green-400 font-semibold">NT$ {{ number_format($totalReceived, 0) }}</div>
+                    </div>
+                    <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                        <div class="text-gray-600 dark:text-gray-400">未收金額</div>
+                        <div class="text-orange-700 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalRemaining, 0) }}</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    @foreach($receivables as $receivable)
+                    <div class="border border-gray-200 dark:border-gray-700 rounded p-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ $receivable->receipt_no }}</span>
+                                    @if($receivable->status === 'paid')
+                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已收</span>
+                                    @elseif($receivable->status === 'partially_paid')
+                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
+                                    @else
+                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未收</span>
+                                    @endif
+                                </div>
+                                <div class="text-gray-500 dark:text-gray-400 mt-0.5">
+                                    {{ $receivable->receipt_date?->format('Y-m-d') }} 
+                                    @if($receivable->due_date)
+                                        <span class="text-gray-400">| 到期: {{ $receivable->due_date->format('Y-m-d') }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($receivable->amount, 0) }}</div>
+                                <div class="text-gray-500 dark:text-gray-400">已收: {{ number_format($receivable->received_amount, 0) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">尚無應收帳款</p>
+            @endif
+        </div>
+
+        <!-- 應付帳款 -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                應付帳款
+            </h2>
+            
+            @php
+                $payables = $project->payables;
+                $totalPayable = $payables->sum('amount');
+                $totalPaid = $payables->sum('paid_amount');
+                $totalUnpaid = $totalPayable - $totalPaid;
+            @endphp
+            
+            @if($payables->count() > 0)
+                <div class="mb-3 grid grid-cols-3 gap-2 text-xs">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+                        <div class="text-gray-600 dark:text-gray-400">應付總額</div>
+                        <div class="text-blue-700 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalPayable, 0) }}</div>
+                    </div>
+                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded">
+                        <div class="text-gray-600 dark:text-gray-400">已付金額</div>
+                        <div class="text-green-700 dark:text-green-400 font-semibold">NT$ {{ number_format($totalPaid, 0) }}</div>
+                    </div>
+                    <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                        <div class="text-gray-600 dark:text-gray-400">未付金額</div>
+                        <div class="text-orange-700 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    @foreach($payables as $payable)
+                    <div class="border border-gray-200 dark:border-gray-700 rounded p-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium text-gray-900 dark:text-white">{{ $payable->payment_no }}</span>
+                                    @if($payable->status === 'paid')
+                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已付</span>
+                                    @elseif($payable->status === 'partially_paid')
+                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
+                                    @else
+                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未付</span>
+                                    @endif
+                                </div>
+                                <div class="text-gray-500 dark:text-gray-400 mt-0.5">
+                                    {{ $payable->payment_date?->format('Y-m-d') }}
+                                    @if($payable->due_date)
+                                        <span class="text-gray-400">| 到期: {{ $payable->due_date->format('Y-m-d') }}</span>
+                                    @endif
+                                </div>
+                                @if($payable->note)
+                                    <div class="text-gray-500 dark:text-gray-400 mt-0.5">{{ $payable->note }}</div>
+                                @endif
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payable->amount, 0) }}</div>
+                                <div class="text-gray-500 dark:text-gray-400">已付: {{ number_format($payable->paid_amount, 0) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">尚無應付帳款</p>
+            @endif
+        </div>
+
         <!-- 專案描述 -->
         @if($project->description)
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 專案描述
             </h2>
-            <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $project->description }}</div>
+            <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $project->description }}</div>
         </div>
         @endif
 
         <!-- 備註 -->
         @if($project->note)
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 備註
             </h2>
-            <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $project->note }}</div>
+            <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $project->note }}</div>
         </div>
         @endif
-
-        <!-- 系統資訊 -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
-                系統資訊
-            </h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">建立時間</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->created_at->format('Y-m-d H:i:s') }}</p>
-                </div>
-
-                <div>
-                    <label class="text-sm font-medium text-gray-500 dark:text-gray-400">最後更新</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $project->updated_at->format('Y-m-d H:i:s') }}</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- 右側：專案成員 (1/3寬度) -->
     <div class="lg:col-span-1">
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
-            <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-6">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-white">
                     專案成員 ({{ $project->members()->count() }})
                 </h2>
                 <button onclick="document.getElementById('addMemberModal').classList.remove('hidden')"
@@ -185,15 +297,15 @@
             @endphp
             
             @if($projectMembers->count() > 0)
-                <div class="space-y-3">
+                <div class="space-y-2">
                     @foreach($projectMembers as $member)
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <div class="flex justify-between items-start mb-2">
+                    <div class="border border-gray-200 dark:border-gray-700 rounded p-2">
+                        <div class="flex justify-between items-start mb-1">
                             <div class="flex-1">
-                                <h3 class="font-medium text-gray-900 dark:text-white">{{ $member->name }}</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $member->email }}</p>
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->name }}</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->email }}</p>
                                 @if($member->pivot->role)
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $member->pivot->role }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $member->pivot->role }}</p>
                                 @endif
                             </div>
                             <form action="{{ route('tenant.projects.members.remove', [$project, $member]) }}" 
@@ -213,11 +325,11 @@
                         @php
                             $memberProjects = $member->projects->where('id', '!=', $project->id);
                         @endphp
-                        @if($memberProjects->count() > 0)
-                            <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">其他進行中專案：</p>
-                                <div class="space-y-1">
-                                    @foreach($memberProjects as $mp)
+                        @if($memberProjects->count() > 0 && $memberProjects->count() <= 3)
+                            <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5">其他專案：</p>
+                                <div class="space-y-0.5">
+                                    @foreach($memberProjects->take(3) as $mp)
                                         <p class="text-xs text-gray-600 dark:text-gray-400">
                                             • {{ $mp->name }}
                                         </p>
@@ -229,9 +341,17 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-gray-500 dark:text-gray-400 text-center py-8">尚無專案成員</p>
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">尚無專案成員</p>
             @endif
         </div>
+    </div>
+</div>
+
+<!-- 系統資訊 -->
+<div class="mt-4 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+    <div class="grid grid-cols-2 gap-4 text-xs text-gray-500 dark:text-gray-400">
+        <div>建立時間：{{ $project->created_at->format('Y-m-d H:i:s') }}</div>
+        <div>最後更新：{{ $project->updated_at->format('Y-m-d H:i:s') }}</div>
     </div>
 </div>
 

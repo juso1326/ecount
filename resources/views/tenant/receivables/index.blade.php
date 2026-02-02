@@ -32,7 +32,7 @@
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-    <form method="GET" action="{{ route('tenant.receivables.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+    <form method="GET" action="{{ route('tenant.receivables.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <!-- 搜尋框 -->
         <input type="text" name="search" value="{{ request('search') }}" 
                placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 

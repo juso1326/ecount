@@ -57,11 +57,13 @@
             <!-- 專案 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
-                <select name="project_id"
+                <select name="project_id" id="project_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">請選擇專案</option>
                     @foreach($projects as $project)
-                        <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                        <option value="{{ $project->id }}" 
+                                data-manager-id="{{ $project->manager_id }}"
+                                {{ old('project_id') == $project->id ? 'selected' : '' }}>
                             {{ $project->code }} - {{ $project->name }}
                         </option>
                     @endforeach
@@ -84,8 +86,8 @@
 
             <!-- 負責人 -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">負責人</label>
-                <select name="responsible_user_id"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">負責人（收款負責人）</label>
+                <select name="responsible_user_id" id="responsible_user_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">請選擇負責人</option>
                     @foreach($users as $user)
@@ -108,17 +110,17 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     應收金額 <span class="text-red-500">*</span>
                 </label>
-                <input type="number" name="amount" value="{{ old('amount', 0) }}" step="0.01" min="0" required
+                <input type="number" name="amount" value="{{ old('amount', 0) }}" step="1" min="0" required
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="0.00">
+                       placeholder="0">
             </div>
 
             <!-- 稅前金額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅前金額</label>
-                <input type="number" name="amount_before_tax" value="{{ old('amount_before_tax', 0) }}" step="0.01" min="0"
+                <input type="number" name="amount_before_tax" value="{{ old('amount_before_tax', 0) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="0.00">
+                       placeholder="0">
             </div>
 
             <!-- 稅率 -->
@@ -132,25 +134,25 @@
             <!-- 稅額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額</label>
-                <input type="number" name="tax_amount" value="{{ old('tax_amount', 0) }}" step="0.01" min="0"
+                <input type="number" name="tax_amount" value="{{ old('tax_amount', 0) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="0.00">
+                       placeholder="0">
             </div>
 
             <!-- 扣繳稅額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">扣繳稅額</label>
-                <input type="number" name="withholding_tax" value="{{ old('withholding_tax', 0) }}" step="0.01" min="0"
+                <input type="number" name="withholding_tax" value="{{ old('withholding_tax', 0) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="0.00">
+                       placeholder="0">
             </div>
 
             <!-- 已收金額 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">已收金額</label>
-                <input type="number" name="received_amount" value="{{ old('received_amount', 0) }}" step="0.01" min="0"
+                <input type="number" name="received_amount" value="{{ old('received_amount', 0) }}" step="1" min="0"
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="0.00">
+                       placeholder="0">
             </div>
 
             <!-- 狀態 -->
@@ -228,4 +230,17 @@
         </div>
     </form>
 </div>
+
+<script>
+// 當選擇專案時，自動設定負責人為專案經理
+document.getElementById('project_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const managerId = selectedOption.getAttribute('data-manager-id');
+    const responsibleSelect = document.getElementById('responsible_user_id');
+    
+    if (managerId) {
+        responsibleSelect.value = managerId;
+    }
+});
+</script>
 @endsection
