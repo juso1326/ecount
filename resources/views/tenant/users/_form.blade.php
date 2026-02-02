@@ -1,9 +1,7 @@
 <!-- 基本資訊 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            基本資訊
-        </h3>
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">基本資訊</h3>
     </div>
     <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -56,56 +54,10 @@
     </div>
 </div>
 
-<!-- 角色與權限 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            角色與權限
-        </h3>
-    </div>
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 角色層級 -->
-            <div>
-                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    角色層級 <span class="text-red-500">*</span>
-                </label>
-                <select name="role" id="role" required
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">請選擇角色</option>
-                    <option value="admin" {{ old('role', $currentRole ?? '') == 'admin' ? 'selected' : '' }}>系統管理員</option>
-                    <option value="manager" {{ old('role', $currentRole ?? '') == 'manager' ? 'selected' : '' }}>總管理/主管</option>
-                    <option value="accountant" {{ old('role', $currentRole ?? '') == 'accountant' ? 'selected' : '' }}>會計</option>
-                    <option value="employee" {{ old('role', $currentRole ?? '') == 'employee' ? 'selected' : '' }}>成員</option>
-                </select>
-                @error('role')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- 上層主管 -->
-            <div id="supervisor_field" style="display: {{ old('role', $currentRole ?? '') != 'admin' ? 'block' : 'none' }};">
-                <label for="supervisor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">上層主管</label>
-                <select name="supervisor_id" id="supervisor_id"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">請選擇</option>
-                    @foreach($supervisors as $supervisor)
-                        <option value="{{ $supervisor->id }}" {{ old('supervisor_id', $user->supervisor_id ?? '') == $supervisor->id ? 'selected' : '' }}>
-                            {{ $supervisor->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- 職務資訊 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            職務資訊
-        </h3>
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">職務資訊</h3>
     </div>
     <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -144,6 +96,38 @@
                 </select>
             </div>
 
+            <!-- 角色層級 -->
+            <div>
+                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    角色層級 <span class="text-red-500">*</span>
+                </label>
+                <select name="role" id="role" required
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">請選擇角色</option>
+                    <option value="admin" {{ old('role', $currentRole ?? '') == 'admin' ? 'selected' : '' }}>系統管理員</option>
+                    <option value="manager" {{ old('role', $currentRole ?? '') == 'manager' ? 'selected' : '' }}>總管理/主管</option>
+                    <option value="accountant" {{ old('role', $currentRole ?? '') == 'accountant' ? 'selected' : '' }}>會計</option>
+                    <option value="employee" {{ old('role', $currentRole ?? '') == 'employee' ? 'selected' : '' }}>成員</option>
+                </select>
+                @error('role')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- 上層主管 -->
+            <div id="supervisor_field" style="display: {{ old('role', $currentRole ?? '') != 'admin' ? 'block' : 'none' }};">
+                <label for="supervisor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">上層主管</label>
+                <select name="supervisor_id" id="supervisor_id"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">請選擇</option>
+                    @foreach($supervisors as $supervisor)
+                        <option value="{{ $supervisor->id }}" {{ old('supervisor_id', $user->supervisor_id ?? '') == $supervisor->id ? 'selected' : '' }}>
+                            {{ $supervisor->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- 是否在職 -->
             <div>
                 <label for="is_active" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -155,6 +139,34 @@
                     <option value="0" {{ !old('is_active', $user->is_active ?? 1) ? 'selected' : '' }}>否</option>
                 </select>
             </div>
+
+            <!-- 到職日 -->
+            <div>
+                <label for="hire_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">到職日</label>
+                <input type="date" name="hire_date" id="hire_date" value="{{ old('hire_date', $user->hire_date ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 離職日 -->
+            <div>
+                <label for="resign_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">離職日</label>
+                <input type="date" name="resign_date" id="resign_date" value="{{ old('resign_date', $user->resign_date ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 停權日 -->
+            <div>
+                <label for="suspend_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">停權日</label>
+                <input type="date" name="suspend_date" id="suspend_date" value="{{ old('suspend_date', $user->suspend_date ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 備註 -->
+            <div class="md:col-span-2">
+                <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備註</label>
+                <textarea name="note" id="note" rows="4"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $user->note ?? '') }}</textarea>
+            </div>
         </div>
     </div>
 </div>
@@ -162,9 +174,7 @@
 <!-- 個人資訊 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            個人資訊
-        </h3>
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">個人資訊</h3>
     </div>
     <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -181,10 +191,7 @@
                 <input type="date" name="birth_date" id="birth_date" value="{{ old('birth_date', $user->birth_date ?? '') }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
-        </div>
-    </div>
-        <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             <!-- 電話 -->
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">電話 (市話)</label>
@@ -198,12 +205,8 @@
                 <input type="text" name="mobile" id="mobile" value="{{ old('mobile', $user->mobile ?? '') }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
-        </div>
-    </div>
-    <!-- 緊急聯絡人 -->
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 緊急聯絡人 -->
+
+            <!-- 緊急聯絡人姓名 -->
             <div>
                 <label for="emergency_contact_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">緊急聯絡人姓名</label>
                 <input type="text" name="emergency_contact_name" id="emergency_contact_name" value="{{ old('emergency_contact_name', $user->emergency_contact_name ?? '') }}"
@@ -220,16 +223,13 @@
     </div>
 </div>
 
-
 <!-- 銀行資訊 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            銀行資訊
-        </h3>
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">銀行資訊</h3>
     </div>
     <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- 銀行 -->
             <div>
                 <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行</label>
@@ -251,54 +251,6 @@
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
         </div>
-    </div>
-</div>
-
-
-
-<!-- 日期資訊 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            日期資訊
-        </h3>
-    </div>
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- 到職日 -->
-            <div>
-                <label for="hire_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">到職日</label>
-                <input type="date" name="hire_date" id="hire_date" value="{{ old('hire_date', $user->hire_date ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 離職日 -->
-            <div>
-                <label for="resign_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">離職日</label>
-                <input type="date" name="resign_date" id="resign_date" value="{{ old('resign_date', $user->resign_date ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 停權日 -->
-            <div>
-                <label for="suspend_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">停權日</label>
-                <input type="date" name="suspend_date" id="suspend_date" value="{{ old('suspend_date', $user->suspend_date ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 備註 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
-            備註
-        </h3>
-    </div>
-    <div class="p-6">
-        <textarea name="note" id="note" rows="4"
-            class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $user->note ?? '') }}</textarea>
     </div>
 </div>
 
