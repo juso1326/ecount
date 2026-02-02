@@ -71,7 +71,6 @@
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">查看</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">外製</th>
@@ -90,12 +89,13 @@
                        class="text-primary hover:text-primary-dark font-medium">
                         查看
                     </a>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <a href="{{ route('tenant.companies.edit', $company) }}" 
-                       class="text-primary hover:text-primary-dark font-medium">
+                       class="ml-1 text-primary hover:text-primary-dark font-medium">
                         編輯
                     </a>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $company->type === 'company' ? '公司' : '個人' }}

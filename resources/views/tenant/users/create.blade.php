@@ -18,47 +18,43 @@
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @include('tenant.users.partials._role_supervisor')
-            @include('tenant.users.partials._employee_no')
-            @include('tenant.users.partials._name')
-            @include('tenant.users.partials._short_name')
-            @include('tenant.users.partials._position')
-            @include('tenant.users.partials._department')
-            @include('tenant.users.partials._is_active')
-            @include('tenant.users.partials._auth')
-            @include('tenant.users.partials._backup_email')
-            @include('tenant.users.partials._id_birth')
-            @include('tenant.users.partials._contact')
-            @include('tenant.users.partials._bank')
-            @include('tenant.users.partials._dates')
-            @include('tenant.users.partials._emergency')
-            @include('tenant.users.partials._note')
-        </div>
+            
+            <!-- 姓名 -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    姓名 <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                @error('name')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <div class="mt-6 flex gap-3">
-            <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
-                新增
-            </button>
-            <a href="{{ route('tenant.users.index') }}" 
-               class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
-                取消
-            </a>
-        </div>
-    </form>
-</div>
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    登入帳號 (Email) <span class="text-red-500">*</span>
+                </label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                @error('email')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
 
-<script>
-// 根據角色顯示/隱藏上層主管欄位
-document.getElementById('role').addEventListener('change', function() {
-    const supervisorField = document.getElementById('supervisor_field');
-    if (this.value && this.value !== 'admin') {
-        supervisorField.style.display = 'block';
-    } else {
-        supervisorField.style.display = 'none';
-    }
-});
-</script>
-@endsection
+            <!-- 密碼 -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    密碼 <span class="text-red-500">*</span>
+                </label>
+                <input type="password" name="password" id="password" required
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                @error('password')
+                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- 角色層級 -->
             <div>
                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
