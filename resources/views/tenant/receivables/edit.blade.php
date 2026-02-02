@@ -55,29 +55,32 @@
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
-            <!-- 專案 -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
-                <select name="project_id"
-                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option value="">請選擇專案</option>
-                    @foreach($projects as $project)
-                        <option value="{{ $project->id }}" {{ old('project_id', $receivable->project_id) == $project->id ? 'selected' : '' }}>
-                            {{ $project->code }} - {{ $project->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
             <!-- 客戶 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">客戶</label>
-                <select name="company_id"
+                <select name="company_id" id="company_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">請選擇客戶</option>
                     @foreach($companies as $company)
                         <option value="{{ $company->id }}" {{ old('company_id', $receivable->company_id) == $company->id ? 'selected' : '' }}>
                             {{ $company->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- 專案 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
+                <select name="project_id" id="project_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">請選擇專案</option>
+                    @foreach($projects as $project)
+                        <option value="{{ $project->id }}" 
+                                data-company-id="{{ $project->company_id }}"
+                                data-manager-id="{{ $project->manager_id }}"
+                                {{ old('project_id', $receivable->project_id) == $project->id ? 'selected' : '' }}>
+                            {{ $project->code }} - {{ $project->name }}
                         </option>
                     @endforeach
                 </select>
@@ -233,4 +236,28 @@
         </div>
     </form>
 </div>
+
+<script>
+// 當選擇客戶時，篩選對應的專案
+document.getElementById('company_id').addEventListener('change', function() {
+    const companyId = this.value;
+    const projectSelect = document.getElementById('project_id');
+    const projectOptions = projectSelect.querySelectorAll('option');
+    
+    projectOptions.forEach(option => {
+        if (option.value === '') {
+            option.style.display = 'block';
+            return;
+        }
+        
+        const optionCompanyId = option.getAttribute('data-company-id');
+        
+        if (!companyId || optionCompanyId === companyId) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+});
+</script>
 @endsection
