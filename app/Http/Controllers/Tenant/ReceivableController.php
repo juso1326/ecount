@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Receivable;
+use App\Models\ReceivablePayment;
 use App\Models\Project;
 use App\Models\Company;
 use App\Models\User;
@@ -159,5 +160,37 @@ class ReceivableController extends Controller
 
         return redirect()->route('tenant.receivables.index')
             ->with('success', '應收帳款刪除成功');
+    }
+
+    /**
+     * 新增收款紀錄
+     */
+    public function addPayment(Request $request, Receivable $receivable)
+    {
+        $validated = $request->validate([
+            'payment_date' => 'required|date',
+            'amount' => 'required|numeric|min:1|max:' . ($receivable->amount - $receivable->received_amount),
+            'payment_method' => 'nullable|string|max:50',
+            'note' => 'nullable|string',
+        ]);
+
+        // 建立收款紀錄
+        $receivable->payments()->create($validated);
+
+        // 更新已收金額
+        $receivable->received_amount += $validated['amount'];
+        
+        // 自動更新狀態
+        if ($receivable->received_amount >= $receivable->amount) {
+            $receivable->status = 'paid';
+            $receivable->paid_date = $validated['payment_date'];
+        } elseif ($receivable->received_amount > 0) {
+            $receivable->status = 'partially_paid';
+        }
+        
+        $receivable->save();
+
+        return redirect()->route('tenant.receivables.show', $receivable)
+            ->with('success', '收款紀錄新增成功');
     }
 }
