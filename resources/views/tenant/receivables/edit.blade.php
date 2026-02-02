@@ -126,8 +126,11 @@
             <!-- 稅率 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅率 (%)</label>
-                <input type="number" name="tax_rate" value="{{ old('tax_rate', $receivable->tax_rate) }}" step="0.01" min="0" max="100"
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <select name="tax_rate"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="0" {{ old('tax_rate', $receivable->tax_rate) == 0 ? 'selected' : '' }}>無</option>
+                    <option value="5" {{ old('tax_rate', $receivable->tax_rate) == 5 ? 'selected' : '' }}>5%</option>
+                </select>
             </div>
 
             <!-- 稅額 -->
@@ -168,8 +171,15 @@
             <!-- 付款方式 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">付款方式</label>
-                <input type="text" name="payment_method" value="{{ old('payment_method', $receivable->payment_method) }}"
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <select name="payment_method"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">請選擇</option>
+                    <option value="轉帳匯款" {{ old('payment_method', $receivable->payment_method) == '轉帳匯款' ? 'selected' : '' }}>轉帳匯款</option>
+                    <option value="現金" {{ old('payment_method', $receivable->payment_method) == '現金' ? 'selected' : '' }}>現金</option>
+                    <option value="支票" {{ old('payment_method', $receivable->payment_method) == '支票' ? 'selected' : '' }}>支票</option>
+                    <option value="信用卡" {{ old('payment_method', $receivable->payment_method) == '信用卡' ? 'selected' : '' }}>信用卡</option>
+                    <option value="其他" {{ old('payment_method', $receivable->payment_method) == '其他' ? 'selected' : '' }}>其他</option>
+                </select>
             </div>
 
             <!-- 實際收款日 -->
