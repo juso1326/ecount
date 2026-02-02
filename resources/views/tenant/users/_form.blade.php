@@ -17,6 +17,12 @@
                 @enderror
             </div>
 
+            <!-- 簡稱 -->
+            <div>
+                <label for="short_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">簡稱</label>
+                <input type="text" name="short_name" id="short_name" value="{{ old('short_name', $user->short_name ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
             <!-- Email -->
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -65,13 +71,6 @@
             <div>
                 <label for="employee_no" class="block text-sm font-medium text-gray-700 dark:text-gray-300">員工編號</label>
                 <input type="text" name="employee_no" id="employee_no" value="{{ old('employee_no', $user->employee_no ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 簡稱 -->
-            <div>
-                <label for="short_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">簡稱</label>
-                <input type="text" name="short_name" id="short_name" value="{{ old('short_name', $user->short_name ?? '') }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
@@ -253,15 +252,3 @@
         </div>
     </div>
 </div>
-
-<script>
-// 根據角色顯示/隱藏上層主管欄位
-document.getElementById('role').addEventListener('change', function() {
-    const supervisorField = document.getElementById('supervisor_field');
-    if (this.value && this.value !== 'admin') {
-        supervisorField.style.display = 'block';
-    } else {
-        supervisorField.style.display = 'none';
-    }
-});
-</script>
