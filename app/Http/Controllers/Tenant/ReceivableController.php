@@ -118,31 +118,41 @@ class ReceivableController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'receipt_no' => 'nullable|string|max:50|unique:receivables,receipt_no',
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => 'nullable|exists:projects,id',
             'company_id' => 'required|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
-            'receipt_date' => 'required|date',
-            'due_date' => 'nullable|date',
+            'receipt_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
-            'amount_before_tax' => 'nullable|numeric|min:0',
-            'tax_rate' => 'nullable|numeric|min:0|max:100',
+            'amount_before_tax' => 'required|numeric|min:0',
+            'tax_setting_id' => 'nullable|exists:tax_settings,id',
+            'tax_inclusive' => 'nullable|boolean',
             'tax_amount' => 'nullable|numeric|min:0',
-            'withholding_tax' => 'nullable|numeric|min:0',
-            'received_amount' => 'nullable|numeric|min:0',
-            'status' => 'nullable|string',
-            'payment_method' => 'nullable|string|max:50',
-            'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
-            'quote_no' => 'nullable|string|max:50',
             'content' => 'nullable|string',
             'note' => 'nullable|string',
+            'status' => 'nullable|string',
         ]);
 
-        // 如果沒有提供單號，自動生成
-        if (empty($validated['receipt_no'])) {
-            $validated['receipt_no'] = $this->generateReceiptCode();
+        // 自動生成單號
+        $validated['receipt_no'] = $this->generateReceiptCode();
+        
+        // 如果沒有提供收款日期，使用今天
+        if (empty($validated['receipt_date'])) {
+            $validated['receipt_date'] = now()->format('Y-m-d');
         }
+        
+        // 如果沒有負責人，使用當前用戶
+        if (empty($validated['responsible_user_id'])) {
+            $validated['responsible_user_id'] = auth()->id();
+        }
+        
+        // 預設狀態
+        if (empty($validated['status'])) {
+            $validated['status'] = 'unpaid';
+        }
+        
+        // 預設已收款金額為 0
+        $validated['received_amount'] = 0;
 
         Receivable::create($validated);
 
@@ -273,5 +283,20 @@ class ReceivableController extends Controller
 
         return redirect()->route('tenant.projects.show', $receivable->project_id)
             ->with('success', '應收帳款更新成功');
+    }
+    
+    /**
+     * 快速收款頁面（入帳記錄）
+     */
+    public function quickReceive(Receivable $receivable)
+    {
+        // 取得此應收帳款的所有入帳記錄
+        $payments = $receivable->payments()->orderBy('payment_date', 'desc')->get();
+        
+        // 計算剩餘應收金額
+        $totalReceived = $payments->sum('amount');
+        $remainingAmount = $receivable->amount - $totalReceived;
+        
+        return view('tenant.receivables.quick-receive', compact('receivable', 'payments', 'totalReceived', 'remainingAmount'));
     }
 }

@@ -87,7 +87,26 @@ foreach ($userTags as $tagData) {
         ['color' => $tagData['color'], 'description' => $tagData['description']]
     );
 }
-echo "✅ 已建立 " . count($userTags) . " 個團隊成員標籤\n\n";
+echo "✅ 已建立 " . count($userTags) . " 個團隊成員標籤\n";
+
+// 付款方式標籤
+$paymentMethodTags = [
+    ['name' => '轉帳匯款', 'color' => '#3B82F6', 'description' => '銀行轉帳'],
+    ['name' => '現金', 'color' => '#10B981', 'description' => '現金支付'],
+    ['name' => '支票', 'color' => '#F59E0B', 'description' => '支票付款'],
+    ['name' => '信用卡', 'color' => '#8B5CF6', 'description' => '信用卡支付'],
+    ['name' => '電子支付', 'color' => '#06B6D4', 'description' => '線上支付/電子錢包'],
+    ['name' => '匯票', 'color' => '#6366F1', 'description' => '銀行匯票'],
+    ['name' => '其他', 'color' => '#6B7280', 'description' => '其他付款方式'],
+];
+
+foreach ($paymentMethodTags as $tagData) {
+    Tag::firstOrCreate(
+        ['name' => $tagData['name'], 'type' => 'payment_method'],
+        ['color' => $tagData['color'], 'description' => $tagData['description']]
+    );
+}
+echo "✅ 已建立 " . count($paymentMethodTags) . " 個付款方式標籤\n\n";
 
 // ===== 2. 支出項目管理 =====
 echo "💰 建立支出項目資料...\n";

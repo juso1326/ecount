@@ -27,6 +27,7 @@ class Tag extends Model
     const TYPE_PROJECT = 'project';
     const TYPE_COMPANY = 'company';
     const TYPE_USER = 'user';
+    const TYPE_PAYMENT_METHOD = 'payment_method';
 
     /**
      * 取得所有可用的標籤類型
@@ -37,6 +38,7 @@ class Tag extends Model
             self::TYPE_PROJECT => '專案標籤',
             self::TYPE_COMPANY => '客戶廠商標籤',
             self::TYPE_USER => '團隊成員標籤',
+            self::TYPE_PAYMENT_METHOD => '付款方式',
         ];
     }
 
