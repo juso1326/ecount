@@ -1,0 +1,154 @@
+@extends('layouts.tenant')
+
+@section('title', '新增標籤')
+
+@section('page-title', '新增標籤')
+
+@section('content')
+<!-- 麵包屑 -->
+<div class="mb-4">
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+        系統設定 &gt; 
+        <a href="{{ route('tenant.tags.index') }}" class="text-primary hover:underline">標籤管理</a> &gt; 
+        新增標籤
+    </p>
+</div>
+
+<!-- 頁面標題 -->
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增標籤</h1>
+</div>
+
+<!-- 表單 -->
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <form action="{{ route('tenant.tags.store') }}" method="POST">
+        @csrf
+
+        <!-- 標籤類型 -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                標籤類型 <span class="text-red-500">*</span>
+            </label>
+            <select name="type" 
+                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent @error('type') border-red-500 @enderror"
+                    required>
+                <option value="">請選擇類型</option>
+                @foreach($types as $key => $label)
+                    <option value="{{ $key }}" {{ old('type', $selectedType) === $key ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+            @error('type')
+                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- 標籤名稱 -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                標籤名稱 <span class="text-red-500">*</span>
+            </label>
+            <input type="text" 
+                   name="name" 
+                   value="{{ old('name') }}"
+                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent @error('name') border-red-500 @enderror"
+                   placeholder="例如：重要客戶、緊急專案、核心成員"
+                   required>
+            @error('name')
+                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- 標籤顏色 -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                標籤顏色 <span class="text-red-500">*</span>
+            </label>
+            <div class="flex items-center space-x-4">
+                <input type="color" 
+                       name="color" 
+                       value="{{ old('color', '#3B82F6') }}"
+                       class="w-20 h-10 border border-gray-300 dark:border-gray-600 rounded cursor-pointer">
+                <input type="text" 
+                       name="color_text" 
+                       value="{{ old('color', '#3B82F6') }}"
+                       class="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 @error('color') border-red-500 @enderror"
+                       pattern="^#[0-9A-Fa-f]{6}$"
+                       placeholder="#3B82F6">
+            </div>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">請使用 Hex 格式，例如：#3B82F6</p>
+            @error('color')
+                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- 說明 -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                說明
+            </label>
+            <textarea name="description" 
+                      rows="3"
+                      class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="選填：標籤的用途或說明">{{ old('description') }}</textarea>
+        </div>
+
+        <!-- 排序 -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                排序
+            </label>
+            <input type="number" 
+                   name="sort_order" 
+                   value="{{ old('sort_order', 0) }}"
+                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                   min="0">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">數字越小越靠前</p>
+        </div>
+
+        <!-- 是否啟用 -->
+        <div class="mb-6">
+            <label class="flex items-center">
+                <input type="checkbox" 
+                       name="is_active" 
+                       value="1"
+                       {{ old('is_active', true) ? 'checked' : '' }}
+                       class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">啟用此標籤</span>
+            </label>
+        </div>
+
+        <!-- 按鈕 -->
+        <div class="flex justify-end space-x-3">
+            <a href="{{ route('tenant.tags.index') }}" 
+               class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
+                取消
+            </a>
+            <button type="submit" 
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+                新增
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// 同步顏色選擇器和文字輸入
+document.querySelector('input[type="color"]').addEventListener('input', function(e) {
+    document.querySelector('input[name="color_text"]').value = e.target.value;
+});
+
+document.querySelector('input[name="color_text"]').addEventListener('input', function(e) {
+    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+        document.querySelector('input[type="color"]').value = e.target.value;
+    }
+});
+
+// 表單提交時確保使用正確的值
+document.querySelector('form').addEventListener('submit', function(e) {
+    const colorText = document.querySelector('input[name="color_text"]').value;
+    document.querySelector('input[name="color"]').value = colorText;
+});
+</script>
+@endsection

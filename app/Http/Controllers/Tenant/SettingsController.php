@@ -138,4 +138,48 @@ class SettingsController extends Controller
         return redirect()->route('tenant.settings.codes')
             ->with('success', '代碼設定已更新');
     }
+
+    /**
+     * Display financial settings
+     */
+    public function financial()
+    {
+        $currencies = [
+            'TWD' => '新台幣 (TWD)',
+            'USD' => '美元 (USD)',
+            'CNY' => '人民幣 (CNY)',
+            'JPY' => '日圓 (JPY)',
+            'EUR' => '歐元 (EUR)',
+            'GBP' => '英鎊 (GBP)',
+            'HKD' => '港幣 (HKD)',
+        ];
+
+        $closingDay = TenantSetting::get('closing_day', 1);
+        $defaultCurrency = TenantSetting::get('default_currency', 'TWD');
+
+        return view('tenant.settings.financial', compact('currencies', 'closingDay', 'defaultCurrency'));
+    }
+
+    /**
+     * Update financial settings
+     */
+    public function updateFinancial(Request $request)
+    {
+        $validated = $request->validate([
+            'closing_day' => 'required|integer|min:1|max:31',
+            'default_currency' => 'required|string|max:3',
+        ], [
+            'closing_day.required' => '請選擇關帳日',
+            'closing_day.min' => '關帳日必須在 1-31 之間',
+            'closing_day.max' => '關帳日必須在 1-31 之間',
+            'default_currency.required' => '請選擇預設幣值',
+        ]);
+
+        foreach ($validated as $key => $value) {
+            TenantSetting::set($key, $value);
+        }
+
+        return redirect()->route('tenant.settings.financial')
+            ->with('success', '財務設定已更新');
+    }
 }

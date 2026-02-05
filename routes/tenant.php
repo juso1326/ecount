@@ -141,6 +141,10 @@ Route::middleware([
             Route::get('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'codes'])->name('codes');
             Route::post('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateCodes'])->name('codes.update');
             
+            // 財務設定
+            Route::get('financial', [\App\Http\Controllers\Tenant\SettingsController::class, 'financial'])->name('financial');
+            Route::post('financial', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateFinancial'])->name('financial.update');
+            
             // 系統設定
             Route::get('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'system'])->name('system');
             Route::post('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateSystem'])->name('system.update');
@@ -149,5 +153,40 @@ Route::middleware([
             Route::get('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'account'])->name('account');
             Route::put('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateAccount'])->name('account.update');
         });
+
+        // 標籤管理
+        Route::resource('tags', \App\Http\Controllers\Tenant\TagController::class)->names([
+            'index' => 'tenant.tags.index',
+            'create' => 'tenant.tags.create',
+            'store' => 'tenant.tags.store',
+            'edit' => 'tenant.tags.edit',
+            'update' => 'tenant.tags.update',
+            'destroy' => 'tenant.tags.destroy',
+        ]);
+
+        // 支出項目管理
+        Route::resource('expense-categories', \App\Http\Controllers\Tenant\ExpenseCategoryController::class)->names([
+            'index' => 'tenant.expense-categories.index',
+            'create' => 'tenant.expense-categories.create',
+            'store' => 'tenant.expense-categories.store',
+            'edit' => 'tenant.expense-categories.edit',
+            'update' => 'tenant.expense-categories.update',
+            'destroy' => 'tenant.expense-categories.destroy',
+        ]);
+
+        // 稅款設定管理
+        Route::resource('tax-settings', \App\Http\Controllers\Tenant\TaxSettingController::class)->names([
+            'index' => 'tenant.tax-settings.index',
+            'create' => 'tenant.tax-settings.create',
+            'store' => 'tenant.tax-settings.store',
+            'edit' => 'tenant.tax-settings.edit',
+            'update' => 'tenant.tax-settings.update',
+            'destroy' => 'tenant.tax-settings.destroy',
+        ]);
+        Route::post('tax-settings/{taxSetting}/set-default', [\App\Http\Controllers\Tenant\TaxSettingController::class, 'setDefault'])->name('tenant.tax-settings.set-default');
+
+        // 財務報表
+        Route::get('reports/financial', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'index'])->name('tenant.reports.financial');
+        Route::get('reports/financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('tenant.reports.financial.export');
     });
 });
