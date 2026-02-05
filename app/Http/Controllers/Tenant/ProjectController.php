@@ -114,21 +114,13 @@ class ProjectController extends Controller
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $managers = User::where('is_active', true)->orderBy('name')->get();
         
-        // 取得已有的專案類型（去重）
-        $projectTypes = Project::whereNotNull('project_type')
-            ->where('project_type', '!=', '')
-            ->distinct()
-            ->pluck('project_type')
-            ->filter()
-            ->values();
-        
         // 取得專案標籤
         $tags = \App\Models\Tag::ofType('project')->orderBy('name')->get();
         
         // 自動生成專案代碼
         $nextCode = $this->generateProjectCode();
 
-        return view('tenant.projects.create', compact('companies', 'managers', 'projectTypes', 'nextCode', 'tags'));
+        return view('tenant.projects.create', compact('companies', 'managers', 'nextCode', 'tags'));
     }
 
     /**
@@ -142,7 +134,6 @@ class ProjectController extends Controller
             'company_id' => 'required|exists:companies,id',
             'department_id' => 'nullable|exists:departments,id',
             'manager_id' => 'nullable|exists:users,id',
-            'project_type' => 'nullable|string',
             'status' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -217,21 +208,13 @@ class ProjectController extends Controller
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $managers = User::where('is_active', true)->orderBy('name')->get();
         
-        // 取得已有的專案類型（去重）
-        $projectTypes = Project::whereNotNull('project_type')
-            ->where('project_type', '!=', '')
-            ->distinct()
-            ->pluck('project_type')
-            ->filter()
-            ->values();
-        
         // 取得專案標籤
         $tags = \App\Models\Tag::ofType('project')->orderBy('name')->get();
         
         // 載入專案現有標籤
         $project->load('tags');
 
-        return view('tenant.projects.edit', compact('project', 'companies', 'managers', 'projectTypes', 'tags'));
+        return view('tenant.projects.edit', compact('project', 'companies', 'managers', 'tags'));
     }
 
     /**
