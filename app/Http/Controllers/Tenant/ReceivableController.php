@@ -297,7 +297,10 @@ class ReceivableController extends Controller
         $totalReceived = $payments->sum('amount');
         $remainingAmount = $receivable->amount - $totalReceived;
         
-        return view('tenant.receivables.quick-receive', compact('receivable', 'payments', 'totalReceived', 'remainingAmount'));
+        // 取得付款方式標籤
+        $paymentMethods = \App\Models\Tag::where('type', \App\Models\Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
+        
+        return view('tenant.receivables.quick-receive', compact('receivable', 'payments', 'totalReceived', 'remainingAmount', 'paymentMethods'));
     }
     
     /**

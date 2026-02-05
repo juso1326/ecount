@@ -15,6 +15,12 @@
         @if(isset($payable))
             @method('PUT')
         @endif
+        
+        <!-- 付款單號（隱藏，自動生成） -->
+        <input type="hidden" name="payment_no" value="{{ old('payment_no', isset($payable) ? $payable->payment_no : $nextCode ?? '') }}">
+        
+        <!-- 類型（隱藏，預設為 expense） -->
+        <input type="hidden" name="type" value="{{ old('type', isset($payable) ? $payable->type : 'expense') }}">
 
         <!-- 專案資訊區塊 -->
         <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">

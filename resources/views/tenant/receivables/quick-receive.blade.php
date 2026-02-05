@@ -147,11 +147,9 @@
                 <select name="payment_method"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                     <option value="">請選擇</option>
-                    <option value="轉帳匯款">轉帳匯款</option>
-                    <option value="現金">現金</option>
-                    <option value="支票">支票</option>
-                    <option value="信用卡">信用卡</option>
-                    <option value="其他">其他</option>
+                    @foreach($paymentMethods as $method)
+                        <option value="{{ $method->name }}">{{ $method->name }}</option>
+                    @endforeach
                 </select>
             </div>
             
