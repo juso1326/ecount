@@ -20,6 +20,9 @@ class ReceivablePayment extends Model
         'amount' => 'decimal:2',
     ];
 
+    /**
+     * 關聯：應收帳款
+     */
     public function receivable(): BelongsTo
     {
         return $this->belongsTo(Receivable::class);

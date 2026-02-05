@@ -21,9 +21,20 @@
 
 <!-- 應收資訊 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-        應收資訊
-    </h2>
+    <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+            應收資訊
+        </h2>
+        @if($payments->count() > 0)
+            <form action="{{ route('tenant.receivables.reset-payments', $receivable) }}" method="POST" 
+                  onsubmit="return confirm('確定要重設收款資料嗎？這將清除所有入帳記錄，此操作無法復原。');">
+                @csrf
+                <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-3 rounded">
+                    重設收款資料
+                </button>
+            </form>
+        @endif
+    </div>
     <ul class="space-y-2 text-red-600 dark:text-red-400 font-medium">
         <li><strong>客戶：</strong>{{ $receivable->company->name ?? '-' }}</li>
         <li><strong>專案名稱：</strong>{{ $receivable->project->name ?? '-' }}</li>

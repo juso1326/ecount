@@ -115,6 +115,11 @@ Route::middleware([
         Route::put('receivables/{receivable}', [\App\Http\Controllers\Tenant\ReceivableController::class, 'update'])->name('tenant.receivables.update');
         Route::delete('receivables/{receivable}', [\App\Http\Controllers\Tenant\ReceivableController::class, 'destroy'])->name('tenant.receivables.destroy');
         Route::get('receivables/{receivable}/quick-receive', [\App\Http\Controllers\Tenant\ReceivableController::class, 'quickReceive'])->name('tenant.receivables.quick-receive');
+        
+        // 應收入帳記錄
+        Route::post('receivable-payments/{receivable}', [\App\Http\Controllers\Tenant\ReceivablePaymentController::class, 'store'])->name('tenant.receivable-payments.store');
+        Route::delete('receivable-payments/{payment}', [\App\Http\Controllers\Tenant\ReceivablePaymentController::class, 'destroy'])->name('tenant.receivable-payments.destroy');
+        Route::post('receivables/{receivable}/reset-payments', [\App\Http\Controllers\Tenant\ReceivableController::class, 'resetPayments'])->name('tenant.receivables.reset-payments');
 
         // 應付帳款管理（簡化路由）
         Route::get('payables', [\App\Http\Controllers\Tenant\PayableController::class, 'index'])->name('tenant.payables.index');

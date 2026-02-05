@@ -79,6 +79,14 @@ class Receivable extends Model
     {
         return $this->belongsTo(User::class, 'responsible_user_id');
     }
+    
+    /**
+     * 關聯：入帳記錄
+     */
+    public function payments()
+    {
+        return $this->hasMany(ReceivablePayment::class);
+    }
 
     /**
      * 計算屬性：未收金額

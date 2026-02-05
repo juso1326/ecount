@@ -299,4 +299,22 @@ class ReceivableController extends Controller
         
         return view('tenant.receivables.quick-receive', compact('receivable', 'payments', 'totalReceived', 'remainingAmount'));
     }
+    
+    /**
+     * 重設收款資料（清除所有入帳記錄）
+     */
+    public function resetPayments(Receivable $receivable)
+    {
+        // 刪除所有入帳記錄
+        $receivable->payments()->delete();
+        
+        // 重置狀態為未收款
+        $receivable->update([
+            'status' => 'unpaid',
+            'received_amount' => 0,
+        ]);
+        
+        return redirect()->route('tenant.receivables.quick-receive', $receivable)
+            ->with('success', '已重設收款資料，所有入帳記錄已清除');
+    }
 }
