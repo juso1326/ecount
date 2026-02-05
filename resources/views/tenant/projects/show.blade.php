@@ -873,6 +873,17 @@ function openEditPayableModal(id) {
     document.getElementById('editPayableForm').action = `/payables/${id}/quick-update`;
     document.getElementById('editPayableModal').classList.remove('hidden');
 }
+
+// 初始化專案標籤 Select2
+$(document).ready(function() {
+    $('#projectTags').select2({
+        placeholder: '選擇標籤',
+        allowClear: true,
+        width: '100%',
+        closeOnSelect: false,
+        theme: 'default'
+    });
+});
 </script>
 
 <!-- 操作按鈕 -->
