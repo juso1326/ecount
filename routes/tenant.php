@@ -84,8 +84,7 @@ Route::middleware([
         Route::delete('projects/{project}/members/{user}', [\App\Http\Controllers\Tenant\ProjectController::class, 'removeMember'])->name('tenant.projects.members.remove');
         
         // 專案標籤管理
-        Route::post('projects/{project}/tags', [\App\Http\Controllers\Tenant\ProjectController::class, 'addTag'])->name('tenant.projects.tags.add');
-        Route::delete('projects/{project}/tags/{tag}', [\App\Http\Controllers\Tenant\ProjectController::class, 'removeTag'])->name('tenant.projects.tags.remove');
+        Route::put('projects/{project}/tags', [\App\Http\Controllers\Tenant\ProjectController::class, 'updateTags'])->name('tenant.projects.tags.update');
         
         // 專案快速新增應收/應付帳款
         Route::post('projects/{project}/receivables/quick-add', [\App\Http\Controllers\Tenant\ProjectController::class, 'quickAddReceivable'])->name('tenant.projects.receivables.quick-add');

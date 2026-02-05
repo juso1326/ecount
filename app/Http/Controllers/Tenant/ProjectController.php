@@ -384,4 +384,21 @@ class ProjectController extends Controller
 
         return 'PRJ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
+    
+    /**
+     * 更新專案標籤
+     */
+    public function updateTags(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'tags' => 'nullable|array',
+            'tags.*' => 'exists:tags,id',
+        ]);
+        
+        // 同步標籤（會自動移除舊的、添加新的）
+        $project->tags()->sync($validated['tags'] ?? []);
+        
+        return redirect()->route('tenant.projects.show', $project)
+            ->with('success', '標籤更新成功');
+    }
 }

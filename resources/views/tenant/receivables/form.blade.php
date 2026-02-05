@@ -111,34 +111,63 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     應收金額 <span class="text-red-500">*</span>
                 </label>
-                <input type="number" name="amount" value="{{ old('amount', 0) }}" step="1" min="0" required
+                <input type="number" name="amount" id="amount" value="{{ old('amount', isset($receivable) ? $receivable->amount : 0) }}" step="1" min="0" required readonly
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50"
+                       placeholder="0">
+                <p class="text-xs text-gray-500 mt-1">此金額由「未稅金額」和「稅款設定」自動計算</p>
+            </div>
+
+            <!-- 未稅金額 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    未稅金額 <span class="text-red-500">*</span>
+                </label>
+                <input type="number" name="amount_before_tax" id="amount_before_tax" value="{{ old('amount_before_tax', isset($receivable) ? $receivable->amount_before_tax : 0) }}" step="1" min="0" required
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
                        placeholder="0">
             </div>
 
-            <!-- 稅前金額 -->
+            <!-- 稅款設定 -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅前金額</label>
-                <input type="number" name="amount_before_tax" value="{{ old('amount_before_tax', 0) }}" step="1" min="0"
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="0">
-            </div>
-
-            <!-- 稅率 -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅率 (%)</label>
-                <select name="tax_rate"
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅款設定</label>
+                <select name="tax_setting_id" id="tax_setting_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option value="0" {{ old('tax_rate', 0) == 0 ? 'selected' : '' }}>無</option>
-                    <option value="5" {{ old('tax_rate', 5) == 5 ? 'selected' : '' }}>5%</option>
+                    <option value="" data-rate="0">無</option>
+                    @foreach($taxSettings as $tax)
+                        <option value="{{ $tax->id }}" 
+                                data-rate="{{ $tax->rate }}"
+                                {{ old('tax_setting_id', isset($receivable) ? $receivable->tax_setting_id : '') == $tax->id ? 'selected' : '' }}>
+                            {{ $tax->name }} ({{ $tax->rate }}%)
+                        </option>
+                    @endforeach
                 </select>
             </div>
 
-            <!-- 稅額 -->
+            <!-- 稅額計算方式 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額計算</label>
+                <div class="flex gap-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="tax_inclusive" id="tax_inclusive_0" value="0" 
+                               {{ old('tax_inclusive', isset($receivable) ? $receivable->tax_inclusive : 0) == 0 ? 'checked' : '' }}
+                               class="mr-2">
+                        <span>外加</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="tax_inclusive" id="tax_inclusive_1" value="1"
+                               {{ old('tax_inclusive', isset($receivable) ? $receivable->tax_inclusive : 0) == 1 ? 'checked' : '' }}
+                               class="mr-2">
+                        <span>內含</span>
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">外加：未稅金額 + 稅額 = 應收金額｜內含：未稅金額 = 應收金額（已含稅）</p>
+            </div>
+
+            <!-- 稅額顯示 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額</label>
-                <input type="number" name="tax_amount" value="{{ old('tax_amount', 0) }}" step="1" min="0"
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                <input type="number" name="tax_amount" id="tax_amount" value="{{ old('tax_amount', isset($receivable) ? $receivable->tax_amount : 0) }}" step="1" min="0" readonly
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 bg-gray-50"
                        placeholder="0">
             </div>
 
@@ -267,7 +296,7 @@ document.getElementById('company_id').addEventListener('change', function() {
     document.getElementById('responsible_user_id').value = '';
 });
 
-// 當選擇專案時，自動設定負責人為專案經理
+// 當選擇專案時，自動帶入負責人（專案經理）
 document.getElementById('project_id').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const managerId = selectedOption.getAttribute('data-manager-id');
@@ -277,5 +306,39 @@ document.getElementById('project_id').addEventListener('change', function() {
         responsibleSelect.value = managerId;
     }
 });
+
+// 稅額計算功能
+function calculateTax() {
+    const amountBeforeTax = parseFloat(document.getElementById('amount_before_tax').value) || 0;
+    const taxSelect = document.getElementById('tax_setting_id');
+    const taxRate = parseFloat(taxSelect.options[taxSelect.selectedIndex].getAttribute('data-rate')) || 0;
+    const taxInclusive = document.querySelector('input[name="tax_inclusive"]:checked').value == '1';
+    
+    let taxAmount = 0;
+    let totalAmount = 0;
+    
+    if (taxInclusive) {
+        // 內含：未稅金額已經是含稅價，需要反推稅額
+        totalAmount = amountBeforeTax;
+        taxAmount = Math.round(amountBeforeTax * taxRate / (100 + taxRate));
+    } else {
+        // 外加：稅額 = 未稅金額 * 稅率
+        taxAmount = Math.round(amountBeforeTax * taxRate / 100);
+        totalAmount = amountBeforeTax + taxAmount;
+    }
+    
+    document.getElementById('tax_amount').value = taxAmount;
+    document.getElementById('amount').value = totalAmount;
+}
+
+// 監聽變更事件
+document.getElementById('amount_before_tax').addEventListener('input', calculateTax);
+document.getElementById('tax_setting_id').addEventListener('change', calculateTax);
+document.querySelectorAll('input[name="tax_inclusive"]').forEach(radio => {
+    radio.addEventListener('change', calculateTax);
+});
+
+// 初始計算一次
+document.addEventListener('DOMContentLoaded', calculateTax);
 </script>
 @endsection

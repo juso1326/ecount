@@ -168,11 +168,12 @@ class ReceivableController extends Controller
         $projects = Project::where('is_active', true)->orderBy('name')->get();
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
+        $taxSettings = \App\Models\TaxSetting::where('is_active', true)->orderBy('rate')->get();
         
         // 自動生成應收單號
         $nextCode = $this->generateReceiptCode();
 
-        return view('tenant.receivables.create', compact('projects', 'companies', 'users', 'nextCode'));
+        return view('tenant.receivables.create', compact('projects', 'companies', 'users', 'taxSettings', 'nextCode'));
     }
 
     /**
@@ -183,8 +184,9 @@ class ReceivableController extends Controller
         $projects = Project::where('is_active', true)->orderBy('name')->get();
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
+        $taxSettings = \App\Models\TaxSetting::where('is_active', true)->orderBy('rate')->get();
 
-        return view('tenant.receivables.edit', compact('receivable', 'projects', 'companies', 'users'));
+        return view('tenant.receivables.edit', compact('receivable', 'projects', 'companies', 'users', 'taxSettings'));
     }
 
     /**
