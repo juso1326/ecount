@@ -116,6 +116,7 @@ class PayableController extends Controller
             'responsible_user_id' => 'nullable|exists:users,id',
             'payee_type' => 'nullable|string|max:20',
             'payee_user_id' => 'nullable|exists:users,id',
+            'payee_company_id' => 'nullable|exists:companies,id',
             'type' => 'required|string|max:50',
             'content' => 'nullable|string',
             'payment_date' => 'required|date',

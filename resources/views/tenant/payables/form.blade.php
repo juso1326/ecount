@@ -103,12 +103,18 @@
                     </select>
                 </div>
 
-                <!-- 廠商名稱（payee_type = vendor 時顯示） -->
+                <!-- 廠商選擇（payee_type = vendor 時顯示） -->
                 <div id="vendor_field" style="display: none;">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商名稱</label>
-                    <input type="text" name="vendor_name" id="vendor_name"
-                           value="{{ old('vendor_name', isset($payable) ? $payable->vendor_name : '') }}"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商</label>
+                    <select name="payee_company_id" id="payee_company_id"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                        <option value="">請選擇廠商</option>
+                        @foreach($companies->where('is_outsource', true) as $company)
+                            <option value="{{ $company->id }}" {{ old('payee_company_id', isset($payable) ? $payable->payee_company_id : '') == $company->id ? 'selected' : '' }}>
+                                {{ $company->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -357,7 +363,7 @@ document.getElementById('payee_type').addEventListener('change', function() {
     const memberField = document.getElementById('member_field');
     const vendorField = document.getElementById('vendor_field');
     const memberSelect = document.getElementById('payee_user_id');
-    const vendorInput = document.getElementById('vendor_name');
+    const vendorSelect = document.getElementById('payee_company_id');
     
     // 隱藏所有欄位
     memberField.style.display = 'none';
@@ -365,7 +371,7 @@ document.getElementById('payee_type').addEventListener('change', function() {
     
     // 清空欄位
     memberSelect.value = '';
-    vendorInput.value = '';
+    vendorSelect.value = '';
     
     // 根據類型顯示對應欄位
     if (payeeType === 'member') {

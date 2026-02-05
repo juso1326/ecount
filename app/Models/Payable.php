@@ -19,6 +19,7 @@ class Payable extends Model
         'company_id',
         'payee_type',
         'payee_user_id',
+        'payee_company_id',
         'responsible_user_id',
         'type',
         'content',
