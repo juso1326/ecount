@@ -297,6 +297,28 @@ document.getElementById('company_id').addEventListener('change', function() {
     });
     
     projectSelect.value = '';
+    document.getElementById('manager_name').value = '請先選擇專案';
+    document.getElementById('responsible_user_id').value = '';
+});
+
+// 專案變更時更新負責人
+document.getElementById('project_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const managerId = selectedOption.getAttribute('data-manager-id');
+    
+    if (managerId) {
+        // 從 users 陣列找出對應的負責人名稱
+        const users = @json($users);
+        const manager = users.find(u => u.id == managerId);
+        
+        if (manager) {
+            document.getElementById('manager_name').value = manager.name;
+            document.getElementById('responsible_user_id').value = manager.id;
+        }
+    } else {
+        document.getElementById('manager_name').value = '請先選擇專案';
+        document.getElementById('responsible_user_id').value = '';
+    }
 });
 
 // 稅額計算
