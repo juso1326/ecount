@@ -129,6 +129,12 @@ Route::middleware([
         Route::get('payables/{payable}/edit', [\App\Http\Controllers\Tenant\PayableController::class, 'edit'])->name('tenant.payables.edit');
         Route::put('payables/{payable}', [\App\Http\Controllers\Tenant\PayableController::class, 'update'])->name('tenant.payables.update');
         Route::delete('payables/{payable}', [\App\Http\Controllers\Tenant\PayableController::class, 'destroy'])->name('tenant.payables.destroy');
+        Route::get('payables/{payable}/quick-pay', [\App\Http\Controllers\Tenant\PayableController::class, 'quickPay'])->name('tenant.payables.quick-pay');
+        
+        // 應付給付記錄（薪資入帳）
+        Route::post('payable-payments/{payable}', [\App\Http\Controllers\Tenant\PayablePaymentController::class, 'store'])->name('tenant.payable-payments.store');
+        Route::delete('payable-payments/{payment}', [\App\Http\Controllers\Tenant\PayablePaymentController::class, 'destroy'])->name('tenant.payable-payments.destroy');
+        Route::post('payables/{payable}/reset-payments', [\App\Http\Controllers\Tenant\PayableController::class, 'resetPayments'])->name('tenant.payables.reset-payments');
 
         // 代碼管理
         Route::get('codes', [\App\Http\Controllers\Tenant\CodeController::class, 'index'])->name('tenant.codes.index');

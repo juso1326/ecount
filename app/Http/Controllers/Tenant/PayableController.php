@@ -273,4 +273,32 @@ class PayableController extends Controller
         return redirect()->route('tenant.projects.show', $payable->project_id)
             ->with('success', '應付帳款更新成功');
     }
+    
+     * 快速給付頁面（薪資入帳）
+     */
+    public function quickPay(Payable $payable)
+    {
+        $payable->load(['project', 'company', 'responsibleUser', 'payeeUser', 'payeeCompany', 'payments']);
+        
+        // 計算已付和剩餘金額
+        $totalPaid = $payable->payments()->sum('amount');
+        $remainingAmount = $payable->amount - $totalPaid;
+        
+        // 取得付款方式標籤
+        $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
+        
+        return view('tenant.payables.quick-pay', compact('payable', 'totalPaid', 'remainingAmount', 'paymentMethods'));
+    }
+    
+    /**
+     * 重設給付記錄
+     */
+    public function resetPayments(Payable $payable)
+    {
+        $payable->payments()->delete();
+        $payable->update(['status' => 'unpaid']);
+        
+        return redirect()->route('tenant.payables.quick-pay', $payable)
+            ->with('success', '給付記錄已重設');
+    }
 }

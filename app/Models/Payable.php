@@ -70,6 +70,14 @@ class Payable extends Model
     {
         return $this->belongsTo(Company::class);
     }
+    
+    /**
+     * 關聯：給付對象廠商
+     */
+    public function payeeCompany(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'payee_company_id');
+    }
 
     /**
      * 關聯：負責人
@@ -85,6 +93,14 @@ class Payable extends Model
     public function payeeUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'payee_user_id');
+    }
+    
+    /**
+     * 關聯：給付記錄（薪資入帳）
+     */
+    public function payments()
+    {
+        return $this->hasMany(PayablePayment::class);
     }
 
     /**
