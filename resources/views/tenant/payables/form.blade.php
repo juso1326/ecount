@@ -350,5 +350,57 @@ document.querySelectorAll('input[name="tax_inclusive"]').forEach(radio => {
 });
 
 document.addEventListener('DOMContentLoaded', calculateTax);
+
+// Initialize Select2 for project dropdown
+$(document).ready(function() {
+    $('#project_id').select2({
+        placeholder: '請選擇專案',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Re-bind change event after Select2 initialization
+    $('#project_id').on('change', function() {
+        const selectedOption = $(this).find(':selected');
+        const managerId = selectedOption.attr('data-manager-id');
+        
+        if (managerId) {
+            const users = @json($users);
+            const manager = users.find(u => u.id == managerId);
+            
+            if (manager) {
+                $('#manager_name').val(manager.name);
+                $('#responsible_user_id').val(manager.id);
+            }
+        } else {
+            $('#manager_name').val('請先選擇專案');
+            $('#responsible_user_id').val('');
+        }
+    });
+    
+    // Update company filter to work with Select2
+    $('#company_id').on('change', function() {
+        const companyId = $(this).val();
+        
+        // Clear selection
+        $('#project_id').val('').trigger('change');
+        $('#manager_name').val('請先選擇專案');
+        $('#responsible_user_id').val('');
+        
+        // Filter options
+        $('#project_id option').each(function() {
+            const optionCompanyId = $(this).attr('data-company-id');
+            if (!$(this).val() || !companyId || optionCompanyId === companyId) {
+                $(this).prop('disabled', false);
+            } else {
+                $(this).prop('disabled', true);
+            }
+        });
+        
+        // Refresh Select2 to reflect disabled options
+        $('#project_id').trigger('change.select2');
+    });
+});
+
 </script>
 @endpush
