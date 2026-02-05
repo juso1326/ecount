@@ -71,6 +71,54 @@
             </div>
         </div>
 
+        <!-- 廠商資訊區塊 -->
+        <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">廠商資訊</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 廠商名稱 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <span class="text-red-500">*</span> 廠商名稱
+                    </label>
+                    <input type="text" name="vendor_name" required
+                           value="{{ old('vendor_name', isset($payable) ? $payable->vendor_name : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+
+                <!-- 廠商統編 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商統編</label>
+                    <input type="text" name="vendor_tax_id"
+                           value="{{ old('vendor_tax_id', isset($payable) ? $payable->vendor_tax_id : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+
+                <!-- 廠商電話 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商電話</label>
+                    <input type="text" name="vendor_phone"
+                           value="{{ old('vendor_phone', isset($payable) ? $payable->vendor_phone : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+
+                <!-- 廠商聯絡人 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商聯絡人</label>
+                    <input type="text" name="vendor_contact"
+                           value="{{ old('vendor_contact', isset($payable) ? $payable->vendor_contact : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+
+                <!-- 廠商地址 -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商地址</label>
+                    <input type="text" name="vendor_address"
+                           value="{{ old('vendor_address', isset($payable) ? $payable->vendor_address : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+            </div>
+        </div>
+
         <!-- 支出資訊區塊 -->
         <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">支出資訊</h3>

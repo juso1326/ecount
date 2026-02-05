@@ -114,9 +114,13 @@ class PayableController extends Controller
             'project_id' => 'required|exists:projects,id',
             'company_id' => 'nullable|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
+            'payee_type' => 'nullable|string|max:20',
+            'payee_user_id' => 'nullable|exists:users,id',
             'type' => 'required|string|max:50',
+            'content' => 'nullable|string',
             'payment_date' => 'required|date',
             'invoice_date' => 'nullable|date',
+            'invoice_no' => 'nullable|string|max:50',
             'due_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
             'deduction' => 'nullable|numeric|min:0',
@@ -124,14 +128,17 @@ class PayableController extends Controller
             'status' => 'nullable|string',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
-            'invoice_no' => 'nullable|string|max:50',
-            'content' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
 
         // 如果沒有提供單號，自動生成
         if (empty($validated['payment_no'])) {
             $validated['payment_no'] = $this->generatePaymentCode();
+        }
+        
+        // 設定預設狀態
+        if (empty($validated['status'])) {
+            $validated['status'] = 'unpaid';
         }
 
         Payable::create($validated);
