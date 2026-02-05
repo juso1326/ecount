@@ -18,7 +18,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::with(['company', 'department', 'manager', 'members']);
+        $query = Project::with(['company', 'department', 'manager', 'members', 'tags']);
 
         // 智能搜尋（支援專案名稱/代碼/成員/負責人/發票號/報價單號）
         if ($request->filled('smart_search')) {
@@ -226,7 +226,6 @@ class ProjectController extends Controller
             'name' => 'required|string|max:255',
             'company_id' => 'required|exists:companies,id',
             'manager_id' => 'nullable|exists:users,id',
-            'project_type' => 'nullable|string',
             'start_date' => 'nullable|date',
             'budget' => 'nullable|numeric|min:0',
             'quote_no' => 'nullable|string',
