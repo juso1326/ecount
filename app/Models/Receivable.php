@@ -125,4 +125,38 @@ class Receivable extends Model
 
         return round(($this->received_amount / $this->amount) * 100, 2);
     }
+
+    /**
+     * 智能搜尋 Scope
+     */
+    public function scopeSmartSearch($query, $keyword)
+    {
+        if (empty($keyword)) {
+            return $query;
+        }
+
+        return $query->where(function($q) use ($keyword) {
+            // 搜尋專案名稱、代碼
+            $q->orWhereHas('project', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('code', 'like', "%{$keyword}%");
+            })
+            // 搜尋專案成員
+            ->orWhereHas('project.members', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })
+            // 搜尋負責人
+            ->orWhereHas('responsibleUser', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })
+            // 搜尋發票號碼
+            ->orWhere('invoice_no', 'like', "%{$keyword}%")
+            // 搜尋報價單號
+            ->orWhere('quote_no', 'like', "%{$keyword}%")
+            // 搜尋收款單號
+            ->orWhere('receipt_no', 'like', "%{$keyword}%")
+            // 搜尋內容
+            ->orWhere('content', 'like', "%{$keyword}%");
+        });
+    }
 }

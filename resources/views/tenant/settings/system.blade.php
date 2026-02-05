@@ -41,22 +41,22 @@
                 </label>
                 <select name="date_format" 
                         class="w-full md:w-1/2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                    <option value="Y-m-d" {{ (setting('date_format', 'Y-m-d') == 'Y-m-d') ? 'selected' : '' }}>
+                    <option value="Y-m-d" {{ ($dateFormat == 'Y-m-d') ? 'selected' : '' }}>
                         YYYY-MM-DD ({{ date('Y-m-d') }})
                     </option>
-                    <option value="Y/m/d" {{ (setting('date_format', 'Y-m-d') == 'Y/m/d') ? 'selected' : '' }}>
+                    <option value="Y/m/d" {{ ($dateFormat == 'Y/m/d') ? 'selected' : '' }}>
                         YYYY/MM/DD ({{ date('Y/m/d') }})
                     </option>
-                    <option value="Y.m.d" {{ (setting('date_format', 'Y-m-d') == 'Y.m.d') ? 'selected' : '' }}>
+                    <option value="Y.m.d" {{ ($dateFormat == 'Y.m.d') ? 'selected' : '' }}>
                         YYYY.MM.DD ({{ date('Y.m.d') }})
                     </option>
-                    <option value="m/d/Y" {{ (setting('date_format', 'Y-m-d') == 'm/d/Y') ? 'selected' : '' }}>
+                    <option value="m/d/Y" {{ ($dateFormat == 'm/d/Y') ? 'selected' : '' }}>
                         MM/DD/YYYY ({{ date('m/d/Y') }})
                     </option>
-                    <option value="d/m/Y" {{ (setting('date_format', 'Y-m-d') == 'd/m/Y') ? 'selected' : '' }}>
+                    <option value="d/m/Y" {{ ($dateFormat == 'd/m/Y') ? 'selected' : '' }}>
                         DD/MM/YYYY ({{ date('d/m/Y') }})
                     </option>
-                    <option value="Ymd" {{ (setting('date_format', 'Y-m-d') == 'Ymd') ? 'selected' : '' }}>
+                    <option value="Ymd" {{ ($dateFormat == 'Ymd') ? 'selected' : '' }}>
                         YYYYMMDD ({{ date('Ymd') }})
                     </option>
                 </select>
@@ -70,16 +70,16 @@
                 </label>
                 <select name="time_format" 
                         class="w-full md:w-1/2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                    <option value="H:i:s" {{ (setting('time_format', 'H:i:s') == 'H:i:s') ? 'selected' : '' }}>
+                    <option value="H:i:s" {{ ($timeFormat == 'H:i:s') ? 'selected' : '' }}>
                         24小時制 ({{ date('H:i:s') }})
                     </option>
-                    <option value="H:i" {{ (setting('time_format', 'H:i:s') == 'H:i') ? 'selected' : '' }}>
+                    <option value="H:i" {{ ($timeFormat == 'H:i') ? 'selected' : '' }}>
                         24小時制 (不含秒) ({{ date('H:i') }})
                     </option>
-                    <option value="h:i:s A" {{ (setting('time_format', 'H:i:s') == 'h:i:s A') ? 'selected' : '' }}>
+                    <option value="h:i:s A" {{ ($timeFormat == 'h:i:s A') ? 'selected' : '' }}>
                         12小時制 ({{ date('h:i:s A') }})
                     </option>
-                    <option value="h:i A" {{ (setting('time_format', 'H:i:s') == 'h:i A') ? 'selected' : '' }}>
+                    <option value="h:i A" {{ ($timeFormat == 'h:i A') ? 'selected' : '' }}>
                         12小時制 (不含秒) ({{ date('h:i A') }})
                     </option>
                 </select>
@@ -93,19 +93,19 @@
                 </label>
                 <select name="timezone" 
                         class="w-full md:w-1/2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                    <option value="Asia/Taipei" {{ (setting('timezone', 'Asia/Taipei') == 'Asia/Taipei') ? 'selected' : '' }}>
+                    <option value="Asia/Taipei" {{ ($timezone == 'Asia/Taipei') ? 'selected' : '' }}>
                         台北 (GMT+8)
                     </option>
-                    <option value="Asia/Shanghai" {{ (setting('timezone', 'Asia/Taipei') == 'Asia/Shanghai') ? 'selected' : '' }}>
+                    <option value="Asia/Shanghai" {{ ($timezone == 'Asia/Shanghai') ? 'selected' : '' }}>
                         上海 (GMT+8)
                     </option>
-                    <option value="Asia/Hong_Kong" {{ (setting('timezone', 'Asia/Taipei') == 'Asia/Hong_Kong') ? 'selected' : '' }}>
+                    <option value="Asia/Hong_Kong" {{ ($timezone == 'Asia/Hong_Kong') ? 'selected' : '' }}>
                         香港 (GMT+8)
                     </option>
-                    <option value="Asia/Tokyo" {{ (setting('timezone', 'Asia/Taipei') == 'Asia/Tokyo') ? 'selected' : '' }}>
+                    <option value="Asia/Tokyo" {{ ($timezone == 'Asia/Tokyo') ? 'selected' : '' }}>
                         東京 (GMT+9)
                     </option>
-                    <option value="UTC" {{ (setting('timezone', 'Asia/Taipei') == 'UTC') ? 'selected' : '' }}>
+                    <option value="UTC" {{ ($timezone == 'UTC') ? 'selected' : '' }}>
                         UTC (GMT+0)
                     </option>
                 </select>

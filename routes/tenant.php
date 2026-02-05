@@ -136,6 +136,7 @@ Route::middleware([
             
             // 公司設定
             Route::get('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'company'])->name('company');
+            Route::post('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateCompany'])->name('company.update');
             
             // 代碼管理設定
             Route::get('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'codes'])->name('codes');
@@ -148,10 +149,6 @@ Route::middleware([
             // 系統設定
             Route::get('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'system'])->name('system');
             Route::post('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateSystem'])->name('system.update');
-            
-            // 帳號設定
-            Route::get('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'account'])->name('account');
-            Route::put('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateAccount'])->name('account.update');
         });
 
         // 標籤管理

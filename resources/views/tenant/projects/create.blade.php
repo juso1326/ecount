@@ -55,6 +55,20 @@
                 <p class="mt-1 text-xs text-gray-500">可搜尋選擇或直接輸入新類型</p>
             </div>
 
+            <!-- 專案標籤 -->
+            <div>
+                <label for="tags" class="block text-sm font-medium text-gray-700">專案標籤</label>
+                <select name="tags[]" id="tags" multiple
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    @foreach($tags as $tag)
+                        <option value="{{ $tag->id }}" {{ in_array($tag->id, old('tags', [])) ? 'selected' : '' }}>
+                            {{ $tag->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <p class="mt-1 text-xs text-gray-500">可多選專案標籤</p>
+            </div>
+
             <!-- 客戶(3W公司) -->
             <div>
                 <label for="company_id" class="block text-sm font-medium text-gray-700">客戶 <span class="text-red-500">*</span></label>
@@ -138,6 +152,14 @@ $(document).ready(function() {
                 newTag: true
             };
         }
+    });
+    
+    // 專案標籤 - 多選
+    $('#tags').select2({
+        placeholder: '選擇專案標籤',
+        allowClear: true,
+        width: '100%',
+        closeOnSelect: false
     });
     
     // 專案負責人 - 可搜尋

@@ -107,7 +107,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                         </svg>
-                        <span class="font-medium">代碼管理</span>
+                        <span class="font-medium">代碼資料管理</span>
                     </a>
                     @endcan
                 </div>
@@ -157,7 +157,7 @@
 
                 <!-- System Settings Section (Collapsible) -->
                 @can('settings.view')
-                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700" x-data="{ settingsOpen: {{ request()->routeIs('tenant.settings.*') ? 'true' : 'false' }} }">
+                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700" x-data="{ settingsOpen: true }">
                     <div class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         系統設定
                     </div>
@@ -178,12 +178,12 @@
 
                     <!-- Settings Submenu -->
                     <div x-show="settingsOpen" x-collapse class="ml-4 mt-2 space-y-1">
-                        <a href="{{ route('tenant.settings.company') }}" 
-                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.company*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
+                        <a href="{{ route('tenant.settings.system') }}" 
+                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.system*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                             </svg>
-                            <span>公司設定</span>
+                            <span>系統設定</span>
                         </a>
                         
                         <a href="{{ route('tenant.settings.codes') }}" 
@@ -191,7 +191,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
                             </svg>
-                            <span>代碼設定</span>
+                            <span>代碼生成規則</span>
                         </a>
                         
                         <!-- 財務設定區塊 -->
@@ -228,22 +228,6 @@
                                 <span>稅款設定</span>
                             </a>
                         </div>
-                        
-                        <a href="{{ route('tenant.settings.system') }}" 
-                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.system*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                            </svg>
-                            <span>系統設定</span>
-                        </a>
-                        
-                        <a href="{{ route('tenant.settings.account') }}" 
-                           class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition {{ request()->routeIs('tenant.settings.account*') ? 'bg-gray-100 dark:bg-gray-700' : '' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                            <span>帳號設定</span>
-                        </a>
                         
                         @can('roles.view')
                         <a href="#" 
@@ -329,14 +313,6 @@
                                     </div>
                                     @endif
                                 </div>
-                                <a href="{{ route('tenant.settings.account') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <div class="flex items-center space-x-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                        <span>個人資料</span>
-                                    </div>
-                                </a>
                                 @can('settings.view')
                                 <a href="{{ route('tenant.settings.system') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <div class="flex items-center space-x-2">

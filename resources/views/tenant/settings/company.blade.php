@@ -14,9 +14,8 @@
 @endif
 
 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-    <form method="POST" action="{{ route('tenant.settings.update') }}">
+    <form method="POST" action="{{ route('tenant.settings.company.update') }}">
         @csrf
-        @method('PUT')
         
         <div class="space-y-6">
             @foreach($settings as $setting)

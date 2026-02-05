@@ -20,15 +20,21 @@ class ReceivableController extends Controller
     {
         $query = Receivable::with(['project', 'company', 'responsibleUser']);
 
+        // 智能搜尋
+        if ($request->filled('smart_search')) {
+            $query->smartSearch($request->smart_search);
+        }
+
         // 日期範圍篩選（預設最近一年）
         $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
         $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
         
-        if ($dateStart && $dateEnd) {
+        // 只在沒有使用智能搜尋時才套用預設日期範圍
+        if (!$request->filled('smart_search') && $dateStart && $dateEnd) {
             $query->whereBetween('receipt_date', [$dateStart, $dateEnd]);
         }
 
-        // 搜尋（專案名稱、內容、發票號碼）
+        // 一般搜尋（專案名稱、內容、發票號碼）
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {

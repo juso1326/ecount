@@ -44,11 +44,28 @@ class SettingsController extends Controller
     }
 
     /**
+     * Update company settings
+     */
+    public function updateCompany(Request $request)
+    {
+        foreach ($request->except('_token', '_method') as $key => $value) {
+            TenantSetting::set($key, $value ?? '');
+        }
+
+        return redirect()->route('tenant.settings.company')
+            ->with('success', '公司設定已更新');
+    }
+
+    /**
      * Display system settings
      */
     public function system()
     {
-        return view('tenant.settings.system');
+        $dateFormat = TenantSetting::get('date_format', 'Y-m-d');
+        $timeFormat = TenantSetting::get('time_format', 'H:i:s');
+        $timezone = TenantSetting::get('timezone', 'Asia/Taipei');
+        
+        return view('tenant.settings.system', compact('dateFormat', 'timeFormat', 'timezone'));
     }
     
     /**
