@@ -119,8 +119,8 @@
             </div>
         </div>
 
-        <!-- 支出資訊區塊 -->
-        <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+        <!-- 支出資訊區塊（給付對象為外製或已支出時顯示） -->
+        <div id="expense_info_section" class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">支出資訊</h3>
             <div class="space-y-4">
                 <!-- 支出項目 -->
@@ -128,7 +128,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <span class="text-red-500">*</span> 支出項目
                     </label>
-                    <select name="expense_category_id" id="expense_category_id" required
+                    <select name="expense_category_id" id="expense_category_id"
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                         <option value="">請選擇支出項目</option>
                         @foreach($expenseCategories as $category)
@@ -151,7 +151,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         <span class="text-red-500">*</span> 內容說明
                     </label>
-                    <textarea name="content" rows="2" required
+                    <textarea name="content" id="expense_content" rows="2"
                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">{{ old('content', isset($payable) ? $payable->content : '') }}</textarea>
                 </div>
 
@@ -362,8 +362,11 @@ document.getElementById('payee_type').addEventListener('change', function() {
     const payeeType = this.value;
     const memberField = document.getElementById('member_field');
     const vendorField = document.getElementById('vendor_field');
+    const expenseSection = document.getElementById('expense_info_section');
     const memberSelect = document.getElementById('payee_user_id');
     const vendorSelect = document.getElementById('payee_company_id');
+    const expenseCategorySelect = document.getElementById('expense_category_id');
+    const expenseContent = document.getElementById('expense_content');
     
     // 隱藏所有欄位
     memberField.style.display = 'none';
@@ -376,18 +379,41 @@ document.getElementById('payee_type').addEventListener('change', function() {
     // 根據類型顯示對應欄位
     if (payeeType === 'member') {
         memberField.style.display = 'block';
+        // 隱藏支出資訊區塊（成員不需要）
+        expenseSection.style.display = 'none';
+        expenseCategorySelect.removeAttribute('required');
+        expenseContent.removeAttribute('required');
     } else if (payeeType === 'vendor') {
         vendorField.style.display = 'block';
+        // 顯示支出資訊區塊
+        expenseSection.style.display = 'block';
+        expenseCategorySelect.setAttribute('required', 'required');
+        expenseContent.setAttribute('required', 'required');
+    } else if (payeeType === 'expense') {
+        // 已支出也顯示支出資訊區塊
+        expenseSection.style.display = 'block';
+        expenseCategorySelect.setAttribute('required', 'required');
+        expenseContent.setAttribute('required', 'required');
     }
 });
 
 // 頁面載入時根據已選值顯示對應欄位
 document.addEventListener('DOMContentLoaded', function() {
     const payeeType = document.getElementById('payee_type').value;
+    const expenseSection = document.getElementById('expense_info_section');
+    const expenseCategorySelect = document.getElementById('expense_category_id');
+    const expenseContent = document.getElementById('expense_content');
+    
     if (payeeType === 'member') {
         document.getElementById('member_field').style.display = 'block';
+        expenseSection.style.display = 'none';
+        expenseCategorySelect.removeAttribute('required');
+        expenseContent.removeAttribute('required');
     } else if (payeeType === 'vendor') {
         document.getElementById('vendor_field').style.display = 'block';
+        expenseSection.style.display = 'block';
+    } else if (payeeType === 'expense') {
+        expenseSection.style.display = 'block';
     }
 });
 

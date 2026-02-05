@@ -6,23 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('payables', function (Blueprint $table) {
-            //
+            $table->foreignId('payee_company_id')->nullable()->after('payee_user_id')->constrained('companies')->onDelete('set null')->comment('給付對象廠商');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('payables', function (Blueprint $table) {
-            //
+            $table->dropForeign(['payee_company_id']);
+            $table->dropColumn('payee_company_id');
         });
     }
 };
