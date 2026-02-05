@@ -48,9 +48,26 @@ class SettingsController extends Controller
      */
     public function system()
     {
-        $settings = TenantSetting::where('group', 'system')->orderBy('label')->get();
+        return view('tenant.settings.system');
+    }
+    
+    /**
+     * Update system settings
+     */
+    public function updateSystem(Request $request)
+    {
+        $validated = $request->validate([
+            'date_format' => 'required|string',
+            'time_format' => 'required|string',
+            'timezone' => 'required|string',
+        ]);
         
-        return view('tenant.settings.system', compact('settings'));
+        foreach ($validated as $key => $value) {
+            TenantSetting::set($key, $value);
+        }
+        
+        return redirect()->route('tenant.settings.system')
+            ->with('success', '系統設定已更新');
     }
 
     /**

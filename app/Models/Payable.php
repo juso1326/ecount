@@ -17,6 +17,8 @@ class Payable extends Model
         'payment_no',
         'project_id',
         'company_id',
+        'payee_type',
+        'payee_user_id',
         'responsible_user_id',
         'type',
         'content',
@@ -74,6 +76,27 @@ class Payable extends Model
     public function responsibleUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_user_id');
+    }
+
+    /**
+     * 關聯：收款員工
+     */
+    public function payeeUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'payee_user_id');
+    }
+
+    /**
+     * 取得收款對象名稱
+     */
+    public function getPayeeNameAttribute(): string
+    {
+        if ($this->payee_type === 'user' && $this->payeeUser) {
+            return $this->payeeUser->name;
+        } elseif ($this->payee_type === 'company' && $this->company) {
+            return $this->company->name;
+        }
+        return '-';
     }
 
     /**

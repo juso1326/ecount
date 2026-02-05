@@ -38,11 +38,11 @@
             <!-- 付款單號 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    付款單號 <span class="text-red-500">*</span>
+                    付款單號 <span class="text-gray-500">(自動)</span>
                 </label>
-                <input type="text" name="payment_no" value="{{ old('payment_no') }}" required
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="例如：R202602001">
+                <input type="text" name="payment_no" value="{{ $nextCode }}" readonly
+                       class="w-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-lg px-4 py-2 cursor-not-allowed">
+                <p class="mt-1 text-xs text-gray-500">系統將自動產生付款單號</p>
             </div>
 
             <!-- 付款日期 -->
@@ -57,21 +57,34 @@
             <!-- 專案 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
-                <select name="project_id"
+                <select name="project_id" id="project_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">請選擇專案</option>
                     @foreach($projects as $project)
-                        <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                        <option value="{{ $project->id }}" 
+                                data-manager-id="{{ $project->manager_id }}"
+                                {{ old('project_id') == $project->id ? 'selected' : '' }}>
                             {{ $project->code }} - {{ $project->name }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            <!-- 廠商 -->
+            <!-- 收款對象類型 -->
             <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">收款對象類型</label>
+                <select name="payee_type" id="payee_type"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">請選擇</option>
+                    <option value="company" {{ old('payee_type') == 'company' ? 'selected' : '' }}>廠商</option>
+                    <option value="user" {{ old('payee_type') == 'user' ? 'selected' : '' }}>員工</option>
+                </select>
+            </div>
+
+            <!-- 廠商 -->
+            <div id="company_field" style="display: none;">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商</label>
-                <select name="company_id"
+                <select name="company_id" id="company_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">請選擇廠商</option>
                     @foreach($companies as $company)
@@ -82,10 +95,24 @@
                 </select>
             </div>
 
+            <!-- 員工 -->
+            <div id="user_field" style="display: none;">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">員工</label>
+                <select name="payee_user_id" id="payee_user_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">請選擇員工</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ old('payee_user_id') == $user->id ? 'selected' : '' }}>
+                            {{ $user->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- 負責人 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">負責人</label>
-                <select name="responsible_user_id"
+                <select name="responsible_user_id" id="responsible_user_id"
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">請選擇負責人</option>
                     @foreach($users as $user)
@@ -228,4 +255,47 @@
         </div>
     </form>
 </div>
+
+<script>
+// 根據收款對象類型顯示對應欄位
+document.getElementById('payee_type').addEventListener('change', function() {
+    const payeeType = this.value;
+    const companyField = document.getElementById('company_field');
+    const userField = document.getElementById('user_field');
+    
+    if (payeeType === 'company') {
+        companyField.style.display = 'block';
+        userField.style.display = 'none';
+        document.getElementById('payee_user_id').value = '';
+    } else if (payeeType === 'user') {
+        companyField.style.display = 'none';
+        userField.style.display = 'block';
+        document.getElementById('company_id').value = '';
+    } else {
+        companyField.style.display = 'none';
+        userField.style.display = 'none';
+        document.getElementById('company_id').value = '';
+        document.getElementById('payee_user_id').value = '';
+    }
+});
+
+// 頁面載入時檢查舊值
+document.addEventListener('DOMContentLoaded', function() {
+    const payeeType = document.getElementById('payee_type').value;
+    if (payeeType) {
+        document.getElementById('payee_type').dispatchEvent(new Event('change'));
+    }
+});
+
+// 當選擇專案時，自動設定負責人為專案經理
+document.getElementById('project_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const managerId = selectedOption.getAttribute('data-manager-id');
+    const responsibleSelect = document.getElementById('responsible_user_id');
+    
+    if (managerId) {
+        responsibleSelect.value = managerId;
+    }
+});
+</script>
 @endsection

@@ -38,11 +38,11 @@
             <!-- 收款單號 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    收款單號 <span class="text-red-500">*</span>
+                    收款單號 <span class="text-gray-500">(自動)</span>
                 </label>
-                <input type="text" name="receipt_no" value="{{ old('receipt_no') }}" required
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-                       placeholder="例如：R202602001">
+                <input type="text" name="receipt_no" value="{{ $nextCode }}" readonly
+                       class="w-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-lg px-4 py-2 cursor-not-allowed">
+                <p class="mt-1 text-xs text-gray-500">系統將自動產生收款單號</p>
             </div>
 
             <!-- 收款日期 -->

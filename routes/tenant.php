@@ -70,19 +70,26 @@ Route::middleware([
         ]);
         
         // 專案管理
-        Route::resource('projects', \App\Http\Controllers\Tenant\ProjectController::class)->names([
-            'index' => 'tenant.projects.index',
-            'create' => 'tenant.projects.create',
-            'store' => 'tenant.projects.store',
-            'show' => 'tenant.projects.show',
-            'edit' => 'tenant.projects.edit',
-            'update' => 'tenant.projects.update',
-            'destroy' => 'tenant.projects.destroy',
-        ]);
+        Route::get('projects', [\App\Http\Controllers\Tenant\ProjectController::class, 'index'])->name('tenant.projects.index');
+        Route::get('projects/create', [\App\Http\Controllers\Tenant\ProjectController::class, 'create'])->name('tenant.projects.create');
+        Route::post('projects', [\App\Http\Controllers\Tenant\ProjectController::class, 'store'])->name('tenant.projects.store');
+        Route::get('projects/{project}', [\App\Http\Controllers\Tenant\ProjectController::class, 'show'])->name('tenant.projects.show');
+        Route::get('projects/{project}/edit', [\App\Http\Controllers\Tenant\ProjectController::class, 'edit'])->name('tenant.projects.edit');
+        Route::put('projects/{project}', [\App\Http\Controllers\Tenant\ProjectController::class, 'update'])->name('tenant.projects.update');
+        Route::patch('projects/{project}/quick-update', [\App\Http\Controllers\Tenant\ProjectController::class, 'quickUpdate'])->name('tenant.projects.quick-update');
+        Route::delete('projects/{project}', [\App\Http\Controllers\Tenant\ProjectController::class, 'destroy'])->name('tenant.projects.destroy');
         
         // 專案成員管理
         Route::post('projects/{project}/members', [\App\Http\Controllers\Tenant\ProjectController::class, 'addMember'])->name('tenant.projects.members.add');
         Route::delete('projects/{project}/members/{user}', [\App\Http\Controllers\Tenant\ProjectController::class, 'removeMember'])->name('tenant.projects.members.remove');
+        
+        // 專案快速新增應收/應付帳款
+        Route::post('projects/{project}/receivables/quick-add', [\App\Http\Controllers\Tenant\ProjectController::class, 'quickAddReceivable'])->name('tenant.projects.receivables.quick-add');
+        Route::post('projects/{project}/payables/quick-add', [\App\Http\Controllers\Tenant\ProjectController::class, 'quickAddPayable'])->name('tenant.projects.payables.quick-add');
+        
+        // 快速更新應收/應付帳款
+        Route::patch('receivables/{receivable}/quick-update', [\App\Http\Controllers\Tenant\ReceivableController::class, 'quickUpdate'])->name('tenant.receivables.quick-update');
+        Route::patch('payables/{payable}/quick-update', [\App\Http\Controllers\Tenant\PayableController::class, 'quickUpdate'])->name('tenant.payables.quick-update');
         
         // 使用者管理
         Route::resource('users', \App\Http\Controllers\Tenant\UserController::class)->names([
@@ -96,28 +103,23 @@ Route::middleware([
         ]);
         Route::post('users/{user}/toggle-active', [\App\Http\Controllers\Tenant\UserController::class, 'toggleActive'])->name('tenant.users.toggle-active');
 
-        // 應收帳款管理
-        Route::resource('receivables', \App\Http\Controllers\Tenant\ReceivableController::class)->names([
-            'index' => 'tenant.receivables.index',
-            'create' => 'tenant.receivables.create',
-            'store' => 'tenant.receivables.store',
-            'show' => 'tenant.receivables.show',
-            'edit' => 'tenant.receivables.edit',
-            'update' => 'tenant.receivables.update',
-            'destroy' => 'tenant.receivables.destroy',
-        ]);
-        Route::post('receivables/{receivable}/add-payment', [\App\Http\Controllers\Tenant\ReceivableController::class, 'addPayment'])->name('tenant.receivables.add-payment');
+        // 應收帳款管理（簡化路由）
+        Route::get('receivables', [\App\Http\Controllers\Tenant\ReceivableController::class, 'index'])->name('tenant.receivables.index');
+        Route::get('receivables/create', [\App\Http\Controllers\Tenant\ReceivableController::class, 'create'])->name('tenant.receivables.create');
+        Route::post('receivables', [\App\Http\Controllers\Tenant\ReceivableController::class, 'store'])->name('tenant.receivables.store');
+        Route::get('receivables/{receivable}', [\App\Http\Controllers\Tenant\ReceivableController::class, 'show'])->name('tenant.receivables.show');
+        Route::get('receivables/{receivable}/edit', [\App\Http\Controllers\Tenant\ReceivableController::class, 'edit'])->name('tenant.receivables.edit');
+        Route::put('receivables/{receivable}', [\App\Http\Controllers\Tenant\ReceivableController::class, 'update'])->name('tenant.receivables.update');
+        Route::delete('receivables/{receivable}', [\App\Http\Controllers\Tenant\ReceivableController::class, 'destroy'])->name('tenant.receivables.destroy');
 
-        // 應付帳款管理
-        Route::resource('payables', \App\Http\Controllers\Tenant\PayableController::class)->names([
-            'index' => 'tenant.payables.index',
-            'create' => 'tenant.payables.create',
-            'store' => 'tenant.payables.store',
-            'show' => 'tenant.payables.show',
-            'edit' => 'tenant.payables.edit',
-            'update' => 'tenant.payables.update',
-            'destroy' => 'tenant.payables.destroy',
-        ]);
+        // 應付帳款管理（簡化路由）
+        Route::get('payables', [\App\Http\Controllers\Tenant\PayableController::class, 'index'])->name('tenant.payables.index');
+        Route::get('payables/create', [\App\Http\Controllers\Tenant\PayableController::class, 'create'])->name('tenant.payables.create');
+        Route::post('payables', [\App\Http\Controllers\Tenant\PayableController::class, 'store'])->name('tenant.payables.store');
+        Route::get('payables/{payable}', [\App\Http\Controllers\Tenant\PayableController::class, 'show'])->name('tenant.payables.show');
+        Route::get('payables/{payable}/edit', [\App\Http\Controllers\Tenant\PayableController::class, 'edit'])->name('tenant.payables.edit');
+        Route::put('payables/{payable}', [\App\Http\Controllers\Tenant\PayableController::class, 'update'])->name('tenant.payables.update');
+        Route::delete('payables/{payable}', [\App\Http\Controllers\Tenant\PayableController::class, 'destroy'])->name('tenant.payables.destroy');
 
         // 代碼管理
         Route::get('codes', [\App\Http\Controllers\Tenant\CodeController::class, 'index'])->name('tenant.codes.index');
@@ -141,6 +143,7 @@ Route::middleware([
             
             // 系統設定
             Route::get('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'system'])->name('system');
+            Route::post('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateSystem'])->name('system.update');
             
             // 帳號設定
             Route::get('account', [\App\Http\Controllers\Tenant\SettingsController::class, 'account'])->name('account');

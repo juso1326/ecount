@@ -158,6 +158,14 @@
                            class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">檢視</a>
                         <a href="{{ route('tenant.receivables.edit', $receivable) }}" 
                            class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">編輯</a>
+                        
+                        @if($receivable->status !== 'paid' && $receivable->remaining_amount > 0)
+                            <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ $receivable->receipt_no }}')"
+                                    class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 mr-3">
+                                快速收款
+                            </button>
+                        @endif
+                        
                         <form action="{{ route('tenant.receivables.destroy', $receivable) }}" 
                               method="POST" 
                               class="inline"
@@ -203,4 +211,118 @@
 <div class="mt-6">
     {{ $receivables->withQueryString()->links() }}
 </div>
+
+<!-- 快速收款 Modal -->
+<div id="quickReceiveModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div class="mt-3">
+            <!-- Modal 標題 -->
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-4">
+                快速收款 - <span id="modalReceiptNo"></span>
+            </h3>
+            
+            <!-- 表單 -->
+            <form id="quickReceiveForm" method="POST">
+                @csrf
+                <input type="hidden" id="receivableId" name="receivable_id">
+                
+                <!-- 收款日期 -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        收款日期 <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="received_date" id="received_date" required
+                           value="{{ date('Y-m-d') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                
+                <!-- 收款金額 -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        收款金額 <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" name="received_amount" id="received_amount" required
+                           min="0" step="1"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        未收金額：NT$ <span id="remainingAmount">0</span>
+                    </p>
+                </div>
+                
+                <!-- 付款方式 -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        付款方式
+                    </label>
+                    <select name="payment_method" id="payment_method"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">請選擇</option>
+                        <option value="現金">現金</option>
+                        <option value="轉帳">轉帳</option>
+                        <option value="支票">支票</option>
+                        <option value="信用卡">信用卡</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                
+                <!-- 備註 -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        備註
+                    </label>
+                    <textarea name="note" id="note" rows="2"
+                              class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                              placeholder="輸入收款備註..."></textarea>
+                </div>
+                
+                <!-- 按鈕 -->
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeQuickReceiveModal()"
+                            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg">
+                        取消
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg">
+                        確認收款
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openQuickReceiveModal(receivableId, remainingAmount, receiptNo) {
+    document.getElementById('receivableId').value = receivableId;
+    document.getElementById('received_amount').value = remainingAmount;
+    document.getElementById('remainingAmount').textContent = new Intl.NumberFormat().format(remainingAmount);
+    document.getElementById('modalReceiptNo').textContent = receiptNo;
+    document.getElementById('quickReceiveModal').classList.remove('hidden');
+    
+    // 設定表單 action
+    document.getElementById('quickReceiveForm').action = `/receivables/${receivableId}/quick-receive`;
+}
+
+function closeQuickReceiveModal() {
+    document.getElementById('quickReceiveModal').classList.add('hidden');
+    document.getElementById('quickReceiveForm').reset();
+}
+
+// 驗證收款金額不超過未收金額
+document.getElementById('received_amount').addEventListener('input', function() {
+    const remaining = parseFloat(document.getElementById('remainingAmount').textContent.replace(/,/g, ''));
+    const amount = parseFloat(this.value);
+    
+    if (amount > remaining) {
+        this.value = remaining;
+    }
+});
+
+// 點擊 modal 外部關閉
+document.getElementById('quickReceiveModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeQuickReceiveModal();
+    }
+});
+</script>
 @endsection

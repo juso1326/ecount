@@ -21,7 +21,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">付款單號：{{ $payable->payment_no }}</p>
     </div>
     <div class="flex gap-3">
-        <a href="{{ route('tenant.payables.edit', $payable) }}"
+        <a href="{{ route('tenant.payables.show', $payable) }}"
            class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg">
             編輯
         </a>

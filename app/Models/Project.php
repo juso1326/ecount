@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * 專案資料 Model
@@ -103,6 +104,14 @@ class Project extends Model
     }
 
     /**
+     * 關聯：標籤
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    /**
      * 取得預算使用率
      */
     public function getBudgetUsagePercentageAttribute(): float
@@ -136,5 +145,50 @@ class Project extends Model
     public function isCompleted(): bool
     {
         return $this->status === self::STATUS_COMPLETED;
+    }
+
+    /**
+     * Scope: 智能搜尋（專案名稱、代碼、成員、負責人、發票號、報價單號）
+     */
+    public function scopeSmartSearch($query, $keyword)
+    {
+        if (empty($keyword)) {
+            return $query;
+        }
+
+        return $query->where(function($q) use ($keyword) {
+            // 搜尋專案名稱或代碼
+            $q->where('name', 'like', "%{$keyword}%")
+              ->orWhere('code', 'like', "%{$keyword}%")
+              ->orWhere('quote_no', 'like', "%{$keyword}%")
+              // 搜尋負責人
+              ->orWhereHas('manager', function($q2) use ($keyword) {
+                  $q2->where('name', 'like', "%{$keyword}%");
+              })
+              // 搜尋專案成員
+              ->orWhereHas('members', function($q2) use ($keyword) {
+                  $q2->where('name', 'like', "%{$keyword}%");
+              })
+              // 搜尋應收帳款的發票號
+              ->orWhereHas('receivables', function($q2) use ($keyword) {
+                  $q2->where('invoice_no', 'like', "%{$keyword}%");
+              });
+        });
+    }
+
+    /**
+     * Scope: 依開案日期範圍搜尋
+     */
+    public function scopeDateRange($query, $startDate, $endDate)
+    {
+        if ($startDate && $endDate) {
+            return $query->whereBetween('start_date', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            return $query->where('start_date', '>=', $startDate);
+        } elseif ($endDate) {
+            return $query->where('start_date', '<=', $endDate);
+        }
+        
+        return $query;
     }
 }

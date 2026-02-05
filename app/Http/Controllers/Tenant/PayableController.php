@@ -12,91 +12,113 @@ use Illuminate\Support\Facades\DB;
 
 class PayableController extends Controller
 {
+    /**
+     * 應付帳款列表（按 PRJ02 邏輯）
+     */
     public function index(Request $request)
     {
         $query = Payable::with(['project', 'company', 'responsibleUser']);
 
-        // 搜尋（包含專案代碼和名稱）
+        // 日期範圍篩選（預設最近一年）
+        $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
+        $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
+        
+        if ($dateStart && $dateEnd) {
+            $query->whereBetween('payment_date', [$dateStart, $dateEnd]);
+        }
+
+        // 搜尋（專案名稱、內容、發票號碼）
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('payment_no', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%")
+                $q->where('content', 'like', "%{$search}%")
                   ->orWhere('invoice_no', 'like', "%{$search}%")
+                  ->orWhere('payment_no', 'like', "%{$search}%")
                   ->orWhereHas('project', function($q) use ($search) {
-                      $q->where('code', 'like', "%{$search}%")
-                        ->orWhere('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('company', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('short_name', 'like', "%{$search}%");
+                      $q->where('name', 'like', "%{$search}%");
                   });
             });
         }
 
-        // 專案篩選
-        if ($request->filled('project_id')) {
-            $query->where('project_id', $request->project_id);
-        }
-
-        // 廠商篩選
+        // 廠商/供應商篩選
         if ($request->filled('company_id')) {
             $query->where('company_id', $request->company_id);
         }
 
-        // 狀態篩選
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // 類型篩選
+        // 付款類型篩選
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
-        // 年月篩選
-        if ($request->filled('year') && $request->filled('month')) {
-            $year = $request->year;
-            $month = str_pad($request->month, 2, '0', STR_PAD_LEFT);
-            $query->whereYear('payment_date', $year)
-                  ->whereMonth('payment_date', $month);
+        // 付款狀態篩選
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
-        $payables = $query->orderBy('payment_date', 'desc')
-                          ->orderBy('payment_no', 'desc')
-                          ->paginate(15);
+        // 排序
+        $orderBy = $request->input('order_by', 'payment_date');
+        $orderDir = $request->input('order_dir', 'desc');
+        $query->orderBy($orderBy, $orderDir);
 
-        // 計算總額
-        $totalAmount = $query->sum('amount');
-        $totalPaid = $query->sum('paid_amount');
+        $payables = $query->paginate(15);
 
-        return view('tenant.payables.index', compact('payables', 'totalAmount', 'totalPaid'));
+        // 計算統計數據（基於當前篩選條件）
+        $statsQuery = Payable::query();
+        
+        // 應用相同的篩選條件
+        if ($dateStart && $dateEnd) {
+            $statsQuery->whereBetween('payment_date', [$dateStart, $dateEnd]);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $statsQuery->where(function($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                  ->orWhere('invoice_no', 'like', "%{$search}%")
+                  ->orWhere('payment_no', 'like', "%{$search}%")
+                  ->orWhereHas('project', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        if ($request->filled('company_id')) {
+            $statsQuery->where('company_id', $request->company_id);
+        }
+        if ($request->filled('type')) {
+            $statsQuery->where('type', $request->type);
+        }
+        if ($request->filled('status')) {
+            $statsQuery->where('status', $request->status);
+        }
+        
+        $stats = $statsQuery->selectRaw('
+            SUM(amount) as total_amount,
+            SUM(paid_amount) as total_paid
+        ')->first();
+        
+        $totalAmount = $stats->total_amount ?? 0;
+        $totalPaid = $stats->total_paid ?? 0;
+
+        return view('tenant.payables.index', compact('payables', 'dateStart', 'dateEnd', 'totalAmount', 'totalPaid'));
     }
 
-    public function create()
-    {
-        $projects = Project::where('is_active', true)->orderBy('code')->get();
-        $companies = Company::where('is_active', true)->orderBy('name')->get();
-        $users = User::where('is_active', true)->orderBy('name')->get();
-
-        return view('tenant.payables.create', compact('projects', 'companies', 'users'));
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'payment_no' => 'required|string|max:50',
-            'project_id' => 'nullable|exists:projects,id',
+            'payment_no' => 'nullable|string|max:50|unique:payables,payment_no',
+            'project_id' => 'required|exists:projects,id',
             'company_id' => 'nullable|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
+            'type' => 'required|string|max:50',
             'payment_date' => 'required|date',
             'invoice_date' => 'nullable|date',
             'due_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
             'deduction' => 'nullable|numeric|min:0',
             'paid_amount' => 'nullable|numeric|min:0',
-            'type' => 'required|in:purchase,expense,service,other',
-            'status' => 'required|in:pending,partial,paid,overdue',
+            'status' => 'nullable|string',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
@@ -104,12 +126,20 @@ class PayableController extends Controller
             'note' => 'nullable|string',
         ]);
 
+        // 如果沒有提供單號，自動生成
+        if (empty($validated['payment_no'])) {
+            $validated['payment_no'] = $this->generatePaymentCode();
+        }
+
         Payable::create($validated);
 
         return redirect()->route('tenant.payables.index')
             ->with('success', '應付帳款新增成功');
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show(Payable $payable)
     {
         $payable->load(['project', 'company', 'responsibleUser']);
@@ -117,30 +147,51 @@ class PayableController extends Controller
         return view('tenant.payables.show', compact('payable'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $projects = Project::where('is_active', true)->orderBy('name')->get();
+        $companies = Company::where('is_active', true)->orderBy('name')->get();
+        $users = User::where('is_active', true)->orderBy('name')->get();
+        
+        // 自動生成應付單號
+        $nextCode = $this->generatePaymentCode();
+
+        return view('tenant.payables.create', compact('projects', 'companies', 'users', 'nextCode'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Payable $payable)
     {
-        $projects = Project::where('is_active', true)->orderBy('code')->get();
+        $projects = Project::where('is_active', true)->orderBy('name')->get();
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
 
         return view('tenant.payables.edit', compact('payable', 'projects', 'companies', 'users'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Payable $payable)
     {
         $validated = $request->validate([
             'payment_no' => 'required|string|max:50',
-            'project_id' => 'nullable|exists:projects,id',
+            'project_id' => 'required|exists:projects,id',
             'company_id' => 'nullable|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
+            'type' => 'required|string|max:50',
             'payment_date' => 'required|date',
             'invoice_date' => 'nullable|date',
             'due_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
             'deduction' => 'nullable|numeric|min:0',
             'paid_amount' => 'nullable|numeric|min:0',
-            'type' => 'required|in:purchase,expense,service,other',
-            'status' => 'required|in:pending,partial,paid,overdue',
+            'status' => 'nullable|string',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
@@ -154,11 +205,55 @@ class PayableController extends Controller
             ->with('success', '應付帳款更新成功');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Payable $payable)
     {
+        $projectId = $payable->project_id;
         $payable->delete();
 
-        return redirect()->route('tenant.payables.index')
+        return redirect()->route('tenant.projects.show', $projectId)
             ->with('success', '應付帳款刪除成功');
+    }
+
+    /**
+     * 自動生成應付單號
+     */
+    private function generatePaymentCode(): string
+    {
+        // 取得最新的應付單號
+        $lastPayable = Payable::withTrashed()
+            ->where('payment_no', 'like', 'PAY-%')
+            ->orderByRaw('CAST(SUBSTRING(payment_no, 5) AS UNSIGNED) DESC')
+            ->first();
+
+        if ($lastPayable) {
+            preg_match('/PAY-(\d+)/', $lastPayable->payment_no, $matches);
+            $nextNumber = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        return 'PAY-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * 快速更新應付帳款
+     */
+    public function quickUpdate(Request $request, Payable $payable)
+    {
+        $validated = $request->validate([
+            'payment_date' => 'required|date',
+            'amount' => 'required|numeric|min:0',
+            'vendor' => 'nullable|string',
+            'content' => 'nullable|string',
+            'note' => 'nullable|string',
+        ]);
+
+        $payable->update($validated);
+
+        return redirect()->route('tenant.projects.show', $payable->project_id)
+            ->with('success', '應付帳款更新成功');
     }
 }

@@ -21,7 +21,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">收款單號：{{ $receivable->receipt_no }}</p>
     </div>
     <div class="flex gap-3">
-        <a href="{{ route('tenant.receivables.edit', $receivable) }}"
+        <a href="{{ route('tenant.receivables.show', $receivable) }}"
            class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg">
             編輯
         </a>

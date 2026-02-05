@@ -26,52 +26,78 @@
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-    <form method="GET" action="{{ route('tenant.projects.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <!-- 搜尋框 -->
-        <input type="text" name="search" value="{{ request('search') }}" 
-               placeholder="搜尋專案代碼、名稱、客戶、部門..." 
-               class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-        
-        <!-- 狀態篩選 -->
-        <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部狀態</option>
-            <option value="planning" {{ request('status') === 'planning' ? 'selected' : '' }}>規劃中</option>
-            <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>進行中</option>
-            <option value="on_hold" {{ request('status') === 'on_hold' ? 'selected' : '' }}>暫停</option>
-            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>已完成</option>
-            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>已取消</option>
-        </select>
-        
-        <!-- 公司篩選 -->
-        <select name="company_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部客戶</option>
-            @foreach(\App\Models\Company::where('is_active', true)->orderBy('name')->get() as $company)
-                <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
-            @endforeach
-        </select>
-        
-        <!-- 部門篩選 -->
-        <select name="department_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部部門</option>
-            @foreach(\App\Models\Department::where('is_active', true)->orderBy('name')->get() as $dept)
-                <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
-            @endforeach
-        </select>
-        
-        <!-- 按鈕 -->
+    <form method="GET" action="{{ route('tenant.projects.index') }}" class="space-y-4">
+        <!-- 智能搜尋框 -->
         <div class="flex gap-2">
+            <div class="flex-1">
+                <input type="text" name="smart_search" value="{{ request('smart_search') }}" 
+                       placeholder="🔍 聰明尋找：專案名稱/代碼/成員/負責人/發票號/報價單號..." 
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    💡 提示：輸入任何關鍵字即可搜尋專案、成員、負責人、發票號或報價單號
+                </p>
+            </div>
             <button type="submit" 
-                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg flex-1">
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                 搜尋
             </button>
-            
-            @if(request()->hasAny(['search', 'status', 'company_id', 'department_id']))
-                <a href="{{ route('tenant.projects.index') }}" 
-                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
-                    清除
-                </a>
-            @endif
         </div>
+
+        <!-- 進階篩選 -->
+        <details class="group">
+            <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
+                <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
+                進階篩選
+            </summary>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <!-- 開案日期範圍 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">開案日（起）</label>
+                    <input type="date" name="date_start" value="{{ request('date_start', $dateStart) }}" 
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">開案日（迄）</label>
+                    <input type="date" name="date_end" value="{{ request('date_end', $dateEnd) }}" 
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                </div>
+                
+                <!-- 狀態篩選 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">專案狀態</label>
+                    <select name="status" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部狀態</option>
+                        <option value="planning" {{ request('status') === 'planning' ? 'selected' : '' }}>規劃中</option>
+                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>進行中</option>
+                        <option value="on_hold" {{ request('status') === 'on_hold' ? 'selected' : '' }}>暫停</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>已完成</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>已取消</option>
+                    </select>
+                </div>
+                
+                <!-- 公司篩選 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">客戶公司</label>
+                    <select name="company_id" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部客戶</option>
+                        @foreach(\App\Models\Company::where('is_active', true)->orderBy('name')->get() as $company)
+                            <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </details>
+        
+        <!-- 清除按鈕 -->
+        @if(request()->hasAny(['smart_search', 'date_start', 'date_end', 'status', 'company_id']))
+            <div class="flex justify-end">
+                <a href="{{ route('tenant.projects.index') }}" 
+                   class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary underline">
+                    清除所有篩選條件
+                </a>
+            </div>
+        @endif
     </form>
 </div>
 
@@ -210,6 +236,28 @@
             </tr>
             @endforelse
         </tbody>
+        <!-- 總計行 -->
+        <tfoot class="bg-gray-100 dark:bg-gray-700 font-semibold">
+            <tr>
+                <td colspan="9" class="px-3 py-3 text-right text-sm text-gray-900 dark:text-white">
+                    總計
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
+                    ${{ number_format($totals['total_receivable'] ?? 0, 0) }}
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
+                    ${{ number_format($totals['withholding_tax'] ?? 0, 0) }}
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
+                    ${{ number_format($totals['total_payable'] ?? 0, 0) }}
+                </td>
+                <td class="px-3 py-3 whitespace-nowrap text-sm text-right 
+                    {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                    ${{ number_format($totals['accumulated_income'] ?? 0, 0) }}
+                </td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 

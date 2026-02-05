@@ -13,31 +13,32 @@ use Illuminate\Support\Facades\DB;
 
 class ReceivableController extends Controller
 {
+    /**
+     * 應收帳款列表（按 PRJ03 邏輯）
+     */
     public function index(Request $request)
     {
         $query = Receivable::with(['project', 'company', 'responsibleUser']);
 
-        // 搜尋（包含專案代碼和名稱）
+        // 日期範圍篩選（預設最近一年）
+        $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
+        $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
+        
+        if ($dateStart && $dateEnd) {
+            $query->whereBetween('receipt_date', [$dateStart, $dateEnd]);
+        }
+
+        // 搜尋（專案名稱、內容、發票號碼）
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('receipt_no', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%")
+                $q->where('content', 'like', "%{$search}%")
                   ->orWhere('invoice_no', 'like', "%{$search}%")
+                  ->orWhere('receipt_no', 'like', "%{$search}%")
                   ->orWhereHas('project', function($q) use ($search) {
-                      $q->where('code', 'like', "%{$search}%")
-                        ->orWhere('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('company', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('short_name', 'like', "%{$search}%");
+                      $q->where('name', 'like', "%{$search}%");
                   });
             });
-        }
-
-        // 專案篩選
-        if ($request->filled('project_id')) {
-            $query->where('project_id', $request->project_id);
         }
 
         // 客戶篩選
@@ -50,40 +51,70 @@ class ReceivableController extends Controller
             $query->where('status', $request->status);
         }
 
-        // 年月篩選（參考舊系統）
-        if ($request->filled('year') && $request->filled('month')) {
-            $year = $request->year;
-            $month = str_pad($request->month, 2, '0', STR_PAD_LEFT);
-            $query->whereYear('receipt_date', $year)
-                  ->whereMonth('receipt_date', $month);
+        // 排除已結案專案（與舊系統一致）
+        if (!$request->filled('show_all')) {
+            $query->whereHas('project', function($q) {
+                $q->where('status', '!=', Project::STATUS_CANCELLED);
+            });
         }
 
-        $receivables = $query->orderBy('receipt_date', 'desc')
-                            ->orderBy('receipt_no', 'desc')
-                            ->paginate(15);
+        // 排序
+        $orderBy = $request->input('order_by', 'receipt_date');
+        $orderDir = $request->input('order_dir', 'desc');
+        $query->orderBy($orderBy, $orderDir);
 
-        // 計算總額
-        $totalAmount = $query->sum('amount');
-        $totalReceived = $query->sum('received_amount');
+        $receivables = $query->paginate(15);
 
-        return view('tenant.receivables.index', compact('receivables', 'totalAmount', 'totalReceived'));
+        // 計算統計數據（基於當前篩選條件）
+        $statsQuery = Receivable::query();
+        
+        // 應用相同的篩選條件
+        if ($dateStart && $dateEnd) {
+            $statsQuery->whereBetween('receipt_date', [$dateStart, $dateEnd]);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $statsQuery->where(function($q) use ($search) {
+                $q->where('content', 'like', "%{$search}%")
+                  ->orWhere('invoice_no', 'like', "%{$search}%")
+                  ->orWhere('receipt_no', 'like', "%{$search}%")
+                  ->orWhereHas('project', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        if ($request->filled('company_id')) {
+            $statsQuery->where('company_id', $request->company_id);
+        }
+        if ($request->filled('status')) {
+            $statsQuery->where('status', $request->status);
+        }
+        if (!$request->filled('show_all')) {
+            $statsQuery->whereHas('project', function($q) {
+                $q->where('status', '!=', Project::STATUS_CANCELLED);
+            });
+        }
+        
+        $stats = $statsQuery->selectRaw('
+            SUM(amount) as total_amount,
+            SUM(received_amount) as total_received
+        ')->first();
+        
+        $totalAmount = $stats->total_amount ?? 0;
+        $totalReceived = $stats->total_received ?? 0;
+
+        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived'));
     }
 
-    public function create()
-    {
-        $projects = Project::where('is_active', true)->orderBy('code')->get();
-        $companies = Company::where('is_active', true)->orderBy('name')->get();
-        $users = User::where('is_active', true)->orderBy('name')->get();
-
-        return view('tenant.receivables.create', compact('projects', 'companies', 'users'));
-    }
-
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'receipt_no' => 'required|string|max:50',
-            'project_id' => 'nullable|exists:projects,id',
-            'company_id' => 'nullable|exists:companies,id',
+            'receipt_no' => 'nullable|string|max:50|unique:receivables,receipt_no',
+            'project_id' => 'required|exists:projects,id',
+            'company_id' => 'required|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
             'receipt_date' => 'required|date',
             'due_date' => 'nullable|date',
@@ -93,7 +124,7 @@ class ReceivableController extends Controller
             'tax_amount' => 'nullable|numeric|min:0',
             'withholding_tax' => 'nullable|numeric|min:0',
             'received_amount' => 'nullable|numeric|min:0',
-            'status' => 'required|in:pending,partial,paid,overdue',
+            'status' => 'nullable|string',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
@@ -102,12 +133,20 @@ class ReceivableController extends Controller
             'note' => 'nullable|string',
         ]);
 
+        // 如果沒有提供單號，自動生成
+        if (empty($validated['receipt_no'])) {
+            $validated['receipt_no'] = $this->generateReceiptCode();
+        }
+
         Receivable::create($validated);
 
         return redirect()->route('tenant.receivables.index')
             ->with('success', '應收帳款新增成功');
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function show(Receivable $receivable)
     {
         $receivable->load(['project', 'company', 'responsibleUser']);
@@ -115,21 +154,42 @@ class ReceivableController extends Controller
         return view('tenant.receivables.show', compact('receivable'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $projects = Project::where('is_active', true)->orderBy('name')->get();
+        $companies = Company::where('is_active', true)->orderBy('name')->get();
+        $users = User::where('is_active', true)->orderBy('name')->get();
+        
+        // 自動生成應收單號
+        $nextCode = $this->generateReceiptCode();
+
+        return view('tenant.receivables.create', compact('projects', 'companies', 'users', 'nextCode'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Receivable $receivable)
     {
-        $projects = Project::where('is_active', true)->orderBy('code')->get();
+        $projects = Project::where('is_active', true)->orderBy('name')->get();
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
 
         return view('tenant.receivables.edit', compact('receivable', 'projects', 'companies', 'users'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Receivable $receivable)
     {
         $validated = $request->validate([
             'receipt_no' => 'required|string|max:50',
-            'project_id' => 'nullable|exists:projects,id',
-            'company_id' => 'nullable|exists:companies,id',
+            'project_id' => 'required|exists:projects,id',
+            'company_id' => 'required|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
             'receipt_date' => 'required|date',
             'due_date' => 'nullable|date',
@@ -139,7 +199,7 @@ class ReceivableController extends Controller
             'tax_amount' => 'nullable|numeric|min:0',
             'withholding_tax' => 'nullable|numeric|min:0',
             'received_amount' => 'nullable|numeric|min:0',
-            'status' => 'required|in:pending,partial,paid,overdue',
+            'status' => 'nullable|string',
             'payment_method' => 'nullable|string|max:50',
             'paid_date' => 'nullable|date',
             'invoice_no' => 'nullable|string|max:50',
@@ -154,43 +214,56 @@ class ReceivableController extends Controller
             ->with('success', '應收帳款更新成功');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Receivable $receivable)
     {
+        $projectId = $receivable->project_id;
         $receivable->delete();
 
-        return redirect()->route('tenant.receivables.index')
+        return redirect()->route('tenant.projects.show', $projectId)
             ->with('success', '應收帳款刪除成功');
     }
 
     /**
-     * 新增收款紀錄
+     * 自動生成應收單號
      */
-    public function addPayment(Request $request, Receivable $receivable)
+    private function generateReceiptCode(): string
+    {
+        // 取得最新的應收單號
+        $lastReceivable = Receivable::withTrashed()
+            ->where('receipt_no', 'like', 'RCV-%')
+            ->orderByRaw('CAST(SUBSTRING(receipt_no, 5) AS UNSIGNED) DESC')
+            ->first();
+
+        if ($lastReceivable) {
+            preg_match('/RCV-(\d+)/', $lastReceivable->receipt_no, $matches);
+            $nextNumber = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        return 'RCV-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * 快速更新應收帳款
+     */
+    public function quickUpdate(Request $request, Receivable $receivable)
     {
         $validated = $request->validate([
-            'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:1|max:' . ($receivable->amount - $receivable->received_amount),
-            'payment_method' => 'nullable|string|max:50',
+            'receipt_date' => 'required|date',
+            'amount' => 'required|numeric|min:0',
+            'content' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'invoice_no' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
 
-        // 建立收款紀錄
-        $receivable->payments()->create($validated);
+        $receivable->update($validated);
 
-        // 更新已收金額
-        $receivable->received_amount += $validated['amount'];
-        
-        // 自動更新狀態
-        if ($receivable->received_amount >= $receivable->amount) {
-            $receivable->status = 'paid';
-            $receivable->paid_date = $validated['payment_date'];
-        } elseif ($receivable->received_amount > 0) {
-            $receivable->status = 'partially_paid';
-        }
-        
-        $receivable->save();
-
-        return redirect()->route('tenant.receivables.show', $receivable)
-            ->with('success', '收款紀錄新增成功');
+        return redirect()->route('tenant.projects.show', $receivable->project_id)
+            ->with('success', '應收帳款更新成功');
     }
 }

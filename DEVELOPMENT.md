@@ -456,6 +456,7 @@ php artisan serve
 - 會計: accountant@abc123.com / password123（5 權限）
 - 員工: employee@abc123.com / password123（4 權限）
 
+
 **下一個任務**: 開始 Phase 4.1 - 建立租戶側認證系統
 
 

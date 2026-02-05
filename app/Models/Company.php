@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * 公司資料 Model
@@ -75,6 +76,14 @@ class Company extends Model
     public function payables(): HasMany
     {
         return $this->hasMany(Payable::class);
+    }
+
+    /**
+     * 關聯：標籤
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     /**

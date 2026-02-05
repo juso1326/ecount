@@ -14,10 +14,18 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- 專案代碼 -->
             <div>
-                <label for="code" class="block text-sm font-medium text-gray-700">專案代碼 <span class="text-red-500">*</span></label>
-                <input type="text" name="code" id="code" value="{{ old('code') }}" required
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('code') border-red-500 @enderror">
-                @error('code')
+                <label for="code" class="block text-sm font-medium text-gray-700">專案代碼 <span class="text-gray-500">(自動)</span></label>
+                <input type="text" name="code" id="code" value="{{ $nextCode }}" readonly
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 bg-gray-100 text-gray-600 cursor-not-allowed">
+                <p class="mt-1 text-xs text-gray-500">系統將自動產生專案代碼</p>
+            </div>
+
+            <!-- 開案日期 -->
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700">開案日期</label>
+                <input type="date" name="start_date" id="start_date" value="{{ old('start_date', '2026-02-04') }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('start_date') border-red-500 @enderror">
+                @error('start_date')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror
             </div>
@@ -32,9 +40,24 @@
                 @enderror
             </div>
 
-            <!-- 所屬公司 -->
+            <!-- 專案類型 -->
             <div>
-                <label for="company_id" class="block text-sm font-medium text-gray-700">所屬公司 <span class="text-red-500">*</span></label>
+                <label for="project_type" class="block text-sm font-medium text-gray-700">專案類型</label>
+                <select name="project_type" id="project_type"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">請選擇或輸入新類型</option>
+                    @foreach($projectTypes as $type)
+                        <option value="{{ $type }}" {{ old('project_type') == $type ? 'selected' : '' }}>
+                            {{ $type }}
+                        </option>
+                    @endforeach
+                </select>
+                <p class="mt-1 text-xs text-gray-500">可搜尋選擇或直接輸入新類型</p>
+            </div>
+
+            <!-- 客戶(3W公司) -->
+            <div>
+                <label for="company_id" class="block text-sm font-medium text-gray-700">客戶 <span class="text-red-500">*</span></label>
                 <select name="company_id" id="company_id" required
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('company_id') border-red-500 @enderror">
                     <option value="">請選擇</option>
@@ -49,99 +72,33 @@
                 @enderror
             </div>
 
-            <!-- 所屬部門 -->
+            <!-- 報價單號 -->
             <div>
-                <label for="department_id" class="block text-sm font-medium text-gray-700">所屬部門</label>
-                <select name="department_id" id="department_id"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">請選擇</option>
-                    @foreach($departments as $department)
-                        <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
-                            {{ $department->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- 專案經理 -->
-            <div>
-                <label for="manager_id" class="block text-sm font-medium text-gray-700">專案經理</label>
-                <select name="manager_id" id="manager_id"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 select2">
-                    <option value="">請選擇</option>
-                    @foreach($managers as $manager)
-                        <option value="{{ $manager->id }}" {{ old('manager_id') == $manager->id ? 'selected' : '' }}>
-                            {{ $manager->name }} ({{ $manager->email }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- 狀態 -->
-            <div>
-                <label for="status" class="block text-sm font-medium text-gray-700">專案狀態 <span class="text-red-500">*</span></label>
-                <select name="status" id="status" required
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="planning" {{ old('status') === 'planning' ? 'selected' : '' }}>規劃中</option>
-                    <option value="in_progress" {{ old('status') === 'in_progress' ? 'selected' : '' }}>進行中</option>
-                    <option value="on_hold" {{ old('status') === 'on_hold' ? 'selected' : '' }}>暫停</option>
-                    <option value="completed" {{ old('status') === 'completed' ? 'selected' : '' }}>已完成</option>
-                    <option value="cancelled" {{ old('status') === 'cancelled' ? 'selected' : '' }}>已取消</option>
-                </select>
-            </div>
-
-            <!-- 開始日期 -->
-            <div>
-                <label for="start_date" class="block text-sm font-medium text-gray-700">開始日期</label>
-                <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}"
+                <label for="quote_no" class="block text-sm font-medium text-gray-700">報價單號</label>
+                <input type="text" name="quote_no" id="quote_no" value="{{ old('quote_no') }}"
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- 結束日期 -->
+            <!-- 總額(含稅) -->
             <div>
-                <label for="end_date" class="block text-sm font-medium text-gray-700">結束日期</label>
-                <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('end_date') border-red-500 @enderror">
-                @error('end_date')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- 預算 -->
-            <div>
-                <label for="budget" class="block text-sm font-medium text-gray-700">預算金額</label>
+                <label for="budget" class="block text-sm font-medium text-gray-700">總額</label>
                 <input type="number" name="budget" id="budget" value="{{ old('budget', 0) }}" step="0.01" min="0"
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <p class="mt-1 text-xs text-gray-500">請填寫含稅總額</p>
             </div>
 
-            <!-- 實際成本 -->
+            <!-- 專案負責人 -->
             <div>
-                <label for="actual_cost" class="block text-sm font-medium text-gray-700">實際成本</label>
-                <input type="number" name="actual_cost" id="actual_cost" value="{{ old('actual_cost', 0) }}" step="0.01" min="0"
+                <label for="manager_id" class="block text-sm font-medium text-gray-700">專案負責人</label>
+                <select name="manager_id" id="manager_id"
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 描述 -->
-            <div class="md:col-span-2">
-                <label for="description" class="block text-sm font-medium text-gray-700">專案描述</label>
-                <textarea name="description" id="description" rows="3"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('description') }}</textarea>
-            </div>
-
-            <!-- 備註 -->
-            <div class="md:col-span-2">
-                <label for="note" class="block text-sm font-medium text-gray-700">備註</label>
-                <textarea name="note" id="note" rows="2"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note') }}</textarea>
-            </div>
-
-            <!-- 狀態 -->
-            <div>
-                <label class="flex items-center">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
-                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                    <span class="ml-2 text-sm text-gray-600">啟用</span>
-                </label>
+                    <option value="">請選擇</option>
+                    @foreach($managers as $manager)
+                        <option value="{{ $manager->id }}" {{ old('manager_id', auth()->id()) == $manager->id ? 'selected' : '' }}>
+                            {{ $manager->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
@@ -164,8 +121,28 @@
 
 <script>
 $(document).ready(function() {
+    // 專案類型 - 可搜尋可新增
+    $('#project_type').select2({
+        placeholder: '請選擇或輸入新類型',
+        allowClear: true,
+        tags: true,  // 允許新增自訂項目
+        width: '100%',
+        createTag: function (params) {
+            var term = $.trim(params.term);
+            if (term === '') {
+                return null;
+            }
+            return {
+                id: term,
+                text: term,
+                newTag: true
+            };
+        }
+    });
+    
+    // 專案負責人 - 可搜尋
     $('#manager_id').select2({
-        placeholder: '搜尋專案經理...',
+        placeholder: '請選擇專案負責人',
         allowClear: true,
         width: '100%'
     });
