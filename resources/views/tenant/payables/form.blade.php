@@ -45,11 +45,22 @@
                         @foreach($projects as $project)
                             <option value="{{ $project->id }}" 
                                     data-company-id="{{ $project->company_id }}"
+                                    data-manager-id="{{ $project->responsible_user_id }}"
                                     {{ old('project_id', isset($payable) ? $payable->project_id : '') == $project->id ? 'selected' : '' }}>
                                 {{ $project->code }} - {{ $project->name }}
                             </option>
                         @endforeach
                     </select>
+                </div>
+                
+                <!-- 負責人（自動帶入） -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">負責人</label>
+                    <input type="text" id="manager_name" disabled
+                           class="w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 dark:text-white rounded-lg px-4 py-2"
+                           value="{{ isset($payable) && $payable->project ? $payable->project->responsibleUser->name : '請先選擇專案' }}">
+                    <input type="hidden" name="responsible_user_id" id="responsible_user_id" 
+                           value="{{ old('responsible_user_id', isset($payable) ? $payable->responsible_user_id : '') }}">
                 </div>
             </div>
         </div>
