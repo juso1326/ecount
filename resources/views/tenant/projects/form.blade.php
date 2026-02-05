@@ -112,6 +112,13 @@
 
 <script>
 $(document).ready(function() {
+    // 客戶選擇 Select2
+    $('#company_id').select2({
+        placeholder: '請選擇客戶',
+        allowClear: false,
+        width: '100%'
+    });
+
     // 專案負責人 - 可搜尋
     $('#manager_id').select2({
         placeholder: '請選擇專案負責人',

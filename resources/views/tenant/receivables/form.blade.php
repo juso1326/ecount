@@ -258,5 +258,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     calculateTax();
 });
+
+// 初始化 Select2
+$(document).ready(function() {
+    // 客戶選擇 Select2
+    $('#company_id').select2({
+        placeholder: '請選擇客戶',
+        allowClear: false,
+        width: '100%'
+    });
+
+    // 專案選擇 Select2
+    $('#project_id').select2({
+        placeholder: '請選擇專案',
+        allowClear: true,
+        width: '100%'
+    });
+});
 </script>
 @endpush
