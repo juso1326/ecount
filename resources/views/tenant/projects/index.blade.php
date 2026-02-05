@@ -112,7 +112,7 @@
                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日</th>
                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案名</th>
-                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">標籤</th>
                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案負責</th>
                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">成員</th>
                 <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總額</th>
@@ -158,9 +158,25 @@
                     </div>
                     <div class="text-xs text-gray-500">{{ $project->code }}</div>
                 </td>
-                <!-- 類型 -->
-                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {{ $project->project_type ?? '-' }}
+                <!-- 標籤 -->
+                <td class="px-3 py-4 text-sm">
+                    @if($project->tags && $project->tags->count() > 0)
+                        <div class="flex flex-wrap gap-1">
+                            @foreach($project->tags->take(2) as $tag)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" 
+                                  style="background-color: {{ $tag->color }}20; color: {{ $tag->color }}; border: 1px solid {{ $tag->color }}40;">
+                                {{ $tag->name }}
+                            </span>
+                            @endforeach
+                            @if($project->tags->count() > 2)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                +{{ $project->tags->count() - 2 }}
+                            </span>
+                            @endif
+                        </div>
+                    @else
+                        <span class="text-xs text-gray-400">-</span>
+                    @endif
                 </td>
                 <!-- 專案負責 -->
                 <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">

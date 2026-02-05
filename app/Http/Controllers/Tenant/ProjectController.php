@@ -114,13 +114,10 @@ class ProjectController extends Controller
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $managers = User::where('is_active', true)->orderBy('name')->get();
         
-        // 取得專案標籤
-        $tags = \App\Models\Tag::ofType('project')->orderBy('name')->get();
-        
         // 自動生成專案代碼
         $nextCode = $this->generateProjectCode();
 
-        return view('tenant.projects.create', compact('companies', 'managers', 'nextCode', 'tags'));
+        return view('tenant.projects.create', compact('companies', 'managers', 'nextCode'));
     }
 
     /**
@@ -143,24 +140,14 @@ class ProjectController extends Controller
             'content' => 'nullable|string',
             'quote_no' => 'nullable|string',
             'note' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
         ]);
 
         // 如果沒有提供代碼，自動生成
         if (empty($validated['code'])) {
             $validated['code'] = $this->generateProjectCode();
         }
-
-        $tags = $validated['tags'] ?? [];
-        unset($validated['tags']);
         
         $project = Project::create($validated);
-        
-        // 同步標籤
-        if (!empty($tags)) {
-            $project->tags()->sync($tags);
-        }
 
         return redirect()->route('tenant.projects.index')
             ->with('success', '專案新增成功');
@@ -207,14 +194,8 @@ class ProjectController extends Controller
     {
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $managers = User::where('is_active', true)->orderBy('name')->get();
-        
-        // 取得專案標籤
-        $tags = \App\Models\Tag::ofType('project')->orderBy('name')->get();
-        
-        // 載入專案現有標籤
-        $project->load('tags');
 
-        return view('tenant.projects.edit', compact('project', 'companies', 'managers', 'tags'));
+        return view('tenant.projects.edit', compact('project', 'companies', 'managers'));
     }
 
     /**
@@ -229,17 +210,9 @@ class ProjectController extends Controller
             'start_date' => 'nullable|date',
             'budget' => 'nullable|numeric|min:0',
             'quote_no' => 'nullable|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
         ]);
-
-        $tags = $validated['tags'] ?? [];
-        unset($validated['tags']);
         
         $project->update($validated);
-        
-        // 同步標籤
-        $project->tags()->sync($tags);
 
         return redirect()->route('tenant.projects.show', $project)
             ->with('success', '專案更新成功');

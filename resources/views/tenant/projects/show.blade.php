@@ -350,9 +350,39 @@
         @endif
     </div>
 
-    <!-- 右側：專案成員 (1/3寬度) -->
-    <div class="lg:col-span-1">
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-6">
+    <!-- 右側：專案標籤與成員 (1/3寬度) -->
+    <div class="lg:col-span-1 space-y-4">
+        <!-- 專案標籤 -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                專案標籤
+            </h2>
+            
+            <form action="{{ route('tenant.projects.tags.update', $project) }}" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <div class="mb-3">
+                    <select name="tags[]" id="projectTags" multiple
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg">
+                        @foreach(\App\Models\Tag::ofType('project')->orderBy('name')->get() as $tag)
+                            <option value="{{ $tag->id }}" 
+                                    {{ $project->tags->contains($tag->id) ? 'selected' : '' }}>
+                                {{ $tag->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <button type="submit"
+                        class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg text-sm">
+                    更新標籤
+                </button>
+            </form>
+        </div>
+        
+        <!-- 專案成員 -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 <h2 class="text-base font-semibold text-gray-900 dark:text-white">
                     專案成員 ({{ $project->members()->count() }})
@@ -464,6 +494,46 @@
                 <div class="flex justify-end gap-3">
                     <button type="button"
                             onclick="document.getElementById('addMemberModal').classList.add('hidden')"
+                            class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
+                        取消
+                    </button>
+                    <button type="submit"
+                            class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg">
+                        新增
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 標籤選擇 Modal -->
+<div id="tagModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">新增專案標籤</h3>
+            
+            <form action="{{ route('tenant.projects.tags.add', $project) }}" method="POST">
+                @csrf
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        選擇標籤 <span class="text-red-500">*</span>
+                    </label>
+                    <select name="tag_id" required
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                        <option value="">請選擇</option>
+                        @foreach(\App\Models\Tag::ofType('project')->orderBy('name')->get() as $tag)
+                            @if(!$project->tags || !$project->tags->contains($tag->id))
+                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="flex justify-end gap-3">
+                    <button type="button"
+                            onclick="document.getElementById('tagModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
                         取消
                     </button>
