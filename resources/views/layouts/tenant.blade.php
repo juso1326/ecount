@@ -21,8 +21,73 @@
             }
         }
     </script>
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
     <style>
         [x-cloak] { display: none !important; }
+        
+        /* Select2 dark mode styles */
+        .dark .select2-container--default .select2-selection--single,
+        .dark .select2-container--default .select2-selection--multiple {
+            background-color: rgb(55, 65, 81);
+            border-color: rgb(75, 85, 99);
+            color: white;
+        }
+        
+        .dark .select2-container--default .select2-selection--single .select2-selection__rendered,
+        .dark .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            color: white;
+        }
+        
+        .dark .select2-container--default .select2-selection--single .select2-selection__placeholder,
+        .dark .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+            color: rgb(156, 163, 175);
+        }
+        
+        .dark .select2-dropdown {
+            background-color: rgb(55, 65, 81);
+            border-color: rgb(75, 85, 99);
+        }
+        
+        .dark .select2-container--default .select2-results__option {
+            color: white;
+        }
+        
+        .dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: rgb(60, 80, 224);
+        }
+        
+        .dark .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: rgb(55, 65, 81);
+            border-color: rgb(75, 85, 99);
+            color: white;
+        }
+        
+        .dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: rgb(60, 80, 224);
+            border-color: rgb(60, 80, 224);
+            color: white;
+        }
+        
+        .dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+        }
+        
+        /* Match form field height */
+        .select2-container .select2-selection--single {
+            height: 42px;
+            padding: 0.5rem 1rem;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 font-sans antialiased">
@@ -430,75 +495,8 @@
     <!-- jQuery (required for Select2) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    
-    <!-- Select2 Dark Mode Custom CSS -->
-    <style>
-        /* Select2 dark mode styles */
-        .dark .select2-container--default .select2-selection--single,
-        .dark .select2-container--default .select2-selection--multiple {
-            background-color: rgb(55, 65, 81);
-            border-color: rgb(75, 85, 99);
-            color: white;
-        }
-        
-        .dark .select2-container--default .select2-selection--single .select2-selection__rendered,
-        .dark .select2-container--default .select2-selection--multiple .select2-selection__rendered {
-            color: white;
-        }
-        
-        .dark .select2-container--default .select2-selection--single .select2-selection__placeholder,
-        .dark .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
-            color: rgb(156, 163, 175);
-        }
-        
-        .dark .select2-dropdown {
-            background-color: rgb(55, 65, 81);
-            border-color: rgb(75, 85, 99);
-        }
-        
-        .dark .select2-container--default .select2-results__option {
-            color: white;
-        }
-        
-        .dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: rgb(60, 80, 224);
-        }
-        
-        .dark .select2-container--default .select2-search--dropdown .select2-search__field {
-            background-color: rgb(55, 65, 81);
-            border-color: rgb(75, 85, 99);
-            color: white;
-        }
-        
-        .dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: rgb(60, 80, 224);
-            border-color: rgb(60, 80, 224);
-            color: white;
-        }
-        
-        .dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-        }
-        
-        /* Match form field height */
-        .select2-container .select2-selection--single {
-            height: 42px;
-            padding: 0.5rem 1rem;
-        }
-        
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 42px;
-        }
-        
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 40px;
-        }
-    </style>
     
     @stack('scripts')
 </body>
