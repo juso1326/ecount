@@ -71,6 +71,48 @@
             </div>
         </div>
 
+        <!-- 給付對象區塊 -->
+        <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">給付對象</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 對象類型 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <span class="text-red-500">*</span> 對象
+                    </label>
+                    <select name="payee_type" id="payee_type" required
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                        <option value="">請選擇</option>
+                        <option value="member" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'member' ? 'selected' : '' }}>成員</option>
+                        <option value="vendor" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'vendor' ? 'selected' : '' }}>外製</option>
+                        <option value="expense" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'expense' ? 'selected' : '' }}>已支出</option>
+                    </select>
+                </div>
+
+                <!-- 成員選擇（payee_type = member 時顯示） -->
+                <div id="member_field" style="display: none;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">成員</label>
+                    <select name="payee_user_id" id="payee_user_id"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                        <option value="">請選擇成員</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ old('payee_user_id', isset($payable) ? $payable->payee_user_id : '') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- 廠商名稱（payee_type = vendor 時顯示） -->
+                <div id="vendor_field" style="display: none;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商名稱</label>
+                    <input type="text" name="vendor_name" id="vendor_name"
+                           value="{{ old('vendor_name', isset($payable) ? $payable->vendor_name : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+            </div>
+        </div>
+
         <!-- 支出資訊區塊 -->
         <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">支出資訊</h3>
@@ -308,6 +350,40 @@ document.querySelectorAll('input[name="tax_inclusive"]').forEach(radio => {
 });
 
 document.addEventListener('DOMContentLoaded', calculateTax);
+
+// 給付對象類型切換
+document.getElementById('payee_type').addEventListener('change', function() {
+    const payeeType = this.value;
+    const memberField = document.getElementById('member_field');
+    const vendorField = document.getElementById('vendor_field');
+    const memberSelect = document.getElementById('payee_user_id');
+    const vendorInput = document.getElementById('vendor_name');
+    
+    // 隱藏所有欄位
+    memberField.style.display = 'none';
+    vendorField.style.display = 'none';
+    
+    // 清空欄位
+    memberSelect.value = '';
+    vendorInput.value = '';
+    
+    // 根據類型顯示對應欄位
+    if (payeeType === 'member') {
+        memberField.style.display = 'block';
+    } else if (payeeType === 'vendor') {
+        vendorField.style.display = 'block';
+    }
+});
+
+// 頁面載入時根據已選值顯示對應欄位
+document.addEventListener('DOMContentLoaded', function() {
+    const payeeType = document.getElementById('payee_type').value;
+    if (payeeType === 'member') {
+        document.getElementById('member_field').style.display = 'block';
+    } else if (payeeType === 'vendor') {
+        document.getElementById('vendor_field').style.display = 'block';
+    }
+});
 
 // Initialize Select2 for project dropdown
 $(document).ready(function() {
