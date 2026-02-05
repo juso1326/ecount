@@ -418,6 +418,20 @@ $(document).ready(function() {
         width: '100%'
     });
     
+    // Initialize Select2 for vendor dropdown
+    $('#payee_company_id').select2({
+        placeholder: '請選擇廠商',
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Initialize Select2 for member dropdown
+    $('#payee_user_id').select2({
+        placeholder: '請選擇成員',
+        allowClear: true,
+        width: '100%'
+    });
+    
     // Re-bind change event after Select2 initialization
     $('#project_id').on('change', function() {
         const selectedOption = $(this).find(':selected');
