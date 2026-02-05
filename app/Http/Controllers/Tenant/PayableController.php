@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\User;
 use App\Models\Tag;
 use App\Models\TaxSetting;
+use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -159,11 +160,12 @@ class PayableController extends Controller
         $users = User::where('is_active', true)->orderBy('name')->get();
         $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
         $taxSettings = TaxSetting::where('is_active', true)->orderBy('name')->get();
+        $expenseCategories = ExpenseCategory::orderBy('parent_id')->orderBy('sort_order')->get();
         
         // 自動生成應付單號
         $nextCode = $this->generatePaymentCode();
 
-        return view('tenant.payables.create', compact('projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'nextCode'));
+        return view('tenant.payables.create', compact('projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'expenseCategories', 'nextCode'));
     }
 
     /**
@@ -176,8 +178,9 @@ class PayableController extends Controller
         $users = User::where('is_active', true)->orderBy('name')->get();
         $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
         $taxSettings = TaxSetting::where('is_active', true)->orderBy('name')->get();
+        $expenseCategories = ExpenseCategory::orderBy('parent_id')->orderBy('sort_order')->get();
 
-        return view('tenant.payables.edit', compact('payable', 'projects', 'companies', 'users', 'paymentMethods', 'taxSettings'));
+        return view('tenant.payables.edit', compact('payable', 'projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'expenseCategories'));
     }
 
     /**
