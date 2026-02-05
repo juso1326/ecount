@@ -247,14 +247,14 @@
                 <!-- 付款方式 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">付款方式</label>
-                    <select name="payment_method"
+                    <select name="payment_method" id="payment_method"
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="">請選擇</option>
-                        <option value="轉帳匯款" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == '轉帳匯款' ? 'selected' : '' }}>轉帳匯款</option>
-                        <option value="現金" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == '現金' ? 'selected' : '' }}>現金</option>
-                        <option value="支票" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == '支票' ? 'selected' : '' }}>支票</option>
-                        <option value="信用卡" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == '信用卡' ? 'selected' : '' }}>信用卡</option>
-                        <option value="其他" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == '其他' ? 'selected' : '' }}>其他</option>
+                        <option value="">請選擇付款方式</option>
+                        @foreach($paymentMethods as $method)
+                            <option value="{{ $method->name }}" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == $method->name ? 'selected' : '' }}>
+                                {{ $method->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
