@@ -204,6 +204,7 @@ Route::middleware([
         // 薪資管理
         Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SalaryController::class, 'index'])->name('index');
+            Route::get('vendors', [\App\Http\Controllers\Tenant\SalaryController::class, 'vendors'])->name('vendors');
             Route::get('{user}', [\App\Http\Controllers\Tenant\SalaryController::class, 'show'])->name('show');
             Route::get('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'adjustments'])->name('adjustments');
             Route::post('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'storeAdjustment'])->name('adjustments.store');

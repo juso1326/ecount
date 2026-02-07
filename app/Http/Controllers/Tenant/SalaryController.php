@@ -24,6 +24,23 @@ class SalaryController extends Controller
     {
         $year = $request->get('year', date('Y'));
         $month = $request->get('month', date('m'));
+        
+        // 處理月份導航
+        if ($request->get('nav') === 'prev') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->subMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        } elseif ($request->get('nav') === 'next') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->addMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        }
+        
+        // 限制最早月份為 2014年9月
+        if ($year < 2014 || ($year == 2014 && $month < 9)) {
+            $year = 2014;
+            $month = '09';
+        }
 
         $data = $this->salaryService->getMonthlySalaries($year, $month);
 
@@ -43,6 +60,23 @@ class SalaryController extends Controller
     {
         $year = $request->get('year', date('Y'));
         $month = $request->get('month', date('m'));
+        
+        // 處理月份導航
+        if ($request->get('nav') === 'prev') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->subMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        } elseif ($request->get('nav') === 'next') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->addMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        }
+        
+        // 限制最早月份為 2014年9月
+        if ($year < 2014 || ($year == 2014 && $month < 9)) {
+            $year = 2014;
+            $month = '09';
+        }
 
         $salary = $this->salaryService->calculateMonthlySalary($user->id, $year, $month);
         $isPaid = $this->salaryService->isPaid($user->id, $year, $month);
@@ -131,6 +165,42 @@ class SalaryController extends Controller
             'year' => $validated['year'],
             'month' => $validated['month']
         ])->with('success', '薪資撥款成功');
+    }
+    
+    /**
+     * 廠商支付列表
+     */
+    public function vendors(Request $request)
+    {
+        $year = $request->get('year', date('Y'));
+        $month = $request->get('month', date('m'));
+        
+        // 處理月份導航
+        if ($request->get('nav') === 'prev') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->subMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        } elseif ($request->get('nav') === 'next') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->addMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        }
+        
+        // 限制最早月份為 2014年9月
+        if ($year < 2014 || ($year == 2014 && $month < 9)) {
+            $year = 2014;
+            $month = '09';
+        }
+
+        $data = $this->salaryService->getVendorPayments($year, $month);
+
+        return view('tenant.salaries.vendors', [
+            'payments' => $data['payments'],
+            'period' => $data['period'],
+            'total' => $data['total'],
+            'year' => $year,
+            'month' => $month,
+        ]);
     }
 }
 

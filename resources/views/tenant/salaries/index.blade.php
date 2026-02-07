@@ -16,29 +16,52 @@
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">薪資總表</h1>
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $period['label'] }}</p>
     </div>
+    <div class="flex gap-3">
+        <a href="{{ route('tenant.salaries.vendors', ['year' => $year, 'month' => $month]) }}" 
+           class="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <span>廠商支付記錄</span>
+        </a>
+    </div>
 </div>
 
-<!-- 月份選擇 -->
+<!-- 月份選擇與導航 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
-    <form method="GET" action="{{ route('tenant.salaries.index') }}" class="flex items-center gap-4">
-        <div>
-            <select name="year" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                @for($y = date('Y'); $y >= 2020; $y--)
+    <div class="flex items-center justify-between">
+        <!-- 上個月按鈕 -->
+        <a href="{{ route('tenant.salaries.index', ['year' => $year, 'month' => str_pad($month, 2, '0', STR_PAD_LEFT)]) }}?nav=prev" 
+           class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            <span class="hidden sm:inline">上個月</span>
+        </a>
+        
+        <!-- 月份選擇表單 -->
+        <form method="GET" action="{{ route('tenant.salaries.index') }}" class="flex items-center gap-3">
+            <select name="year" onchange="this.form.submit()" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                @for($y = date('Y'); $y >= 2014; $y--)
                     <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}年</option>
                 @endfor
             </select>
-        </div>
-        <div>
-            <select name="month" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+            <select name="month" onchange="this.form.submit()" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                 @for($m = 1; $m <= 12; $m++)
                     <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}" {{ $month == str_pad($m, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>{{ $m }}月</option>
                 @endfor
             </select>
-        </div>
-        <button type="submit" class="bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg transition">
-            查詢
-        </button>
-    </form>
+        </form>
+        
+        <!-- 下個月按鈕 -->
+        <a href="{{ route('tenant.salaries.index', ['year' => $year, 'month' => str_pad($month, 2, '0', STR_PAD_LEFT)]) }}?nav=next" 
+           class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary transition">
+            <span class="hidden sm:inline">下個月</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </div>
 </div>
 
 <!-- 薪資列表 -->

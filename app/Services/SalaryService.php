@@ -171,4 +171,39 @@ class SalaryService
         
         return $unpaidCount === 0;
     }
+    
+    /**
+     * 取得廠商支付記錄
+     */
+    public function getVendorPayments($year, $month)
+    {
+        $period = $this->getSalaryPeriod($year, $month);
+        
+        $payments = Payable::with(['company', 'project'])
+            ->where('payee_type', 'company')
+            ->whereBetween('payment_date', [$period['start'], $period['end']])
+            ->whereNotNull('payee_company_id')
+            ->orderBy('payment_date')
+            ->orderBy('company_id')
+            ->get();
+        
+        $groupedPayments = $payments->groupBy('payee_company_id')->map(function ($items, $companyId) {
+            $company = $items->first()->payeeCompany;
+            return [
+                'company' => $company,
+                'items' => $items,
+                'total' => $items->sum('amount'),
+                'paid_total' => $items->where('is_salary_paid', true)->sum('salary_paid_amount'),
+                'unpaid_total' => $items->where('is_salary_paid', false)->sum('amount'),
+            ];
+        });
+        
+        return [
+            'payments' => $groupedPayments,
+            'period' => $period,
+            'total' => $payments->sum('amount'),
+            'paid_total' => $payments->where('is_salary_paid', true)->sum('salary_paid_amount'),
+            'unpaid_total' => $payments->where('is_salary_paid', false)->sum('amount'),
+        ];
+    }
 }

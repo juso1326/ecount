@@ -13,19 +13,40 @@
     </p>
 </div>
 
-<!-- 頁面標題 -->
-<div class="mb-6 flex justify-between items-center">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }} 薪資明細</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $salary['period']['label'] }}</p>
+<!-- 頁面標題與導航 -->
+<div class="mb-6">
+    <!-- 月份導航 -->
+    <div class="flex items-center justify-between mb-4">
+        <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month]) }}?nav=prev" 
+           class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            上個月
+        </a>
+        
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $salary['period']['label'] }}</h2>
+        
+        <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month]) }}?nav=next" 
+           class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition">
+            下個月
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </a>
     </div>
-    <div class="flex gap-2">
-        @if(!$isPaid && $salary['total'] > 0)
-        <button onclick="document.getElementById('payModal').classList.remove('hidden')"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
-            確認撥款
-        </button>
-        @endif
+    
+    <!-- 標題與操作按鈕 -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }} 薪資明細</h1>
+        <div class="flex gap-2">
+            @if(!$isPaid && $salary['total'] > 0)
+            <button onclick="document.getElementById('payModal').classList.remove('hidden')"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+                確認撥款
+            </button>
+            @endif
+        </div>
     </div>
 </div>
 
