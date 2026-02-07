@@ -173,8 +173,10 @@ class SettingsController extends Controller
 
         $closingDay = TenantSetting::get('closing_day', 1);
         $defaultCurrency = TenantSetting::get('default_currency', 'TWD');
+        $fiscalYearStart = TenantSetting::get('fiscal_year_start', 1);
+        $defaultFiscalYear = TenantSetting::get('default_fiscal_year', date('Y'));
 
-        return view('tenant.settings.financial', compact('currencies', 'closingDay', 'defaultCurrency'));
+        return view('tenant.settings.financial', compact('currencies', 'closingDay', 'defaultCurrency', 'fiscalYearStart', 'defaultFiscalYear'));
     }
 
     /**
@@ -185,11 +187,19 @@ class SettingsController extends Controller
         $validated = $request->validate([
             'closing_day' => 'required|integer|min:1|max:31',
             'default_currency' => 'required|string|max:3',
+            'fiscal_year_start' => 'required|integer|min:1|max:12',
+            'default_fiscal_year' => 'required|integer|min:2000|max:2100',
         ], [
             'closing_day.required' => '請選擇關帳日',
             'closing_day.min' => '關帳日必須在 1-31 之間',
             'closing_day.max' => '關帳日必須在 1-31 之間',
             'default_currency.required' => '請選擇預設幣值',
+            'fiscal_year_start.required' => '請選擇會計年度起始月份',
+            'fiscal_year_start.min' => '月份必須在 1-12 之間',
+            'fiscal_year_start.max' => '月份必須在 1-12 之間',
+            'default_fiscal_year.required' => '請輸入預設帳務年度',
+            'default_fiscal_year.min' => '年度必須在 2000-2100 之間',
+            'default_fiscal_year.max' => '年度必須在 2000-2100 之間',
         ]);
 
         foreach ($validated as $key => $value) {
