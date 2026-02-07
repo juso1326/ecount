@@ -314,4 +314,184 @@ class FinancialReportController extends Controller
             'otherPayables'
         ));
     }
+    
+    /**
+     * 專案收支分析表
+     */
+    public function projectAnalysis(Request $request)
+    {
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        $projectId = $request->input('project_id');
+        
+        // 取得可用年度
+        $availableYears = Receivable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->union(
+                Payable::select('fiscal_year')
+                    ->whereNotNull('fiscal_year')
+                    ->distinct()
+            )
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+        
+        // 專案列表
+        $projects = Project::orderBy('code')->get();
+        
+        // 專案收支查詢
+        $projectsQuery = Project::query();
+        
+        if ($projectId) {
+            $projectsQuery->where('id', $projectId);
+        }
+        
+        $projectData = $projectsQuery->get()->map(function($project) use ($fiscalYear) {
+            // 應收統計
+            $receivables = Receivable::where('project_id', $project->id)
+                ->where('fiscal_year', $fiscalYear)
+                ->selectRaw('
+                    SUM(amount) as total_receivable,
+                    SUM(received_amount) as total_received
+                ')
+                ->first();
+            
+            // 應付統計
+            $payables = Payable::where('project_id', $project->id)
+                ->where('fiscal_year', $fiscalYear)
+                ->selectRaw('
+                    SUM(amount) as total_payable,
+                    SUM(paid_amount) as total_paid
+                ')
+                ->first();
+            
+            $totalReceivable = $receivables->total_receivable ?? 0;
+            $totalReceived = $receivables->total_received ?? 0;
+            $totalPayable = $payables->total_payable ?? 0;
+            $totalPaid = $payables->total_paid ?? 0;
+            
+            // 計算收支與成本比例
+            $profit = $totalReceived - $totalPaid;
+            $costRatio = $totalReceivable > 0 ? ($totalPayable / $totalReceivable) * 100 : 0;
+            $profitMargin = $totalReceivable > 0 ? ($profit / $totalReceivable) * 100 : 0;
+            
+            return [
+                'id' => $project->id,
+                'code' => $project->code,
+                'name' => $project->name,
+                'status' => $project->status,
+                'total_receivable' => $totalReceivable,
+                'total_received' => $totalReceived,
+                'receivable_unpaid' => $totalReceivable - $totalReceived,
+                'total_payable' => $totalPayable,
+                'total_paid' => $totalPaid,
+                'payable_unpaid' => $totalPayable - $totalPaid,
+                'profit' => $profit,
+                'cost_ratio' => $costRatio,
+                'profit_margin' => $profitMargin,
+            ];
+        })->filter(function($data) {
+            // 過濾掉沒有任何交易的專案
+            return $data['total_receivable'] > 0 || $data['total_payable'] > 0;
+        });
+        
+        // 總計
+        $summary = [
+            'total_receivable' => $projectData->sum('total_receivable'),
+            'total_received' => $projectData->sum('total_received'),
+            'receivable_unpaid' => $projectData->sum('receivable_unpaid'),
+            'total_payable' => $projectData->sum('total_payable'),
+            'total_paid' => $projectData->sum('total_paid'),
+            'payable_unpaid' => $projectData->sum('payable_unpaid'),
+            'profit' => $projectData->sum('profit'),
+        ];
+        
+        $summary['cost_ratio'] = $summary['total_receivable'] > 0 
+            ? ($summary['total_payable'] / $summary['total_receivable']) * 100 
+            : 0;
+        
+        $summary['profit_margin'] = $summary['total_receivable'] > 0 
+            ? ($summary['profit'] / $summary['total_receivable']) * 100 
+            : 0;
+        
+        return view('tenant.financial_reports.project_analysis', compact(
+            'fiscalYear',
+            'availableYears',
+            'projectId',
+            'projects',
+            'projectData',
+            'summary'
+        ));
+    }
+    
+    /**
+     * 應收未收報表
+     */
+    public function unpaidReceivables(Request $request)
+    {
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        $companyId = $request->input('company_id');
+        
+        // 取得可用年度
+        $availableYears = Receivable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+        
+        // 應收未收查詢（已開發票但未收款）
+        $unpaidQuery = Receivable::where('fiscal_year', $fiscalYear)
+            ->whereNotNull('invoice_no')
+            ->where('invoice_no', '!=', '')
+            ->whereRaw('amount > received_amount')
+            ->with(['company', 'project']);
+        
+        if ($companyId) {
+            $unpaidQuery->where('company_id', $companyId);
+        }
+        
+        $unpaidReceivables = $unpaidQuery->orderBy('invoice_date')->get();
+        
+        // 依公司分組統計
+        $companySummary = $unpaidReceivables->groupBy('company_id')->map(function($items, $companyId) {
+            $company = $items->first()->company;
+            return [
+                'company_id' => $companyId,
+                'company_name' => $company->name ?? '未指定',
+                'count' => $items->count(),
+                'total_amount' => $items->sum('amount'),
+                'total_received' => $items->sum('received_amount'),
+                'total_unpaid' => $items->sum(fn($item) => $item->amount - $item->received_amount),
+            ];
+        })->sortByDesc('total_unpaid');
+        
+        // 逾期統計
+        $today = now();
+        $overdue = $unpaidReceivables->filter(fn($item) => $item->due_date && $item->due_date < $today);
+        $upcoming = $unpaidReceivables->filter(fn($item) => !$item->due_date || $item->due_date >= $today);
+        
+        // 總計
+        $summary = [
+            'total_count' => $unpaidReceivables->count(),
+            'total_amount' => $unpaidReceivables->sum('amount'),
+            'total_received' => $unpaidReceivables->sum('received_amount'),
+            'total_unpaid' => $unpaidReceivables->sum(fn($item) => $item->amount - $item->received_amount),
+            'overdue_count' => $overdue->count(),
+            'overdue_unpaid' => $overdue->sum(fn($item) => $item->amount - $item->received_amount),
+            'upcoming_count' => $upcoming->count(),
+            'upcoming_unpaid' => $upcoming->sum(fn($item) => $item->amount - $item->received_amount),
+        ];
+        
+        // 公司列表（用於篩選）
+        $companies = Company::orderBy('name')->get(['id', 'name']);
+        
+        return view('tenant.financial_reports.unpaid_receivables', compact(
+            'fiscalYear',
+            'availableYears',
+            'companyId',
+            'companies',
+            'unpaidReceivables',
+            'companySummary',
+            'summary'
+        ));
+    }
 }
