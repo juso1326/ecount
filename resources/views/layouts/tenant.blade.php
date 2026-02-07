@@ -230,7 +230,6 @@
                 </div>
 
                 <!-- System Settings Section (Collapsible) -->
-                @can('settings.view')
                 <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700" x-data="{ settingsOpen: true }">
                     <div class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         系統設定
@@ -303,7 +302,6 @@
                             </a>
                         </div>
                         
-                        @can('roles.view')
                         <a href="#" 
                            class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,10 +309,8 @@
                             </svg>
                             <span>角色權限</span>
                         </a>
-                        @endcan
                     </div>
                 </div>
-                @endcan
             </nav>
         </aside>
 
