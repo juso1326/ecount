@@ -218,13 +218,24 @@
         <!-- 支出明細區塊 -->
         <div class="mb-6">
             <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">支出明細</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- 付款日期 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">付款日期</label>
-                    <input type="date" name="payment_date" 
+                    <input type="date" name="payment_date" id="payment_date"
                            value="{{ old('payment_date', isset($payable) ? $payable->payment_date : now()->format('Y-m-d')) }}"
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+
+                <!-- 帳務年度 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">帳務年度</label>
+                    <input type="number" name="fiscal_year" id="fiscal_year"
+                           value="{{ old('fiscal_year', isset($payable) ? $payable->fiscal_year : date('Y')) }}"
+                           min="2000" max="2100"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"
+                           placeholder="YYYY">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">可手動調整年度</p>
                 </div>
 
                 <!-- 發票號碼 -->
@@ -235,7 +246,9 @@
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"
                            placeholder="例如：AB12345678">
                 </div>
+            </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <!-- 預計付款日 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">預計付款日</label>
@@ -346,6 +359,15 @@ document.getElementById('amount_before_tax').addEventListener('input', calculate
 document.getElementById('tax_setting_id').addEventListener('change', calculateTax);
 document.querySelectorAll('input[name="tax_inclusive"]').forEach(radio => {
     radio.addEventListener('change', calculateTax);
+});
+
+// 日期變更時自動更新年度
+document.getElementById('payment_date').addEventListener('change', function() {
+    const dateValue = this.value;
+    if (dateValue) {
+        const year = dateValue.split('-')[0];
+        document.getElementById('fiscal_year').value = year;
+    }
 });
 
 document.addEventListener('DOMContentLoaded', calculateTax);

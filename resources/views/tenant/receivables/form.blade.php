@@ -135,12 +135,22 @@
             <!-- 開立資訊 -->
             <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">開立資訊</h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">日期</label>
-                        <input type="date" name="receipt_date" 
+                        <input type="date" name="receipt_date" id="receipt_date"
                                value="{{ old('receipt_date', isset($receivable) ? $receivable->receipt_date : now()->format('Y-m-d')) }}"
                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">帳務年度</label>
+                        <input type="number" name="fiscal_year" id="fiscal_year"
+                               value="{{ old('fiscal_year', isset($receivable) ? $receivable->fiscal_year : date('Y')) }}"
+                               min="2000" max="2100"
+                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="YYYY">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">可手動調整年度</p>
                     </div>
                     
                     <div>
@@ -246,6 +256,15 @@ document.getElementById('amount_before_tax').addEventListener('input', calculate
 document.getElementById('tax_setting_id').addEventListener('change', calculateTax);
 document.querySelectorAll('input[name="tax_inclusive"]').forEach(radio => {
     radio.addEventListener('change', calculateTax);
+});
+
+// 日期變更時自動更新年度
+document.getElementById('receipt_date').addEventListener('change', function() {
+    const dateValue = this.value;
+    if (dateValue) {
+        const year = dateValue.split('-')[0];
+        document.getElementById('fiscal_year').value = year;
+    }
 });
 
 // 初始化：顯示已選客戶的統編
