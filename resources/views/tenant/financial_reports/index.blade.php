@@ -240,6 +240,33 @@
         </div>
     </a>
 
+    <!-- 外製成本回收報表 -->
+    <a href="{{ route('tenant.reports.financial.outsource-cost-recovery', ['fiscal_year' => $fiscalYear]) }}" 
+       class="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow duration-200">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-purple-100 dark:bg-purple-900 rounded-md p-3">
+                        <svg class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                    </div>
+                </div>
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">外製成本回收</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">已付外包成本與應收款項回收狀況追蹤</p>
+            <div class="mt-3 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                成本回收率與風險分析
+            </div>
+        </div>
+    </a>
+
     <!-- 佔位卡片 - 未來功能 -->
     <div class="block bg-gray-50 dark:bg-gray-900 rounded-lg shadow border-2 border-dashed border-gray-300 dark:border-gray-700">
         <div class="p-6 opacity-50">

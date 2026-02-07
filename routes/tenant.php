@@ -203,6 +203,7 @@ Route::middleware([
             Route::get('financial/total-expenses', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'totalExpenses'])->name('financial.total-expenses');
             Route::get('financial/project-analysis', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'projectAnalysis'])->name('financial.project-analysis');
             Route::get('financial/unpaid-receivables', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'unpaidReceivables'])->name('financial.unpaid-receivables');
+            Route::get('financial/outsource-cost-recovery', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'outsourceCostRecovery'])->name('financial.outsource-cost-recovery');
             Route::get('financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('financial.export');
         });
         

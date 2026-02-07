@@ -494,4 +494,132 @@ class FinancialReportController extends Controller
             'summary'
         ));
     }
+    
+    /**
+     * 外製成本回收報表（已付外包但尚未收回款項）
+     */
+    public function outsourceCostRecovery(Request $request)
+    {
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        $projectId = $request->input('project_id');
+        
+        // 取得可用年度
+        $availableYears = Payable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+        
+        // 專案列表
+        $projects = Project::orderBy('code')->get();
+        
+        // 查詢已付款的外包成本
+        $paidOutsourcesQuery = Payable::where('fiscal_year', $fiscalYear)
+            ->where('payee_type', 'company')
+            ->whereNotNull('payee_company_id')
+            ->where(function($q) {
+                $q->where('type', 'like', '%薪資%')
+                  ->orWhere('type', 'like', '%勞務%')
+                  ->orWhere('type', 'like', '%外包%')
+                  ->orWhere('content', 'like', '%薪資%')
+                  ->orWhere('content', 'like', '%勞務%')
+                  ->orWhere('content', 'like', '%外包%');
+            })
+            ->where('paid_amount', '>', 0)
+            ->with(['payeeCompany', 'project']);
+        
+        if ($projectId) {
+            $paidOutsourcesQuery->where('project_id', $projectId);
+        }
+        
+        $paidOutsources = $paidOutsourcesQuery->get();
+        
+        // 整理專案資料：已付外包 vs 應收狀況
+        $projectSummaries = collect();
+        
+        foreach($paidOutsources->groupBy('project_id') as $projectIdKey => $payables) {
+            $project = $payables->first()->project;
+            
+            if (!$project) continue;
+            
+            // 該專案的已付外包成本
+            $totalPaidOutsource = $payables->sum('paid_amount');
+            
+            // 該專案的應收狀況
+            $receivables = Receivable::where('project_id', $projectIdKey)
+                ->where('fiscal_year', $fiscalYear)
+                ->get();
+            
+            $totalReceivable = $receivables->sum('amount');
+            $totalReceived = $receivables->sum('received_amount');
+            $hasInvoice = $receivables->where('invoice_no', '!=', '')->where('invoice_no', '!=', null)->count() > 0;
+            
+            // 應收未收（已開發票但未收款）
+            $unpaidReceivable = $receivables->filter(function($r) {
+                return $r->invoice_no && $r->amount > $r->received_amount;
+            })->sum(fn($r) => $r->amount - $r->received_amount);
+            
+            // 未開發票金額
+            $uninvoicedAmount = $receivables->where('invoice_no', '')->sum('amount') 
+                + $receivables->whereNull('invoice_no')->sum('amount');
+            
+            // 成本回收率
+            $recoveryRate = $totalPaidOutsource > 0 ? ($totalReceived / $totalPaidOutsource) * 100 : 0;
+            
+            // 風險等級
+            $riskLevel = 'low';
+            if (!$hasInvoice && $totalPaidOutsource > 0) {
+                $riskLevel = 'high'; // 已付外包但完全沒開發票
+            } elseif ($unpaidReceivable > $totalPaidOutsource * 0.5) {
+                $riskLevel = 'medium'; // 未收款超過外包成本50%
+            }
+            
+            $projectSummaries->push([
+                'project' => $project,
+                'paid_outsource' => $totalPaidOutsource,
+                'total_receivable' => $totalReceivable,
+                'total_received' => $totalReceived,
+                'unpaid_receivable' => $unpaidReceivable,
+                'uninvoiced_amount' => $uninvoicedAmount,
+                'recovery_rate' => $recoveryRate,
+                'has_invoice' => $hasInvoice,
+                'risk_level' => $riskLevel,
+                'cost_not_recovered' => max(0, $totalPaidOutsource - $totalReceived),
+                'payables' => $payables,
+                'receivables' => $receivables,
+            ]);
+        }
+        
+        // 依風險等級和未回收成本排序
+        $projectSummaries = $projectSummaries->sortByDesc(function($item) {
+            $riskScore = ['high' => 3, 'medium' => 2, 'low' => 1];
+            return ($riskScore[$item['risk_level']] * 1000000) + $item['cost_not_recovered'];
+        });
+        
+        // 總計統計
+        $summary = [
+            'total_projects' => $projectSummaries->count(),
+            'total_paid_outsource' => $projectSummaries->sum('paid_outsource'),
+            'total_receivable' => $projectSummaries->sum('total_receivable'),
+            'total_received' => $projectSummaries->sum('total_received'),
+            'total_unpaid_receivable' => $projectSummaries->sum('unpaid_receivable'),
+            'total_uninvoiced' => $projectSummaries->sum('uninvoiced_amount'),
+            'total_cost_not_recovered' => $projectSummaries->sum('cost_not_recovered'),
+            'high_risk_count' => $projectSummaries->where('risk_level', 'high')->count(),
+            'medium_risk_count' => $projectSummaries->where('risk_level', 'medium')->count(),
+        ];
+        
+        $summary['overall_recovery_rate'] = $summary['total_paid_outsource'] > 0 
+            ? ($summary['total_received'] / $summary['total_paid_outsource']) * 100 
+            : 0;
+        
+        return view('tenant.financial_reports.outsource_cost_recovery', compact(
+            'fiscalYear',
+            'availableYears',
+            'projectId',
+            'projects',
+            'projectSummaries',
+            'summary'
+        ));
+    }
 }
