@@ -295,7 +295,6 @@
 <!-- Reports Section -->
 <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 mb-6">
     <!-- 專案統計 -->
-    <!-- 專案統計 -->
     <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">專案統計</h3>
@@ -319,16 +318,10 @@
         </div>
     </div>
 
-    <!-- 客戶廠商統計 -->
+    <!-- 專案狀態分布圖 -->
     <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">客戶廠商</h3>
-            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
-        </div>
-        <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total_companies'] }}</div>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">登記的客戶廠商</p>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">專案狀態分布</h3>
+        <canvas id="projectStatusChart" class="max-h-48"></canvas>
     </div>
 
     <!-- 人員統計 -->
@@ -341,8 +334,56 @@
         </div>
         <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total_users'] }}</div>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">{{ $stats['total_departments'] }} 個部門</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $stats['total_companies'] }} 個客戶廠商</p>
     </div>
 </div>
+
+<!-- 專案收益 TOP 5 -->
+@if($projectProfitStats->count() > 0)
+<div class="mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">專案收益 TOP 5（{{ $fiscalYear }} 年度）</h2>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">排名</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">專案名稱</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">已收金額</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">已付成本</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">淨利潤</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach($projectProfitStats as $index => $data)
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full {{ $index == 0 ? 'bg-yellow-100 text-yellow-800' : ($index == 1 ? 'bg-gray-100 text-gray-800' : ($index == 2 ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800')) }} font-bold text-sm">
+                            {{ $index + 1 }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $data['project']->name }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $data['project']->code }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
+                        ${{ number_format($data['total_received'], 0) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
+                        ${{ number_format($data['total_paid'], 0) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold {{ $data['profit'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
+                        ${{ number_format($data['profit'], 0) }}
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
 
 <!-- Recent Projects -->
 @if($recentProjects->count() > 0)

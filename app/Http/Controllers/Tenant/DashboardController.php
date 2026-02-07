@@ -51,6 +51,9 @@ class DashboardController extends Controller
         // 財務統計（本年度）
         $financialStats = $this->getFinancialStats($fiscalYear);
         
+        // 專案收益統計
+        $projectProfitStats = $this->getProjectProfitStats($fiscalYear);
+        
         // 可用年度
         $availableYears = \App\Models\Receivable::select('fiscal_year')
             ->whereNotNull('fiscal_year')
@@ -66,6 +69,7 @@ class DashboardController extends Controller
                 'active_projects' => $activeProjects,
                 'announcement' => $announcement,
                 'financial_stats' => $financialStats,
+                'project_profit_stats' => $projectProfitStats,
             ]);
         }
 
@@ -76,6 +80,7 @@ class DashboardController extends Controller
             'activeProjects', 
             'announcement',
             'financialStats',
+            'projectProfitStats',
             'fiscalYear',
             'availableYears'
         ));
@@ -133,6 +138,38 @@ class DashboardController extends Controller
             'net_income' => $netIncome,
             'profit_margin' => $profitMargin,
         ];
+    }
+    
+    /**
+     * 取得專案收益統計
+     */
+    private function getProjectProfitStats($fiscalYear)
+    {
+        $projects = Project::with(['receivables' => function($q) use ($fiscalYear) {
+                $q->where('fiscal_year', $fiscalYear);
+            }, 'payables' => function($q) use ($fiscalYear) {
+                $q->where('fiscal_year', $fiscalYear);
+            }])
+            ->get()
+            ->map(function($project) {
+                $totalReceived = $project->receivables->sum('received_amount');
+                $totalPaid = $project->payables->sum('paid_amount');
+                $profit = $totalReceived - $totalPaid;
+                
+                return [
+                    'project' => $project,
+                    'total_received' => $totalReceived,
+                    'total_paid' => $totalPaid,
+                    'profit' => $profit,
+                ];
+            })
+            ->filter(function($data) {
+                return $data['total_received'] > 0 || $data['total_paid'] > 0;
+            })
+            ->sortByDesc('profit')
+            ->take(5);
+        
+        return $projects;
     }
 
     /**
