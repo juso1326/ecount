@@ -198,9 +198,37 @@ class SalaryController extends Controller
             'payments' => $data['payments'],
             'period' => $data['period'],
             'total' => $data['total'],
+            'paid_total' => $data['paid_total'],
+            'unpaid_total' => $data['unpaid_total'],
             'year' => $year,
             'month' => $month,
         ]);
+    }
+    
+    /**
+     * 移動薪資項目到上個月
+     */
+    public function moveToPrevMonth(Request $request)
+    {
+        try {
+            $this->salaryService->moveToPreviousMonth($request->payable_id);
+            return response()->json(['success' => true, 'message' => '已移到上個月']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+        }
+    }
+    
+    /**
+     * 移動薪資項目到下個月
+     */
+    public function moveToNextMonth(Request $request)
+    {
+        try {
+            $this->salaryService->moveToNextMonth($request->payable_id);
+            return response()->json(['success' => true, 'message' => '已移到下個月']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+        }
     }
 }
 

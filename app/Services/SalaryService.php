@@ -206,4 +206,50 @@ class SalaryService
             'unpaid_total' => $payments->where('is_salary_paid', false)->sum('amount'),
         ];
     }
+    
+    /**
+     * 移動薪資項目到上個月
+     */
+    public function moveToPreviousMonth($payableId)
+    {
+        $payable = Payable::findOrFail($payableId);
+        
+        // 檢查是否已撥款
+        if ($payable->is_salary_paid) {
+            throw new \Exception('已撥款的項目無法移動');
+        }
+        
+        // 計算上個月的日期（移到上個月的6號）
+        $currentDate = Carbon::parse($payable->payment_date);
+        $newDate = $currentDate->subMonth()->setDay(6);
+        
+        // 更新日期
+        $payable->payment_date = $newDate;
+        $payable->save();
+        
+        return $payable;
+    }
+    
+    /**
+     * 移動薪資項目到下個月
+     */
+    public function moveToNextMonth($payableId)
+    {
+        $payable = Payable::findOrFail($payableId);
+        
+        // 檢查是否已撥款
+        if ($payable->is_salary_paid) {
+            throw new \Exception('已撥款的項目無法移動');
+        }
+        
+        // 計算下個月的日期（移到下個月的6號）
+        $currentDate = Carbon::parse($payable->payment_date);
+        $newDate = $currentDate->addMonth()->setDay(6);
+        
+        // 更新日期
+        $payable->payment_date = $newDate;
+        $payable->save();
+        
+        return $payable;
+    }
 }

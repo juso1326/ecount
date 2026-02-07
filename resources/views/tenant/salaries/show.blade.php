@@ -90,6 +90,9 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">專案</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">內容</th>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">金額</th>
+                @if(!$isPaid)
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">移動</th>
+                @endif
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -107,10 +110,26 @@
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
                     ${{ number_format($item->amount, 0) }}
                 </td>
+                @if(!$isPaid && !$item->is_salary_paid)
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                    <div class="flex justify-center gap-2">
+                        <button onclick="moveItem({{ $item->id }}, 'prev')" 
+                                class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                title="移到上個月">
+                            &lt;
+                        </button>
+                        <button onclick="moveItem({{ $item->id }}, 'next')" 
+                                class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                title="移到下個月">
+                            &gt;
+                        </button>
+                    </div>
+                </td>
+                @endif
             </tr>
             @empty
             <tr>
-                <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">無薪資項目</td>
+                <td colspan="{{ !$isPaid ? 5 : 4 }}" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">無薪資項目</td>
             </tr>
             @endforelse
         </tbody>
@@ -162,4 +181,38 @@
         </div>
     </div>
 </div>
+
+<script>
+function moveItem(payableId, direction) {
+    if (!confirm('確定要移動此薪資項目到' + (direction === 'prev' ? '上個月' : '下個月') + '嗎？')) {
+        return;
+    }
+    
+    const url = direction === 'prev' 
+        ? '{{ route("tenant.salaries.move-prev") }}'
+        : '{{ route("tenant.salaries.move-next") }}';
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ payable_id: payableId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        } else {
+            alert('錯誤：' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('操作失敗，請稍後再試');
+        console.error('Error:', error);
+    });
+}
+</script>
 @endsection

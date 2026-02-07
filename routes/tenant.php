@@ -205,6 +205,8 @@ Route::middleware([
         Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SalaryController::class, 'index'])->name('index');
             Route::get('vendors', [\App\Http\Controllers\Tenant\SalaryController::class, 'vendors'])->name('vendors');
+            Route::post('move-to-prev-month', [\App\Http\Controllers\Tenant\SalaryController::class, 'moveToPrevMonth'])->name('move-prev');
+            Route::post('move-to-next-month', [\App\Http\Controllers\Tenant\SalaryController::class, 'moveToNextMonth'])->name('move-next');
             Route::get('{user}', [\App\Http\Controllers\Tenant\SalaryController::class, 'show'])->name('show');
             Route::get('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'adjustments'])->name('adjustments');
             Route::post('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'storeAdjustment'])->name('adjustments.store');
