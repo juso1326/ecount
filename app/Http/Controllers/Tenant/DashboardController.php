@@ -17,6 +17,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $fiscalYear = request()->input('fiscal_year', date('Y'));
+        
         // 基本統計
         $stats = [
             'total_companies' => Company::count(),
@@ -45,6 +47,16 @@ class DashboardController extends Controller
 
         // 獲取系統公告
         $announcement = Announcement::getActive();
+        
+        // 財務統計（本年度）
+        $financialStats = $this->getFinancialStats($fiscalYear);
+        
+        // 可用年度
+        $availableYears = \App\Models\Receivable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
 
         if (request()->wantsJson()) {
             return response()->json([
@@ -53,10 +65,74 @@ class DashboardController extends Controller
                 'recent_projects' => $recentProjects,
                 'active_projects' => $activeProjects,
                 'announcement' => $announcement,
+                'financial_stats' => $financialStats,
             ]);
         }
 
-        return view('tenant.dashboard', compact('stats', 'projectStats', 'recentProjects', 'activeProjects', 'announcement'));
+        return view('tenant.dashboard', compact(
+            'stats', 
+            'projectStats', 
+            'recentProjects', 
+            'activeProjects', 
+            'announcement',
+            'financialStats',
+            'fiscalYear',
+            'availableYears'
+        ));
+    }
+    
+    /**
+     * 取得財務統計
+     */
+    private function getFinancialStats($fiscalYear)
+    {
+        // 應收統計
+        $receivableStats = \App\Models\Receivable::where('fiscal_year', $fiscalYear)
+            ->selectRaw('
+                SUM(amount) as total_receivable,
+                SUM(received_amount) as total_received,
+                COUNT(CASE WHEN invoice_no IS NOT NULL AND invoice_no != "" AND amount > received_amount THEN 1 END) as unpaid_count
+            ')
+            ->first();
+        
+        // 應付統計
+        $payableStats = \App\Models\Payable::where('fiscal_year', $fiscalYear)
+            ->selectRaw('
+                SUM(amount) as total_payable,
+                SUM(paid_amount) as total_paid,
+                SUM(CASE WHEN payee_type = "user" THEN paid_amount ELSE 0 END) as employee_salary,
+                SUM(CASE WHEN payee_type = "company" AND (type LIKE "%薪資%" OR type LIKE "%勞務%" OR type LIKE "%外包%") THEN paid_amount ELSE 0 END) as outsource_cost
+            ')
+            ->first();
+        
+        // 計算衍生指標
+        $totalReceivable = $receivableStats->total_receivable ?? 0;
+        $totalReceived = $receivableStats->total_received ?? 0;
+        $totalPayable = $payableStats->total_payable ?? 0;
+        $totalPaid = $payableStats->total_paid ?? 0;
+        
+        $netIncome = $totalReceived - $totalPaid;
+        $profitMargin = $totalReceived > 0 ? ($netIncome / $totalReceived) * 100 : 0;
+        
+        // 風險指標
+        $unpaidReceivables = $totalReceivable - $totalReceived;
+        $unpaidPayables = $totalPayable - $totalPaid;
+        
+        return [
+            'total_receivable' => $totalReceivable,
+            'total_received' => $totalReceived,
+            'unpaid_receivables' => $unpaidReceivables,
+            'unpaid_count' => $receivableStats->unpaid_count ?? 0,
+            
+            'total_payable' => $totalPayable,
+            'total_paid' => $totalPaid,
+            'unpaid_payables' => $unpaidPayables,
+            'employee_salary' => $payableStats->employee_salary ?? 0,
+            'outsource_cost' => $payableStats->outsource_cost ?? 0,
+            
+            'net_income' => $netIncome,
+            'profit_margin' => $profitMargin,
+        ];
     }
 
     /**
