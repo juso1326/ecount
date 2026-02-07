@@ -200,6 +200,7 @@ Route::middleware([
         // 財務報表
         Route::prefix('reports')->name('tenant.reports.')->group(function () {
             Route::get('financial', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'index'])->name('financial');
+            Route::get('financial/total-expenses', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'totalExpenses'])->name('financial.total-expenses');
             Route::get('financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('financial.export');
         });
         

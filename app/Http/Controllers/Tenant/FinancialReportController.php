@@ -220,4 +220,98 @@ class FinancialReportController extends Controller
         
         return response()->json($data);
     }
+    
+    /**
+     * 總支出報表（含薪資與應付）
+     */
+    public function totalExpenses(Request $request)
+    {
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        
+        // 取得可用年度
+        $availableYears = Payable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+        
+        // 1. 員工薪資（應付帳款中 payee_type = user）
+        $employeeSalaries = Payable::where('fiscal_year', $fiscalYear)
+            ->where('payee_type', 'user')
+            ->whereNotNull('payee_user_id')
+            ->with('payeeUser')
+            ->get();
+        
+        $employeeSalaryTotal = $employeeSalaries->sum('amount');
+        $employeeSalaryPaid = $employeeSalaries->sum('paid_amount');
+        
+        // 2. 外包薪資/勞務（應付帳款中 payee_type = company，且 type 包含薪資/勞務相關）
+        $vendorPayables = Payable::where('fiscal_year', $fiscalYear)
+            ->where('payee_type', 'company')
+            ->whereNotNull('payee_company_id')
+            ->where(function($q) {
+                $q->where('type', 'like', '%薪資%')
+                  ->orWhere('type', 'like', '%勞務%')
+                  ->orWhere('type', 'like', '%外包%')
+                  ->orWhere('content', 'like', '%薪資%')
+                  ->orWhere('content', 'like', '%勞務%')
+                  ->orWhere('content', 'like', '%外包%');
+            })
+            ->with('payeeCompany')
+            ->get();
+        
+        $vendorPayableTotal = $vendorPayables->sum('amount');
+        $vendorPayablePaid = $vendorPayables->sum('paid_amount');
+        
+        // 3. 其他應付（排除薪資相關）
+        $otherPayables = Payable::where('fiscal_year', $fiscalYear)
+            ->where(function($q) {
+                $q->where('payee_type', 'company')
+                  ->where(function($q2) {
+                      $q2->where('type', 'not like', '%薪資%')
+                         ->where('type', 'not like', '%勞務%')
+                         ->where('type', 'not like', '%外包%')
+                         ->where('content', 'not like', '%薪資%')
+                         ->where('content', 'not like', '%勞務%')
+                         ->where('content', 'not like', '%外包%');
+                  });
+            })
+            ->orWhere(function($q) use ($fiscalYear) {
+                $q->where('fiscal_year', $fiscalYear)
+                  ->whereNull('payee_type');
+            })
+            ->with(['payeeCompany', 'project'])
+            ->get();
+        
+        $otherPayableTotal = $otherPayables->sum('amount');
+        $otherPayablePaid = $otherPayables->sum('paid_amount');
+        
+        // 總計
+        $summary = [
+            'employee_salary_total' => $employeeSalaryTotal,
+            'employee_salary_paid' => $employeeSalaryPaid,
+            'employee_salary_unpaid' => $employeeSalaryTotal - $employeeSalaryPaid,
+            
+            'vendor_payable_total' => $vendorPayableTotal,
+            'vendor_payable_paid' => $vendorPayablePaid,
+            'vendor_payable_unpaid' => $vendorPayableTotal - $vendorPayablePaid,
+            
+            'other_payable_total' => $otherPayableTotal,
+            'other_payable_paid' => $otherPayablePaid,
+            'other_payable_unpaid' => $otherPayableTotal - $otherPayablePaid,
+            
+            'grand_total' => $employeeSalaryTotal + $vendorPayableTotal + $otherPayableTotal,
+            'grand_paid' => $employeeSalaryPaid + $vendorPayablePaid + $otherPayablePaid,
+            'grand_unpaid' => ($employeeSalaryTotal - $employeeSalaryPaid) + ($vendorPayableTotal - $vendorPayablePaid) + ($otherPayableTotal - $otherPayablePaid),
+        ];
+        
+        return view('tenant.financial_reports.total_expenses', compact(
+            'fiscalYear',
+            'availableYears',
+            'summary',
+            'employeeSalaries',
+            'vendorPayables',
+            'otherPayables'
+        ));
+    }
 }

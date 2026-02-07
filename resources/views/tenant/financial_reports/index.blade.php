@@ -156,4 +156,51 @@
         </div>
     </div>
 </div>
+
+<!-- 報表功能卡片 -->
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
+    <!-- 總支出報表 -->
+    <a href="{{ route('tenant.reports.financial.total-expenses', ['fiscal_year' => $fiscalYear]) }}" 
+       class="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow duration-200">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-red-100 dark:bg-red-900 rounded-md p-3">
+                        <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">總支出報表</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">員工薪資、外包勞務與其他支出統計分析</p>
+            <div class="mt-3 flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                支援區分成員與外包
+            </div>
+        </div>
+    </a>
+
+    <!-- 佔位卡片 - 未來功能 -->
+    <div class="block bg-gray-50 dark:bg-gray-900 rounded-lg shadow border-2 border-dashed border-gray-300 dark:border-gray-700">
+        <div class="p-6 opacity-50">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-gray-200 dark:bg-gray-800 rounded-md p-3">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-500 dark:text-gray-600 mb-2">更多報表</h3>
+            <p class="text-sm text-gray-400 dark:text-gray-600">即將推出...</p>
+        </div>
+    </div>
+</div>
 @endsection
