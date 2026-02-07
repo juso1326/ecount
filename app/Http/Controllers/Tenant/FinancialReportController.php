@@ -14,21 +14,35 @@ class FinancialReportController extends Controller
     /**
      * 財務報表首頁
      */
-    public function index()
+    public function index(Request $request)
     {
-        // 快速統計
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        
+        // 取得可用年度
+        $availableYears = Receivable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->union(
+                Payable::select('fiscal_year')
+                    ->whereNotNull('fiscal_year')
+                    ->distinct()
+            )
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+        
+        // 快速統計（依會計年度）
         $summary = [
-            'total_receivable' => Receivable::sum('amount'),
-            'total_received' => Receivable::sum('received_amount'),
-            'total_payable' => Payable::sum('amount'),
-            'total_paid' => Payable::sum('paid_amount'),
+            'total_receivable' => Receivable::where('fiscal_year', $fiscalYear)->sum('amount'),
+            'total_received' => Receivable::where('fiscal_year', $fiscalYear)->sum('received_amount'),
+            'total_payable' => Payable::where('fiscal_year', $fiscalYear)->sum('amount'),
+            'total_paid' => Payable::where('fiscal_year', $fiscalYear)->sum('paid_amount'),
         ];
         
         $summary['remaining_receivable'] = $summary['total_receivable'] - $summary['total_received'];
         $summary['remaining_payable'] = $summary['total_payable'] - $summary['total_paid'];
         $summary['net_income'] = $summary['total_received'] - $summary['total_paid'];
         
-        return view('tenant.financial_reports.index', compact('summary'));
+        return view('tenant.financial_reports.index', compact('summary', 'fiscalYear', 'availableYears'));
     }
     
     /**

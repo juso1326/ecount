@@ -198,8 +198,10 @@ Route::middleware([
         Route::post('tax-settings/{taxSetting}/set-default', [\App\Http\Controllers\Tenant\TaxSettingController::class, 'setDefault'])->name('tenant.tax-settings.set-default');
 
         // 財務報表
-        Route::get('reports/financial', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'index'])->name('tenant.reports.financial');
-        Route::get('reports/financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('tenant.reports.financial.export');
+        Route::prefix('reports')->name('tenant.reports.')->group(function () {
+            Route::get('financial', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'index'])->name('financial');
+            Route::get('financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('financial.export');
+        });
         
         // 薪資管理
         Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
