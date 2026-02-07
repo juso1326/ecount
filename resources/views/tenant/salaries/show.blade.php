@@ -17,7 +17,7 @@
 <div class="mb-6">
     <!-- 月份導航 -->
     <div class="flex items-center justify-between mb-4">
-        <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month]) }}?nav=prev" 
+        <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month, 'nav' => 'prev']) }}" 
            class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -27,7 +27,7 @@
         
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $salary['period']['label'] }}</h2>
         
-        <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month]) }}?nav=next" 
+        <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month, 'nav' => 'next']) }}" 
            class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition">
             下個月
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

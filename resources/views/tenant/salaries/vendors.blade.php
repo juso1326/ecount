@@ -26,7 +26,7 @@
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
     <div class="flex items-center justify-between">
         <!-- 上個月按鈕 -->
-        <a href="{{ route('tenant.salaries.vendors', ['year' => $year, 'month' => str_pad($month, 2, '0', STR_PAD_LEFT)]) }}?nav=prev" 
+        <a href="{{ route('tenant.salaries.vendors', ['year' => $year, 'month' => $month, 'nav' => 'prev']) }}" 
            class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -49,7 +49,7 @@
         </form>
         
         <!-- 下個月按鈕 -->
-        <a href="{{ route('tenant.salaries.vendors', ['year' => $year, 'month' => str_pad($month, 2, '0', STR_PAD_LEFT)]) }}?nav=next" 
+        <a href="{{ route('tenant.salaries.vendors', ['year' => $year, 'month' => $month, 'nav' => 'next']) }}" 
            class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary transition">
             <span class="hidden sm:inline">下個月</span>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
