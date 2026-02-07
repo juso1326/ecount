@@ -33,6 +33,26 @@
 <!-- 智能搜尋 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <form method="GET" action="{{ route('tenant.receivables.index') }}">
+        <!-- 年度選擇器 -->
+        <div class="flex items-center gap-3 mb-4">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">帳務年度：</label>
+            <select name="fiscal_year" 
+                    onchange="this.form.submit()"
+                    class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <option value="">全部年度</option>
+                @foreach($availableYears as $year)
+                    <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
+                        {{ $year }} 年
+                    </option>
+                @endforeach
+            </select>
+            @if(request('fiscal_year'))
+                <span class="text-sm text-gray-600 dark:text-gray-400">
+                    目前顯示：<span class="font-semibold text-primary">{{ request('fiscal_year') }} 年度</span> 的應收帳款
+                </span>
+            @endif
+        </div>
+
         <div class="flex gap-3">
             <div class="flex-1">
                 <input type="text" 
@@ -45,7 +65,7 @@
                     class="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-3 rounded-lg shadow-sm whitespace-nowrap">
                 搜尋
             </button>
-            @if(request('smart_search'))
+            @if(request('smart_search') || request('fiscal_year') != date('Y'))
                 <a href="{{ route('tenant.receivables.index') }}" 
                    class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium px-6 py-3 rounded-lg whitespace-nowrap">
                     清除
@@ -61,7 +81,7 @@
 </div>
 
 <!-- 進階篩選 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6" x-data="{ showFilters: {{ request()->hasAny(['search', 'project_id', 'company_id', 'status', 'year', 'month']) ? 'true' : 'false' }} }">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6" x-data="{ showFilters: {{ request()->hasAny(['search', 'project_id', 'company_id', 'status', 'year', 'month', 'date_start', 'date_end']) ? 'true' : 'false' }} }">
     <button @click="showFilters = !showFilters" 
             class="w-full px-4 py-3 flex items-center justify-between text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition">
         <span class="font-medium">進階篩選</span>
@@ -72,6 +92,8 @@
     
     <div x-show="showFilters" x-collapse class="border-t border-gray-200 dark:border-gray-700 p-4">
         <form method="GET" action="{{ route('tenant.receivables.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="hidden" name="fiscal_year" value="{{ request('fiscal_year') }}">
+        
         <!-- 搜尋框 -->
         <input type="text" name="search" value="{{ request('search') }}" 
                placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 

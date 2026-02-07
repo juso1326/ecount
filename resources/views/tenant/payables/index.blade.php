@@ -32,35 +32,59 @@
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-    <form method="GET" action="{{ route('tenant.payables.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input type="text" name="search" value="{{ request('search') }}" 
-               placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 
-               class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-        
-        <select name="type" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-            <option value="">全部類型</option>
-            <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
-            <option value="expense" {{ request('type') === 'expense' ? 'selected' : '' }}>費用</option>
-            <option value="service" {{ request('type') === 'service' ? 'selected' : '' }}>服務</option>
-            <option value="other" {{ request('type') === 'other' ? 'selected' : '' }}>其他</option>
-        </select>
-
-        <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-            <option value="">全部狀態</option>
-            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
-            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
-            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
-            <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
-        </select>
-
-        <div class="flex gap-2">
-            <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg flex-1">
-                搜尋
-            </button>
-            @if(request()->hasAny(['search', 'type', 'status']))
-                <a href="{{ route('tenant.payables.index') }}" 
-                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg">清除</a>
+    <form method="GET" action="{{ route('tenant.payables.index') }}">
+        <!-- 年度選擇器 -->
+        <div class="flex items-center gap-3 mb-4">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">帳務年度：</label>
+            <select name="fiscal_year" 
+                    onchange="this.form.submit()"
+                    class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <option value="">全部年度</option>
+                @foreach($availableYears as $year)
+                    <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
+                        {{ $year }} 年
+                    </option>
+                @endforeach
+            </select>
+            @if(request('fiscal_year'))
+                <span class="text-sm text-gray-600 dark:text-gray-400">
+                    目前顯示：<span class="font-semibold text-primary">{{ request('fiscal_year') }} 年度</span> 的應付帳款
+                </span>
             @endif
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <input type="hidden" name="fiscal_year" value="{{ request('fiscal_year') }}">
+            
+            <input type="text" name="search" value="{{ request('search') }}" 
+                   placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 
+                   class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+            
+            <select name="type" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                <option value="">全部類型</option>
+                <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
+                <option value="expense" {{ request('type') === 'expense' ? 'selected' : '' }}>費用</option>
+                <option value="service" {{ request('type') === 'service' ? 'selected' : '' }}>服務</option>
+                <option value="other" {{ request('type') === 'other' ? 'selected' : '' }}>其他</option>
+            </select>
+
+            <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                <option value="">全部狀態</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
+                <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
+                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
+                <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
+            </select>
+
+            <div class="flex gap-2">
+                <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg flex-1">
+                    搜尋
+                </button>
+                @if(request()->hasAny(['search', 'type', 'status', 'fiscal_year']))
+                    <a href="{{ route('tenant.payables.index') }}" 
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg">清除</a>
+                @endif
+            </div>
         </div>
     </form>
 </div>

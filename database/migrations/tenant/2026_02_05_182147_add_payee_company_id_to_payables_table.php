@@ -9,7 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payables', function (Blueprint $table) {
-            $table->foreignId('payee_company_id')->nullable()->after('payee_user_id')->constrained('companies')->onDelete('set null')->comment('給付對象廠商');
+            if (!Schema::hasColumn('payables', 'payee_company_id')) {
+                $table->foreignId('payee_company_id')->nullable()->after('payee_user_id')->constrained('companies')->onDelete('set null')->comment('給付對象廠商');
+            }
         });
     }
 

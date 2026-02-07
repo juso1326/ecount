@@ -20,17 +20,25 @@ class ReceivableController extends Controller
     {
         $query = Receivable::with(['project', 'company', 'responsibleUser']);
 
+        // 帳務年度篩選
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        if ($fiscalYear) {
+            $query->where('fiscal_year', $fiscalYear);
+        }
+
         // 智能搜尋
         if ($request->filled('smart_search')) {
             $query->smartSearch($request->smart_search);
         }
 
         // 日期範圍篩選（預設最近一年）
-        $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
-        $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
+        $dateStart = $request->input('date_start');
+        $dateEnd = $request->input('date_end');
         
-        // 只在沒有使用智能搜尋時才套用預設日期範圍
-        if (!$request->filled('smart_search') && $dateStart && $dateEnd) {
+        // 只在沒有使用智能搜尋且沒有選擇年度時才套用預設日期範圍
+        if (!$request->filled('smart_search') && !$request->filled('fiscal_year') && $dateStart && $dateEnd) {
+            $query->whereBetween('receipt_date', [$dateStart, $dateEnd]);
+        } elseif ($dateStart && $dateEnd) {
             $query->whereBetween('receipt_date', [$dateStart, $dateEnd]);
         }
 
@@ -71,10 +79,20 @@ class ReceivableController extends Controller
 
         $receivables = $query->paginate(15);
 
+        // 可用年度清單
+        $availableYears = Receivable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+
         // 計算統計數據（基於當前篩選條件）
         $statsQuery = Receivable::query();
         
         // 應用相同的篩選條件
+        if ($fiscalYear) {
+            $statsQuery->where('fiscal_year', $fiscalYear);
+        }
         if ($dateStart && $dateEnd) {
             $statsQuery->whereBetween('receipt_date', [$dateStart, $dateEnd]);
         }
@@ -109,7 +127,7 @@ class ReceivableController extends Controller
         $totalAmount = $stats->total_amount ?? 0;
         $totalReceived = $stats->total_received ?? 0;
 
-        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived'));
+        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'availableYears', 'fiscalYear'));
     }
 
     /**

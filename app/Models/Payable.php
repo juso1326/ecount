@@ -24,6 +24,7 @@ class Payable extends Model
         'type',
         'content',
         'payment_date',
+        'fiscal_year',
         'invoice_date',
         'due_date',
         'amount',

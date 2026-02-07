@@ -22,9 +22,15 @@ class PayableController extends Controller
     {
         $query = Payable::with(['project', 'company', 'responsibleUser']);
 
-        // 日期範圍篩選（預設最近一年）
-        $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
-        $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
+        // 帳務年度篩選
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        if ($fiscalYear) {
+            $query->where('fiscal_year', $fiscalYear);
+        }
+
+        // 日期範圍篩選
+        $dateStart = $request->input('date_start');
+        $dateEnd = $request->input('date_end');
         
         if ($dateStart && $dateEnd) {
             $query->whereBetween('payment_date', [$dateStart, $dateEnd]);
@@ -65,10 +71,20 @@ class PayableController extends Controller
 
         $payables = $query->paginate(15);
 
+        // 可用年度清單
+        $availableYears = Payable::select('fiscal_year')
+            ->whereNotNull('fiscal_year')
+            ->distinct()
+            ->orderBy('fiscal_year', 'desc')
+            ->pluck('fiscal_year');
+
         // 計算統計數據（基於當前篩選條件）
         $statsQuery = Payable::query();
         
         // 應用相同的篩選條件
+        if ($fiscalYear) {
+            $statsQuery->where('fiscal_year', $fiscalYear);
+        }
         if ($dateStart && $dateEnd) {
             $statsQuery->whereBetween('payment_date', [$dateStart, $dateEnd]);
         }
@@ -101,7 +117,7 @@ class PayableController extends Controller
         $totalAmount = $stats->total_amount ?? 0;
         $totalPaid = $stats->total_paid ?? 0;
 
-        return view('tenant.payables.index', compact('payables', 'dateStart', 'dateEnd', 'totalAmount', 'totalPaid'));
+        return view('tenant.payables.index', compact('payables', 'dateStart', 'dateEnd', 'totalAmount', 'totalPaid', 'availableYears', 'fiscalYear'));
     }
 
     /**

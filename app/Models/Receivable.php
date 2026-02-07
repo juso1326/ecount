@@ -19,6 +19,7 @@ class Receivable extends Model
         'company_id',
         'responsible_user_id',
         'receipt_date',
+        'fiscal_year',
         'due_date',
         'amount',
         'amount_before_tax',
