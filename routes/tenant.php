@@ -200,5 +200,15 @@ Route::middleware([
         // 財務報表
         Route::get('reports/financial', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'index'])->name('tenant.reports.financial');
         Route::get('reports/financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('tenant.reports.financial.export');
+        
+        // 薪資管理
+        Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Tenant\SalaryController::class, 'index'])->name('index');
+            Route::get('{user}', [\App\Http\Controllers\Tenant\SalaryController::class, 'show'])->name('show');
+            Route::get('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'adjustments'])->name('adjustments');
+            Route::post('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'storeAdjustment'])->name('adjustments.store');
+            Route::delete('adjustments/{adjustment}', [\App\Http\Controllers\Tenant\SalaryController::class, 'destroyAdjustment'])->name('adjustments.destroy');
+            Route::post('{user}/pay', [\App\Http\Controllers\Tenant\SalaryController::class, 'pay'])->name('pay');
+        });
     });
 });

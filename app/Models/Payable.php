@@ -34,6 +34,10 @@ class Payable extends Model
         'paid_date',
         'invoice_no',
         'note',
+        'is_salary_paid',
+        'salary_paid_at',
+        'salary_paid_amount',
+        'salary_paid_remark',
     ];
 
     protected $casts = [
@@ -44,6 +48,9 @@ class Payable extends Model
         'amount' => 'decimal:2',
         'deduction' => 'decimal:2',
         'paid_amount' => 'decimal:2',
+        'is_salary_paid' => 'boolean',
+        'salary_paid_at' => 'datetime',
+        'salary_paid_amount' => 'decimal:2',
     ];
 
     /**
@@ -160,5 +167,48 @@ class Payable extends Model
         }
 
         return round(($this->paid_amount / $this->amount) * 100, 2);
+    }
+
+    /**
+     * 檢查是否為薪資類型
+     */
+    public function isSalary(): bool
+    {
+        return $this->payee_type === 'user';
+    }
+
+    /**
+     * 檢查薪資是否已撥款
+     */
+    public function isSalaryPaid(): bool
+    {
+        return $this->is_salary_paid;
+    }
+
+    /**
+     * 查詢範圍：未撥款的薪資
+     */
+    public function scopeUnpaidSalaries($query)
+    {
+        return $query->where('payee_type', 'user')
+                    ->where('is_salary_paid', false);
+    }
+
+    /**
+     * 查詢範圍：已撥款的薪資
+     */
+    public function scopePaidSalaries($query)
+    {
+        return $query->where('payee_type', 'user')
+                    ->where('is_salary_paid', true);
+    }
+
+    /**
+     * 查詢範圍：指定員工的薪資
+     */
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('payee_type', 'user')
+                    ->where('payee_user_id', $userId);
     }
 }

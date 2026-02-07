@@ -271,7 +271,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         收款日期 <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" name="received_date" id="received_date" required
+                    <input type="date" name="payment_date" id="payment_date" required
                            value="{{ date('Y-m-d') }}"
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                 </div>
@@ -281,7 +281,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         收款金額 <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" name="received_amount" id="received_amount" required
+                    <input type="number" name="amount" id="amount" required
                            min="0" step="1"
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -334,13 +334,13 @@
 <script>
 function openQuickReceiveModal(receivableId, remainingAmount, receiptNo) {
     document.getElementById('receivableId').value = receivableId;
-    document.getElementById('received_amount').value = remainingAmount;
+    document.getElementById('amount').value = remainingAmount;
     document.getElementById('remainingAmount').textContent = new Intl.NumberFormat().format(remainingAmount);
     document.getElementById('modalReceiptNo').textContent = receiptNo;
     document.getElementById('quickReceiveModal').classList.remove('hidden');
     
     // 設定表單 action
-    document.getElementById('quickReceiveForm').action = `/receivables/${receivableId}/quick-receive`;
+    document.getElementById('quickReceiveForm').action = `/receivable-payments/${receivableId}`;
 }
 
 function closeQuickReceiveModal() {
@@ -349,7 +349,7 @@ function closeQuickReceiveModal() {
 }
 
 // 驗證收款金額不超過未收金額
-document.getElementById('received_amount').addEventListener('input', function() {
+document.getElementById('amount').addEventListener('input', function() {
     const remaining = parseFloat(document.getElementById('remainingAmount').textContent.replace(/,/g, ''));
     const amount = parseFloat(this.value);
     

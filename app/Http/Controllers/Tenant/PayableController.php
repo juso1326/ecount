@@ -274,6 +274,7 @@ class PayableController extends Controller
             ->with('success', '應付帳款更新成功');
     }
     
+    /**
      * 快速給付頁面（薪資入帳）
      */
     public function quickPay(Payable $payable)
