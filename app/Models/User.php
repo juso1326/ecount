@@ -26,30 +26,18 @@ class User extends Authenticatable
         'password',
         'last_login_at',
         'is_active',
+        'permission_start_date',
+        'permission_end_date',
         // 員工基本資訊
         'employee_no',
         'short_name',
         'position',
         'department_id',
         'supervisor_id',
-        // 個人資料
-        'id_number',
-        'birth_date',
-        'phone',
-        'mobile',
+        'company_id', // 關聯到成員（員工）
+        // 其他
         'backup_email',
-        // 銀行資訊
-        'bank_name',
-        'bank_branch',
-        'bank_account',
-        // 緊急聯絡人
-        'emergency_contact',
-        'emergency_contact_phone',
-        // 任職資訊
-        'hire_date',
-        'resign_date',
         'suspended_at',
-        // 備註
         'note',
     ];
 
@@ -75,9 +63,8 @@ class User extends Authenticatable
             'password' => 'hashed',
             'last_login_at' => 'datetime',
             'is_active' => 'boolean',
-            'birth_date' => 'date',
-            'hire_date' => 'date',
-            'resign_date' => 'date',
+            'permission_start_date' => 'date',
+            'permission_end_date' => 'date',
             'suspended_at' => 'datetime',
         ];
     }
@@ -104,6 +91,14 @@ class User extends Authenticatable
     public function subordinates()
     {
         return $this->hasMany(User::class, 'supervisor_id');
+    }
+
+    /**
+     * 關聯到成員（員工）
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**

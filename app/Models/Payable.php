@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * 應付帳款 Model
@@ -28,6 +29,11 @@ class Payable extends Model
         'invoice_date',
         'due_date',
         'amount',
+        'amount_before_tax',
+        'has_tax',
+        'tax_rate',
+        'tax_amount',
+        'tax_inclusive',
         'deduction',
         'paid_amount',
         'status',
@@ -47,8 +53,13 @@ class Payable extends Model
         'due_date' => 'date',
         'paid_date' => 'date',
         'amount' => 'decimal:2',
+        'amount_before_tax' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'tax_inclusive' => 'boolean',
         'deduction' => 'decimal:2',
         'paid_amount' => 'decimal:2',
+        'has_tax' => 'boolean',
         'is_salary_paid' => 'boolean',
         'salary_paid_at' => 'datetime',
         'salary_paid_amount' => 'decimal:2',
@@ -109,6 +120,14 @@ class Payable extends Model
     public function payments()
     {
         return $this->hasMany(PayablePayment::class);
+    }
+
+    /**
+     * 關聯：標籤
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     /**
@@ -211,5 +230,45 @@ class Payable extends Model
     {
         return $query->where('payee_type', 'user')
                     ->where('payee_user_id', $userId);
+    }
+
+    /**
+     * 智能搜尋 Scope
+     */
+    public function scopeSmartSearch($query, $keyword)
+    {
+        if (empty($keyword)) {
+            return $query;
+        }
+
+        return $query->where(function($q) use ($keyword) {
+            // 搜尋專案名稱、代碼
+            $q->orWhereHas('project', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                  ->orWhere('code', 'like', "%{$keyword}%");
+            })
+            // 搜尋專案成員
+            ->orWhereHas('project.members', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })
+            // 搜尋負責人
+            ->orWhereHas('responsibleUser', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })
+            // 搜尋收款人
+            ->orWhereHas('payeeUser', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })
+            // 搜尋廠商
+            ->orWhereHas('payeeCompany', function($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%");
+            })
+            // 搜尋發票號碼
+            ->orWhere('invoice_no', 'like', "%{$keyword}%")
+            // 搜尋付款單號
+            ->orWhere('payment_no', 'like', "%{$keyword}%")
+            // 搜尋內容
+            ->orWhere('content', 'like', "%{$keyword}%");
+        });
     }
 }

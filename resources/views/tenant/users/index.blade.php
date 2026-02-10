@@ -62,13 +62,12 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工編號</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">姓名</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">部門</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">參與專案</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">登入帳號</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色層級</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">關聯員工</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">權限期限</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
             </tr>
         </thead>
@@ -76,56 +75,72 @@
             @forelse($users as $user)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <a href="{{ route('tenant.users.show', $user) }}" 
+                       class="text-primary hover:text-primary-dark font-medium mr-2">
+                        查看
+                    </a>
                     <a href="{{ route('tenant.users.edit', $user) }}" 
                        class="text-primary hover:text-primary-dark font-medium">
                         編輯
                     </a>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {{ $user->employee_id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {{ $user->name }}
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="font-medium text-gray-900 dark:text-white">{{ $user->name }}</div>
+                    @if($user->short_name)
+                        <div class="text-gray-500 dark:text-gray-400 text-xs">{{ $user->short_name }}</div>
+                    @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $user->email }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {{ $user->department?->name }}
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                    @if($user->projects && $user->projects->count() > 0)
-                        <div class="flex flex-wrap gap-1">
-                            @foreach($user->projects->take(3) as $project)
-                                <a href="{{ route('tenant.projects.show', $project) }}" 
-                                   class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800"
-                                   title="{{ $project->name }}">
-                                    {{ $project->code }}
-                                </a>
-                            @endforeach
-                            @if($user->projects->count() > 3)
-                                <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                                    +{{ $user->projects->count() - 3 }}
-                                </span>
-                            @endif
-                        </div>
-                    @else
-                        <span class="text-gray-400 dark:text-gray-500">無</span>
-                    @endif
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
                     @if($user->hasRole('admin'))
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                             系統管理員
                         </span>
                     @elseif($user->hasRole('manager'))
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                             總管理/主管
                         </span>
-                    @else
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                            一般使用者
+                    @elseif($user->hasRole('accountant'))
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            會計
                         </span>
+                    @elseif($user->hasRole('employee'))
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                            成員
+                        </span>
+                    @else
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                            未設定
+                        </span>
+                    @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    @if($user->company)
+                        <a href="{{ route('tenant.companies.edit', $user->company) }}" 
+                           class="text-primary hover:text-primary-dark">
+                            {{ $user->company->name }}
+                            <span class="text-gray-400">({{ $user->company->code }})</span>
+                        </a>
+                    @else
+                        <span class="text-gray-400 dark:text-gray-500">-</span>
+                    @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    @if($user->permission_start_date || $user->permission_end_date)
+                        <div class="text-xs">
+                            @if($user->permission_start_date)
+                                <div>起：{{ $user->permission_start_date->format('Y/m/d') }}</div>
+                            @endif
+                            @if($user->permission_end_date)
+                                <div class="{{ $user->permission_end_date->isPast() ? 'text-red-600 dark:text-red-400 font-medium' : '' }}">
+                                    迄：{{ $user->permission_end_date->format('Y/m/d') }}
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <span class="text-gray-400 dark:text-gray-500">永久</span>
                     @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -142,7 +157,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何使用者資料
                 </td>
             </tr>

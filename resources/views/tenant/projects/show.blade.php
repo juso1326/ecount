@@ -405,8 +405,15 @@
                     <div class="border border-gray-200 dark:border-gray-700 rounded p-2">
                         <div class="flex justify-between items-start mb-1">
                             <div class="flex-1">
-                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->name }}</h3>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->email }}</p>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->name }}</h3>
+                                    @if($member->is_member)
+                                        <span class="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded">員工</span>
+                                    @elseif($member->is_outsource)
+                                        <span class="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded">廠商</span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->code }}</p>
                                 @if($member->pivot->role)
                                     <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $member->pivot->role }}</p>
                                 @endif
@@ -424,9 +431,9 @@
                             </form>
                         </div>
                         
-                        <!-- 成員的專案列表 -->
+                        <!-- 成員的其他專案列表 -->
                         @php
-                            $memberProjects = $member->projects->where('id', '!=', $project->id);
+                            $memberProjects = $member->memberProjects->where('id', '!=', $project->id);
                         @endphp
                         @if($memberProjects->count() > 0 && $memberProjects->count() <= 3)
                             <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -471,14 +478,39 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         選擇成員 <span class="text-red-500">*</span>
                     </label>
-                    <select name="user_id" required
+                    <select name="user_id" id="memberSelect" required
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                         <option value="">請選擇</option>
-                        @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $user)
-                            @if(!$project->members || !$project->members->contains($user->id))
-                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-                            @endif
-                        @endforeach
+                        @php
+                            $employees = \App\Models\Company::where('is_member', true)
+                                ->where('is_active', true)
+                                ->orderBy('name')
+                                ->get();
+                            $vendors = \App\Models\Company::where('is_outsource', true)
+                                ->where('is_active', true)
+                                ->orderBy('name')
+                                ->get();
+                        @endphp
+                        
+                        @if($employees->count() > 0)
+                        <optgroup label="員工">
+                            @foreach($employees as $employee)
+                                @if(!$project->members || !$project->members->contains($employee->id))
+                                    <option value="{{ $employee->id }}">{{ $employee->name }} ({{ $employee->code }})</option>
+                                @endif
+                            @endforeach
+                        </optgroup>
+                        @endif
+                        
+                        @if($vendors->count() > 0)
+                        <optgroup label="廠商">
+                            @foreach($vendors as $vendor)
+                                @if(!$project->members || !$project->members->contains($vendor->id))
+                                    <option value="{{ $vendor->id }}">{{ $vendor->name }} ({{ $vendor->code }})</option>
+                                @endif
+                            @endforeach
+                        </optgroup>
+                        @endif
                     </select>
                 </div>
                 
@@ -881,6 +913,15 @@ $(document).ready(function() {
         allowClear: true,
         width: '100%',
         closeOnSelect: false,
+        theme: 'default'
+    });
+    
+    // 初始化成員選擇 Select2
+    $('#memberSelect').select2({
+        placeholder: '請選擇員工或廠商',
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('#addMemberModal'),
         theme: 'default'
     });
 });

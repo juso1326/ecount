@@ -40,7 +40,11 @@ class DashboardController extends Controller
         $recentProjects = Project::with(['company', 'department'])
             ->orderBy('created_at', 'desc')
             ->take(5)
-            ->get();
+            ->get()
+            ->map(function($project) {
+                $project->is_new = $project->created_at->gte(now()->subDays(7));
+                return $project;
+            });
 
         // 進行中專案數量
         $activeProjects = $stats['active_projects'];
@@ -94,6 +98,7 @@ class DashboardController extends Controller
         // 應收統計
         $receivableStats = \App\Models\Receivable::where('fiscal_year', $fiscalYear)
             ->selectRaw('
+                COUNT(*) as receivable_count,
                 SUM(amount) as total_receivable,
                 SUM(received_amount) as total_received,
                 COUNT(CASE WHEN invoice_no IS NOT NULL AND invoice_no != "" AND amount > received_amount THEN 1 END) as unpaid_count
@@ -103,6 +108,7 @@ class DashboardController extends Controller
         // 應付統計
         $payableStats = \App\Models\Payable::where('fiscal_year', $fiscalYear)
             ->selectRaw('
+                COUNT(*) as payable_count,
                 SUM(amount) as total_payable,
                 SUM(paid_amount) as total_paid,
                 SUM(CASE WHEN payee_type = "user" THEN paid_amount ELSE 0 END) as employee_salary,
@@ -128,13 +134,16 @@ class DashboardController extends Controller
             'total_received' => $totalReceived,
             'unpaid_receivables' => $unpaidReceivables,
             'unpaid_count' => $receivableStats->unpaid_count ?? 0,
+            'receivable_count' => $receivableStats->receivable_count ?? 0,
             
             'total_payable' => $totalPayable,
             'total_paid' => $totalPaid,
             'unpaid_payables' => $unpaidPayables,
+            'payable_count' => $payableStats->payable_count ?? 0,
             'employee_salary' => $payableStats->employee_salary ?? 0,
             'outsource_cost' => $payableStats->outsource_cost ?? 0,
             
+            'total_transactions' => ($receivableStats->receivable_count ?? 0) + ($payableStats->payable_count ?? 0),
             'net_income' => $netIncome,
             'profit_margin' => $profitMargin,
         ];

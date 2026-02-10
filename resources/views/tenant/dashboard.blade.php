@@ -97,41 +97,41 @@
         </a>
     </div>
     
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <!-- 應收總額 -->
-        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">應收總額</h3>
-                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">應收總額</h3>
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            <div class="text-xl font-bold text-gray-900 dark:text-white">
                 ${{ number_format($financialStats['total_receivable'], 0) }}
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
                 已收：${{ number_format($financialStats['total_received'], 0) }}
             </p>
             @if($financialStats['unpaid_receivables'] > 0)
             <a href="{{ route('tenant.reports.financial.unpaid-receivables', ['fiscal_year' => $fiscalYear]) }}" 
                class="text-xs text-yellow-600 dark:text-yellow-400 hover:underline mt-1 block">
-                未收：${{ number_format($financialStats['unpaid_receivables'], 0) }}（{{ $financialStats['unpaid_count'] }} 筆）
+                未收：${{ number_format($financialStats['unpaid_receivables'], 0) }}
             </a>
             @endif
         </div>
 
         <!-- 應付總額 -->
-        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">應付總額</h3>
-                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">應付總額</h3>
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            <div class="text-xl font-bold text-gray-900 dark:text-white">
                 ${{ number_format($financialStats['total_payable'], 0) }}
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
                 已付：${{ number_format($financialStats['total_paid'], 0) }}
             </p>
             @if($financialStats['unpaid_payables'] > 0)
@@ -142,48 +142,57 @@
         </div>
 
         <!-- 淨收入 -->
-        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">淨收入</h3>
-                <svg class="w-8 h-8 {{ $financialStats['net_income'] >= 0 ? 'text-blue-500' : 'text-red-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">淨收入</h3>
+                <svg class="w-6 h-6 {{ $financialStats['net_income'] >= 0 ? 'text-blue-500' : 'text-red-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
             </div>
-            <div class="text-2xl font-bold {{ $financialStats['net_income'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
+            <div class="text-xl font-bold {{ $financialStats['net_income'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
                 ${{ number_format($financialStats['net_income'], 0) }}
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
                 毛利率：{{ number_format($financialStats['profit_margin'], 1) }}%
             </p>
-            <a href="{{ route('tenant.reports.financial.project-analysis', ['fiscal_year' => $fiscalYear]) }}" 
-               class="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 block">
-                查看專案分析 →
-            </a>
+        </div>
+
+        <!-- 交易筆數 -->
+        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">交易筆數</h3>
+                <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+            </div>
+            <div class="text-xl font-bold text-gray-900 dark:text-white">
+                {{ $financialStats['total_transactions'] ?? 0 }}
+            </div>
+            <p class="text-xs text-green-600 dark:text-green-400 mt-1">
+                應收：{{ $financialStats['receivable_count'] ?? 0 }} 筆
+            </p>
+            <p class="text-xs text-red-600 dark:text-red-400">
+                應付：{{ $financialStats['payable_count'] ?? 0 }} 筆
+            </p>
         </div>
 
         <!-- 支出結構 -->
-        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">支出結構</h3>
-                <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">支出結構</h3>
+                <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-900 dark:text-white">
+            <div class="text-xl font-bold text-gray-900 dark:text-white">
                 ${{ number_format($financialStats['total_paid'], 0) }}
             </div>
-            <div class="mt-2 space-y-1 text-xs">
-                <p class="text-blue-600 dark:text-blue-400">
-                    員工：${{ number_format($financialStats['employee_salary'], 0) }}
-                </p>
-                <p class="text-purple-600 dark:text-purple-400">
-                    外包：${{ number_format($financialStats['outsource_cost'], 0) }}
-                </p>
-            </div>
-            <a href="{{ route('tenant.reports.financial.total-expenses', ['fiscal_year' => $fiscalYear]) }}" 
-               class="text-xs text-purple-600 dark:text-purple-400 hover:underline mt-1 block">
-                查看詳細支出 →
-            </a>
+            <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                員工：${{ number_format($financialStats['employee_salary'], 0) }}
+            </p>
+            <p class="text-xs text-purple-600 dark:text-purple-400">
+                外包：${{ number_format($financialStats['outsource_cost'], 0) }}
+            </p>
         </div>
     </div>
 </div>
@@ -388,52 +397,174 @@
 <!-- Recent Projects -->
 @if($recentProjects->count() > 0)
 <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white">最近專案</h2>
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">專案列表</h2>
+        <a href="{{ route('tenant.projects.index') }}" class="text-sm text-primary hover:text-primary-dark font-medium">
+            查看全部 →
+        </a>
     </div>
-    <div class="p-6">
-        <div class="space-y-4">
-            @foreach($recentProjects as $project)
-            <div class="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750">
-                <div class="flex-1">
-                    <h3 class="font-medium text-gray-900 dark:text-white">{{ $project->name }}</h3>
-                    <div class="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span>{{ $project->code }}</span>
-                        @if($project->company)
-                        <span>{{ $project->company->name }}</span>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">客戶</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">專案名稱</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">類型</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">開案日</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">專案期</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">報價單號</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">專案狀態</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">收入項</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">支出項</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">操作</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach($recentProjects as $project)
+                @php
+                    $receivableCount = $project->receivables()->count();
+                    $payableCount = $project->payables()->count();
+                    $projectPeriod = '';
+                    if ($project->start_date && $project->end_date) {
+                        $days = $project->start_date->diffInDays($project->end_date);
+                        $projectPeriod = $days . ' 天';
+                    }
+                @endphp
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {{ $project->company->name ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-medium text-gray-900 dark:text-white">{{ $project->name }}</span>
+                            @if($project->is_new)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                NEW
+                            </span>
+                            @endif
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $project->code }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {{ $project->project_type ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {{ $project->start_date?->format('Y-m-d') ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        @if($project->start_date && $project->end_date)
+                            {{ $projectPeriod }}
+                            <div class="text-xs text-gray-400">至 {{ $project->end_date->format('m/d') }}</div>
+                        @else
+                            -
                         @endif
-                        <span>{{ $project->start_date?->format('Y-m-d') }}</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    @if($project->status === 'active')
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        進行中
-                    </span>
-                    @elseif($project->status === 'completed')
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        已完成
-                    </span>
-                    @else
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                        {{ $project->status }}
-                    </span>
-                    @endif
-                    <a href="{{ route('tenant.projects.show', $project) }}" class="text-primary hover:text-primary-dark">
-                        查看
-                    </a>
-                </div>
-            </div>
-            @endforeach
-        </div>
-        
-        <div class="mt-4 text-center">
-            <a href="{{ route('tenant.projects.index') }}" class="text-primary hover:text-primary-dark font-medium">
-                查看所有專案 →
-            </a>
-        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {{ $project->quote_no ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        @if($project->status === 'in_progress')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            進行中
+                        </span>
+                        @elseif($project->status === 'completed')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            已完成
+                        </span>
+                        @elseif($project->status === 'planning')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                            規劃中
+                        </span>
+                        @elseif($project->status === 'on_hold')
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                            暫停
+                        </span>
+                        @else
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                            {{ $project->status }}
+                        </span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                        <span class="text-green-600 dark:text-green-400 font-medium">{{ $receivableCount }}</span>
+                        <span class="text-gray-400 text-xs ml-1">筆</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                        <span class="text-red-600 dark:text-red-400 font-medium">{{ $payableCount }}</span>
+                        <span class="text-gray-400 text-xs ml-1">筆</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                        <a href="{{ route('tenant.projects.show', $project) }}" 
+                           class="text-primary hover:text-primary-dark font-medium">
+                            查看
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 @endif
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 專案狀態圓餅圖
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('projectStatusChart');
+    if (ctx) {
+        const statusData = @json($projectStats);
+        
+        const statusLabels = {
+            'planning': '規劃中',
+            'in_progress': '進行中',
+            'on_hold': '暫停',
+            'completed': '已完成',
+            'cancelled': '已取消'
+        };
+        
+        const statusColors = {
+            'planning': '#EAB308',
+            'in_progress': '#3B82F6',
+            'on_hold': '#F97316',
+            'completed': '#10B981',
+            'cancelled': '#6B7280'
+        };
+        
+        const labels = Object.keys(statusData).map(key => statusLabels[key] || key);
+        const data = Object.values(statusData);
+        const colors = Object.keys(statusData).map(key => statusColors[key] || '#9CA3AF');
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: document.documentElement.classList.contains('dark') ? '#1F2937' : '#FFFFFF'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: document.documentElement.classList.contains('dark') ? '#D1D5DB' : '#374151',
+                            padding: 10,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 
 @endsection

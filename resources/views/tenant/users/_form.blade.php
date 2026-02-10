@@ -51,7 +51,7 @@
             </div>
 
             <!-- 備份 Email -->
-            <div>
+            <div class="md:col-span-2">
                 <label for="backup_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備份 Email</label>
                 <input type="email" name="backup_email" id="backup_email" value="{{ old('backup_email', $user->backup_email ?? '') }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -60,41 +60,13 @@
     </div>
 </div>
 
-<!-- 職務資訊 -->
+<!-- 角色與權限 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">職務資訊</h3>
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">角色與權限</h3>
     </div>
     <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 員工編號 -->
-            <div>
-                <label for="employee_no" class="block text-sm font-medium text-gray-700 dark:text-gray-300">員工編號</label>
-                <input type="text" name="employee_no" id="employee_no" value="{{ old('employee_no', $user->employee_no ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 職位 -->
-            <div>
-                <label for="position" class="block text-sm font-medium text-gray-700 dark:text-gray-300">職位</label>
-                <input type="text" name="position" id="position" value="{{ old('position', $user->position ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 部門 -->
-            <div>
-                <label for="department_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">部門</label>
-                <select name="department_id" id="department_id"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">請選擇</option>
-                    @foreach($departments as $dept)
-                        <option value="{{ $dept->id }}" {{ old('department_id', $user->department_id ?? '') == $dept->id ? 'selected' : '' }}>
-                            {{ $dept->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
             <!-- 角色層級 -->
             <div>
                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -113,24 +85,25 @@
                 @enderror
             </div>
 
-            <!-- 上層主管 -->
-            <div id="supervisor_field" style="display: {{ old('role', $currentRole ?? '') != 'admin' ? 'block' : 'none' }};">
-                <label for="supervisor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">上層主管</label>
-                <select name="supervisor_id" id="supervisor_id"
+            <!-- 關聯成員 -->
+            <div>
+                <label for="company_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">關聯成員（員工）</label>
+                <select name="company_id" id="company_id"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <option value="">請選擇</option>
-                    @foreach($supervisors as $supervisor)
-                        <option value="{{ $supervisor->id }}" {{ old('supervisor_id', $user->supervisor_id ?? '') == $supervisor->id ? 'selected' : '' }}>
-                            {{ $supervisor->name }}
+                    @foreach($members as $member)
+                        <option value="{{ $member->id }}" {{ old('company_id', $user->company_id ?? '') == $member->id ? 'selected' : '' }}>
+                            {{ $member->name }} ({{ $member->code }})
                         </option>
                     @endforeach
                 </select>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">選擇此使用者對應的員工資料</p>
             </div>
 
-            <!-- 是否在職 -->
+            <!-- 是否啟動 -->
             <div>
                 <label for="is_active" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    是否在職 <span class="text-red-500">*</span>
+                    是否啟動 <span class="text-red-500">*</span>
                 </label>
                 <select name="is_active" id="is_active" required
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -139,116 +112,49 @@
                 </select>
             </div>
 
-            <!-- 到職日 -->
+            <!-- 權限開始日期 -->
             <div>
-                <label for="hire_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">到職日</label>
-                <input type="date" name="hire_date" id="hire_date" value="{{ old('hire_date', $user->hire_date ?? '') }}"
+                <label for="permission_start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">權限開始日期</label>
+                <input type="date" name="permission_start_date" id="permission_start_date" value="{{ old('permission_start_date', isset($user->permission_start_date) ? $user->permission_start_date->format('Y-m-d') : '') }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- 離職日 -->
-            <div>
-                <label for="resign_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">離職日</label>
-                <input type="date" name="resign_date" id="resign_date" value="{{ old('resign_date', $user->resign_date ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 停權日 -->
-            <div>
-                <label for="suspend_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">停權日</label>
-                <input type="date" name="suspend_date" id="suspend_date" value="{{ old('suspend_date', $user->suspend_date ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 備註 -->
+            <!-- 權限結束日期 -->
             <div class="md:col-span-2">
-                <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備註</label>
-                <textarea name="note" id="note" rows="4"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $user->note ?? '') }}</textarea>
+                <label for="permission_end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">權限結束日期</label>
+                <input type="date" name="permission_end_date" id="permission_end_date" value="{{ old('permission_end_date', isset($user->permission_end_date) ? $user->permission_end_date->format('Y-m-d') : '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
         </div>
     </div>
 </div>
 
-<!-- 個人資訊 -->
+<!-- 備註 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">個人資訊</h3>
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">備註</h3>
     </div>
     <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 身分證字號 -->
-            <div>
-                <label for="id_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">身分證字號</label>
-                <input type="text" name="id_number" id="id_number" value="{{ old('id_number', $user->id_number ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 出生年月日 -->
-            <div>
-                <label for="birth_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">出生年月日</label>
-                <input type="date" name="birth_date" id="birth_date" value="{{ old('birth_date', $user->birth_date ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 電話 -->
-            <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">電話 (市話)</label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 手機 -->
-            <div>
-                <label for="mobile" class="block text-sm font-medium text-gray-700 dark:text-gray-300">手機</label>
-                <input type="text" name="mobile" id="mobile" value="{{ old('mobile', $user->mobile ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 緊急聯絡人姓名 -->
-            <div>
-                <label for="emergency_contact_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">緊急聯絡人姓名</label>
-                <input type="text" name="emergency_contact_name" id="emergency_contact_name" value="{{ old('emergency_contact_name', $user->emergency_contact_name ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 緊急聯絡電話 -->
-            <div>
-                <label for="emergency_contact_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">緊急聯絡電話</label>
-                <input type="text" name="emergency_contact_phone" id="emergency_contact_phone" value="{{ old('emergency_contact_phone', $user->emergency_contact_phone ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-        </div>
+        <textarea name="note" id="note" rows="4"
+            class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $user->note ?? '') }}</textarea>
     </div>
 </div>
 
-<!-- 銀行資訊 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">銀行資訊</h3>
-    </div>
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 銀行 -->
-            <div>
-                <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行</label>
-                <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $user->bank_name ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 分行 -->
-            <div>
-                <label for="bank_branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300">分行</label>
-                <input type="text" name="bank_branch" id="bank_branch" value="{{ old('bank_branch', $user->bank_branch ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 帳號 -->
-            <div>
-                <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">帳號</label>
-                <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account', $user->bank_account ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-        </div>
-    </div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 監聽角色選擇變化
+    const roleSelect = document.getElementById('role');
+    const supervisorField = document.getElementById('supervisor_field');
+    
+    if (roleSelect && supervisorField) {
+        roleSelect.addEventListener('change', function() {
+            if (this.value === 'admin') {
+                supervisorField.style.display = 'none';
+                document.getElementById('supervisor_id').value = '';
+            } else {
+                supervisorField.style.display = 'block';
+            }
+        });
+    }
+});
+</script>

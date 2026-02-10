@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['department', 'projects']);
+        $query = User::with(['company', 'projects']);
 
         // 搜尋
         if ($request->filled('search')) {
@@ -57,8 +57,9 @@ class UserController extends Controller
     {
         $departments = Department::where('is_active', true)->orderBy('name')->get();
         $supervisors = User::where('is_active', true)->orderBy('name')->get();
+        $members = \App\Models\Company::where('is_member', true)->orderBy('name')->get();
         
-        return view('tenant.users.create', compact('departments', 'supervisors'));
+        return view('tenant.users.create', compact('departments', 'supervisors', 'members'));
     }
 
     /**
@@ -78,23 +79,12 @@ class UserController extends Controller
             'position' => 'nullable|string|max:100',
             'department_id' => 'nullable|exists:departments,id',
             'supervisor_id' => 'nullable|exists:users,id',
-            // 個人資料
-            'id_number' => 'nullable|string|max:20',
-            'birth_date' => 'nullable|date',
-            'phone' => 'nullable|string|max:20',
-            'mobile' => 'nullable|string|max:20',
+            'company_id' => 'nullable|exists:companies,id',
+            // 權限日期
+            'permission_start_date' => 'nullable|date',
+            'permission_end_date' => 'nullable|date|after_or_equal:permission_start_date',
+            // 其他
             'backup_email' => 'nullable|email',
-            // 銀行資訊
-            'bank_name' => 'nullable|string|max:100',
-            'bank_branch' => 'nullable|string|max:100',
-            'bank_account' => 'nullable|string|max:50',
-            // 緊急聯絡人
-            'emergency_contact_name' => 'nullable|string|max:50',
-            'emergency_contact_phone' => 'nullable|string|max:20',
-            // 任職資訊
-            'hire_date' => 'nullable|date',
-            'resign_date' => 'nullable|date',
-            'suspend_date' => 'nullable|date',
             'note' => 'nullable|string',
         ], [
             'name.required' => '姓名為必填',
@@ -143,6 +133,9 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        // 載入關聯資料
+        $user->load(['company']);
+        
         if (request()->wantsJson()) {
             return response()->json([
                 'data' => $user
@@ -159,9 +152,10 @@ class UserController extends Controller
     {
         $departments = Department::where('is_active', true)->orderBy('name')->get();
         $supervisors = User::where('is_active', true)->where('id', '!=', $user->id)->orderBy('name')->get();
+        $members = \App\Models\Company::where('is_member', true)->orderBy('name')->get();
         $currentRole = $user->roles->first()?->name ?? '';
         
-        return view('tenant.users.edit', compact('user', 'departments', 'supervisors', 'currentRole'));
+        return view('tenant.users.edit', compact('user', 'departments', 'supervisors', 'members', 'currentRole'));
     }
 
     /**
@@ -172,15 +166,26 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|string',
             'is_active' => 'boolean',
+            // 員工資訊
+            'short_name' => 'nullable|string|max:50',
+            'company_id' => 'nullable|exists:companies,id',
+            // 權限日期
+            'permission_start_date' => 'nullable|date',
+            'permission_end_date' => 'nullable|date|after_or_equal:permission_start_date',
+            // 其他
+            'backup_email' => 'nullable|email',
+            'note' => 'nullable|string',
         ], [
             'name.required' => '姓名為必填',
             'email.required' => 'Email 為必填',
             'email.email' => 'Email 格式不正確',
             'email.unique' => 'Email 已被使用',
-            'password.min' => '密碼至少需要 8 個字元',
-            'password.confirmed' => '密碼確認不一致',
+            'password.min' => '密碼至少需要 6 個字元',
+            'role.required' => '角色為必填',
+            'permission_end_date.after_or_equal' => '權限結束日期必須大於或等於開始日期',
         ]);
 
         if ($validator->fails()) {
@@ -195,7 +200,13 @@ class UserController extends Controller
 
         $data = [
             'name' => $request->name,
+            'short_name' => $request->short_name,
             'email' => $request->email,
+            'backup_email' => $request->backup_email,
+            'company_id' => $request->company_id,
+            'permission_start_date' => $request->permission_start_date,
+            'permission_end_date' => $request->permission_end_date,
+            'note' => $request->note,
             'is_active' => $request->boolean('is_active', true),
         ];
 
@@ -205,6 +216,11 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        // 更新角色
+        if ($request->role) {
+            $user->syncRoles([$request->role]);
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -230,6 +246,19 @@ class UserController extends Controller
                 ], 422);
             }
             return back()->with('error', '無法刪除自己的帳號');
+        }
+
+        // 防止刪除最後一個系統管理員
+        if ($user->hasRole('admin')) {
+            $adminCount = User::role('admin')->count();
+            if ($adminCount <= 1) {
+                if (request()->wantsJson()) {
+                    return response()->json([
+                        'message' => '無法刪除最後一個系統管理員帳號'
+                    ], 422);
+                }
+                return back()->with('error', '無法刪除最後一個系統管理員帳號');
+            }
         }
 
         $user->delete();

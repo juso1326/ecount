@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * 應收帳款 Model
@@ -87,6 +88,14 @@ class Receivable extends Model
     public function payments()
     {
         return $this->hasMany(ReceivablePayment::class);
+    }
+
+    /**
+     * 關聯：標籤
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     /**

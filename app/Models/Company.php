@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -20,7 +21,14 @@ class Company extends Model
         'short_name',
         'type',
         'is_outsource',
+        'is_client',
+        'is_member',
+        'is_active',
+        'hire_date',
+        'leave_date',
         'tax_id',
+        'id_number',
+        'birth_date',
         'is_tax_entity',
         'invoice_title',
         'invoice_type',
@@ -28,6 +36,8 @@ class Company extends Model
         'contact_person',
         'phone',
         'mobile',
+        'emergency_contact',
+        'emergency_phone',
         'fax',
         'email',
         'address',
@@ -45,13 +55,17 @@ class Company extends Model
         'logo_path',
         'brand_color',
         'note',
-        'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'is_outsource' => 'boolean',
+        'is_client' => 'boolean',
+        'is_member' => 'boolean',
         'is_tax_entity' => 'boolean',
+        'birth_date' => 'date',
+        'hire_date' => 'date',
+        'leave_date' => 'date',
     ];
 
     /**
@@ -60,6 +74,16 @@ class Company extends Model
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
+    }
+
+    /**
+     * 關聯：作為成員參與的專案
+     */
+    public function memberProjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class, 'project_members')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
     }
 
     /**
@@ -84,6 +108,22 @@ class Company extends Model
     public function tags(): MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    /**
+     * 關聯：屬性變更歷史
+     */
+    public function attributeHistories(): HasMany
+    {
+        return $this->hasMany(CompanyAttributeHistory::class)->orderBy('changed_at', 'desc');
+    }
+
+    /**
+     * 關聯：銀行帳號
+     */
+    public function bankAccounts(): HasMany
+    {
+        return $this->hasMany(CompanyBankAccount::class);
     }
 
     /**

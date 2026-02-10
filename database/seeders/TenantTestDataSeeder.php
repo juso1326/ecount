@@ -8,7 +8,6 @@ use App\Models\Department;
 use App\Models\Project;
 use App\Models\Receivable;
 use App\Models\Payable;
-use App\Models\Code;
 
 class TenantTestDataSeeder extends Seeder
 {
@@ -17,63 +16,22 @@ class TenantTestDataSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. 建立代碼表資料
-        $this->createCodes();
-        
-        // 2. 建立公司資料
+        // 1. 建立公司資料
         $companies = $this->createCompanies();
         
-        // 3. 建立部門資料
+        // 2. 建立部門資料
         $departments = $this->createDepartments();
         
-        // 4. 建立專案資料
+        // 3. 建立專案資料
         $projects = $this->createProjects($companies, $departments);
         
-        // 5. 建立應收帳款資料
+        // 4. 建立應收帳款資料
         $this->createReceivables($projects, $companies);
         
-        // 6. 建立應付帳款資料
+        // 5. 建立應付帳款資料
         $this->createPayables($projects);
         
         $this->command->info('測試資料建立完成！');
-    }
-    
-    /**
-     * 建立代碼表
-     */
-    private function createCodes()
-    {
-        $codes = [
-            // 專案狀態
-            ['type' => 'project_status', 'code' => 'planning', 'name' => '規劃中', 'sort_order' => 1],
-            ['type' => 'project_status', 'code' => 'in_progress', 'name' => '進行中', 'sort_order' => 2],
-            ['type' => 'project_status', 'code' => 'completed', 'name' => '已完成', 'sort_order' => 3],
-            ['type' => 'project_status', 'code' => 'suspended', 'name' => '暫停', 'sort_order' => 4],
-            ['type' => 'project_status', 'code' => 'cancelled', 'name' => '取消', 'sort_order' => 5],
-            
-            // 付款方式
-            ['type' => 'payment_method', 'code' => 'cash', 'name' => '現金', 'sort_order' => 1],
-            ['type' => 'payment_method', 'code' => 'transfer', 'name' => '匯款', 'sort_order' => 2],
-            ['type' => 'payment_method', 'code' => 'check', 'name' => '支票', 'sort_order' => 3],
-            ['type' => 'payment_method', 'code' => 'credit_card', 'name' => '信用卡', 'sort_order' => 4],
-            
-            // 應收應付狀態
-            ['type' => 'payment_status', 'code' => 'unpaid', 'name' => '未付', 'sort_order' => 1],
-            ['type' => 'payment_status', 'code' => 'partial', 'name' => '部分付款', 'sort_order' => 2],
-            ['type' => 'payment_status', 'code' => 'paid', 'name' => '已付', 'sort_order' => 3],
-            ['type' => 'payment_status', 'code' => 'overdue', 'name' => '逾期', 'sort_order' => 4],
-            
-            // 公司類型
-            ['type' => 'company_type', 'code' => 'client', 'name' => '客戶', 'sort_order' => 1],
-            ['type' => 'company_type', 'code' => 'vendor', 'name' => '廠商', 'sort_order' => 2],
-            ['type' => 'company_type', 'code' => 'partner', 'name' => '合作夥伴', 'sort_order' => 3],
-        ];
-        
-        foreach ($codes as $code) {
-            Code::create($code);
-        }
-        
-        $this->command->info('✓ 代碼表建立完成 (' . count($codes) . ' 筆)');
     }
     
     /**

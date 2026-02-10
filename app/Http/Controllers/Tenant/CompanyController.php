@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\CompanyAttributeHistory;
+use App\Models\CompanyBankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
@@ -27,14 +31,19 @@ class CompanyController extends Controller
             });
         }
 
-        // 類型篩選 - 客戶
-        if ($request->filled('is_client')) {
-            $query->where('is_client', true);
-        }
-
-        // 類型篩選 - 外製
-        if ($request->filled('is_outsource')) {
-            $query->where('is_outsource', true);
+        // 標籤篩選
+        if ($request->filled('type')) {
+            switch ($request->type) {
+                case 'client':
+                    $query->where('is_client', true);
+                    break;
+                case 'outsource':
+                    $query->where('is_outsource', true);
+                    break;
+                case 'member':
+                    $query->where('is_member', true);
+                    break;
+            }
         }
 
         $companies = $query->orderBy('created_at', 'desc')->paginate(15);
@@ -108,12 +117,25 @@ class CompanyController extends Controller
             'address' => 'nullable|string|max:255',
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
+            'is_member' => 'boolean',
+            // 使用者帳號欄位
+            'create_user_account' => 'boolean',
+            'user_email' => 'required_if:create_user_account,1|nullable|email|unique:users,email',
+            'user_password' => 'required_if:create_user_account,1|nullable|string|min:6',
+            'user_role' => 'required_if:create_user_account,1|nullable|in:employee,accountant,manager',
+            'user_is_active' => 'boolean',
         ], [
             'code.required' => '公司代碼為必填',
             'code.unique' => '公司代碼已存在',
             'name.required' => '名稱為必填',
             'type.required' => '類型為必填',
             'email.email' => 'Email 格式不正確',
+            'user_email.required_if' => '使用者 Email 為必填',
+            'user_email.email' => '使用者 Email 格式不正確',
+            'user_email.unique' => '此 Email 已被使用',
+            'user_password.required_if' => '使用者密碼為必填',
+            'user_password.min' => '密碼至少需要 6 個字元',
+            'user_role.required_if' => '角色權限為必填',
         ]);
 
         if ($validator->fails()) {
@@ -138,9 +160,37 @@ class CompanyController extends Controller
         
         $companyData['is_client'] = $request->boolean('is_client');
         $companyData['is_outsource'] = $request->boolean('is_outsource');
+        $companyData['is_member'] = $request->boolean('is_member');
         $companyData['is_active'] = true;
 
-        $company = Company::create($companyData);
+        DB::beginTransaction();
+        try {
+            $company = Company::create($companyData);
+
+            // 處理銀行帳號
+            if ($request->has('bank_accounts')) {
+                $this->saveBankAccounts($company, $request->bank_accounts);
+            }
+
+            // 如果勾選建立使用者帳號且是員工
+            if ($request->boolean('create_user_account') && $request->boolean('is_member')) {
+                $user = \App\Models\User::create([
+                    'name' => $company->name,
+                    'email' => $request->user_email,
+                    'password' => bcrypt($request->user_password),
+                    'company_id' => $company->id,
+                    'is_active' => $request->boolean('user_is_active', true),
+                ]);
+                
+                // 指派角色
+                $user->assignRole($request->user_role);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => '建立失敗：' . $e->getMessage()])->withInput();
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -149,8 +199,13 @@ class CompanyController extends Controller
             ], 201);
         }
 
+        $successMessage = '客戶/廠商建立成功';
+        if ($request->boolean('create_user_account') && $request->boolean('is_member')) {
+            $successMessage .= '，已同時建立使用者帳號';
+        }
+
         return redirect()->route('tenant.companies.index')
-            ->with('success', '客戶/廠商建立成功');
+            ->with('success', $successMessage);
     }
 
     /**
@@ -172,7 +227,16 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        return view('tenant.companies.edit', compact('company'));
+        // 載入屬性變更歷史和銀行帳號
+        $attributeHistories = $company->attributeHistories()
+            ->with('changedBy')
+            ->latest('changed_at')
+            ->limit(20)
+            ->get();
+        
+        $company->load('bankAccounts');
+        
+        return view('tenant.companies.edit', compact('company', 'attributeHistories'));
     }
 
     /**
@@ -192,6 +256,7 @@ class CompanyController extends Controller
             'address' => 'nullable|string|max:255',
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
+            'is_member' => 'boolean',
         ], [
             'code.required' => '公司代碼為必填',
             'code.unique' => '公司代碼已存在',
@@ -216,10 +281,31 @@ class CompanyController extends Controller
             'phone', 'fax', 'email', 'address'
         ]);
         
+        // 檢查並記錄屬性變更
+        $this->recordAttributeChanges($company, [
+            'is_client' => $request->boolean('is_client'),
+            'is_outsource' => $request->boolean('is_outsource'),
+            'is_member' => $request->boolean('is_member'),
+        ]);
+        
         $companyData['is_client'] = $request->boolean('is_client');
         $companyData['is_outsource'] = $request->boolean('is_outsource');
+        $companyData['is_member'] = $request->boolean('is_member');
 
-        $company->update($companyData);
+        DB::beginTransaction();
+        try {
+            $company->update($companyData);
+
+            // 處理銀行帳號
+            if ($request->has('bank_accounts')) {
+                $this->saveBankAccounts($company, $request->bank_accounts);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => '更新失敗：' . $e->getMessage()])->withInput();
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -247,5 +333,52 @@ class CompanyController extends Controller
 
         return redirect()->route('tenant.companies.index')
             ->with('success', '公司刪除成功');
+    }
+
+    /**
+     * 記錄屬性變更歷史
+     */
+    private function recordAttributeChanges(Company $company, array $newAttributes): void
+    {
+        foreach ($newAttributes as $attributeName => $newValue) {
+            $oldValue = $company->$attributeName;
+            
+            // 只記錄有變更的屬性
+            if ($oldValue !== $newValue) {
+                CompanyAttributeHistory::create([
+                    'company_id' => $company->id,
+                    'attribute_name' => $attributeName,
+                    'old_value' => $oldValue,
+                    'new_value' => $newValue,
+                    'changed_by' => Auth::id(),
+                    'changed_at' => now(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * 儲存銀行帳號資訊
+     */
+    private function saveBankAccounts(Company $company, array $bankAccounts): void
+    {
+        // 刪除舊的銀行帳號
+        $company->bankAccounts()->delete();
+        
+        // 新增銀行帳號
+        foreach ($bankAccounts as $accountData) {
+            // 過濾空資料
+            if (empty($accountData['bank_name']) && empty($accountData['account_number'])) {
+                continue;
+            }
+            
+            CompanyBankAccount::create([
+                'company_id' => $company->id,
+                'bank_name' => $accountData['bank_name'] ?? null,
+                'branch_name' => $accountData['branch_name'] ?? null,
+                'account_number' => $accountData['account_number'] ?? null,
+                'is_default' => isset($accountData['is_default']) && $accountData['is_default'] == '1',
+            ]);
+        }
     }
 }

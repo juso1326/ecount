@@ -28,6 +28,8 @@ class Tag extends Model
     const TYPE_COMPANY = 'company';
     const TYPE_USER = 'user';
     const TYPE_PAYMENT_METHOD = 'payment_method';
+    const TYPE_RECEIVABLE = 'receivable';
+    const TYPE_PAYABLE = 'payable';
 
     /**
      * 取得所有可用的標籤類型
@@ -38,6 +40,8 @@ class Tag extends Model
             self::TYPE_PROJECT => '專案標籤',
             self::TYPE_COMPANY => '客戶廠商標籤',
             self::TYPE_USER => '團隊成員標籤',
+            self::TYPE_RECEIVABLE => '應收標籤',
+            self::TYPE_PAYABLE => '應付標籤',
             self::TYPE_PAYMENT_METHOD => '付款方式',
         ];
     }
@@ -64,6 +68,22 @@ class Tag extends Model
     public function users(): MorphToMany
     {
         return $this->morphedByMany(User::class, 'taggable');
+    }
+
+    /**
+     * 關聯：應收帳款
+     */
+    public function receivables(): MorphToMany
+    {
+        return $this->morphedByMany(Receivable::class, 'taggable');
+    }
+
+    /**
+     * 關聯：應付帳款
+     */
+    public function payables(): MorphToMany
+    {
+        return $this->morphedByMany(Payable::class, 'taggable');
     }
 
     /**

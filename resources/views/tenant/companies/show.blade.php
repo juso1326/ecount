@@ -76,7 +76,12 @@
                                 外製
                             </span>
                         @endif
-                        @if(!$company->is_client && !$company->is_outsource)
+                        @if($company->is_member)
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                成員
+                            </span>
+                        @endif
+                        @if(!$company->is_client && !$company->is_outsource && !$company->is_member)
                             <span class="text-gray-500 dark:text-gray-400">-</span>
                         @endif
                     </div>
@@ -185,12 +190,23 @@
     <div class="lg:col-span-1">
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
-                相關專案 ({{ $company->projects->count() }})
+                @if($company->is_member)
+                    正在執行專案 ({{ $company->projects->where('status', 'in_progress')->count() }})
+                @else
+                    執行專案 ({{ $company->projects->count() }})
+                @endif
             </h2>
             
-            @if($company->projects->count() > 0)
+            @php
+                // 根据公司类型过滤项目
+                $displayProjects = $company->is_member 
+                    ? $company->projects->where('status', 'in_progress') 
+                    : $company->projects;
+            @endphp
+            
+            @if($displayProjects->count() > 0)
                 <div class="space-y-3">
-                    @foreach($company->projects as $project)
+                    @foreach($displayProjects as $project)
                     <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-medium text-gray-900 dark:text-white">{{ $project->name }}</h3>
@@ -229,7 +245,13 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-gray-500 dark:text-gray-400 text-center py-8">尚無相關專案</p>
+                <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                    @if($company->is_member)
+                        目前無正在執行的專案
+                    @else
+                        尚無相關專案
+                    @endif
+                </p>
             @endif
         </div>
     </div>

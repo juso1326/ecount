@@ -175,6 +175,24 @@
                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
         </thead>
+        <!-- 總計列 -->
+        <tbody class="bg-blue-50 dark:bg-blue-900/20 border-y-2 border-blue-200 dark:border-blue-700">
+            <tr class="font-semibold">
+                <td colspan="4" class="px-6 py-3 text-sm text-gray-700 dark:text-gray-300">
+                    總計（本頁）
+                </td>
+                <td class="px-6 py-3 text-sm text-right text-gray-900 dark:text-white">
+                    NT$ {{ number_format($receivables->sum('amount'), 0) }}
+                </td>
+                <td class="px-6 py-3 text-sm text-right text-green-600 dark:text-green-400 font-bold">
+                    NT$ {{ number_format($receivables->sum('received_amount'), 0) }}
+                </td>
+                <td class="px-6 py-3 text-sm text-right text-red-600 dark:text-red-400 font-bold">
+                    NT$ {{ number_format($receivables->sum(function($r) { return $r->amount - $r->received_amount; }), 0) }}
+                </td>
+                <td colspan="2" class="px-6 py-3"></td>
+            </tr>
+        </tbody>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($receivables as $receivable)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
@@ -247,25 +265,6 @@
                 </tr>
             @endforelse
         </tbody>
-        @if($receivables->count() > 0)
-        <tfoot class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
-                    總計：
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
-                    NT$ {{ number_format($totalAmount, 0) }}
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-green-600 dark:text-green-400">
-                    NT$ {{ number_format($totalReceived, 0) }}
-                </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount - $totalReceived, 0) }}
-                </td>
-                <td colspan="2"></td>
-            </tr>
-        </tfoot>
-        @endif
     </table>
 </div>
 

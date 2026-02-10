@@ -258,14 +258,16 @@ class ProjectController extends Controller
     public function addMember(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:companies,id',
+            'role' => 'nullable|string|max:50',
         ]);
         
-        if ($project->members()->where('user_id', $validated['user_id'])->exists()) {
-            return back()->with('error', '該使用者已經是專案成員');
+        if ($project->members()->where('company_id', $validated['user_id'])->exists()) {
+            return back()->with('error', '該成員已經在專案中');
         }
         
         $project->members()->attach($validated['user_id'], [
+            'role' => $request->role,
             'joined_at' => now(),
         ]);
         
@@ -276,9 +278,9 @@ class ProjectController extends Controller
     /**
      * 從專案移除成員
      */
-    public function removeMember(Project $project, User $user)
+    public function removeMember(Project $project, Company $company)
     {
-        $project->members()->detach($user->id);
+        $project->members()->detach($company->id);
         
         return redirect()->route('tenant.projects.show', $project)
             ->with('success', '成員移除成功');
