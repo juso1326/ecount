@@ -333,7 +333,6 @@
             </svg>
         </div>
         <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total_users'] }}</div>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">{{ $stats['total_departments'] }} 個部門</p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $stats['total_companies'] }} 個客戶廠商</p>
     </div>
 </div>

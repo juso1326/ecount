@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +15,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['department', 'projects']);
+        $query = User::with(['projects']);
 
         // 搜尋
         if ($request->filled('search')) {
@@ -55,10 +54,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        $departments = Department::where('is_active', true)->orderBy('name')->get();
         $supervisors = User::where('is_active', true)->orderBy('name')->get();
         
-        return view('tenant.users.create', compact('departments', 'supervisors'));
+        return view('tenant.users.create', compact('supervisors'));
     }
 
     /**
@@ -76,7 +74,6 @@ class UserController extends Controller
             'employee_no' => 'nullable|string|max:50',
             'short_name' => 'nullable|string|max:50',
             'position' => 'nullable|string|max:100',
-            'department_id' => 'nullable|exists:departments,id',
             'supervisor_id' => 'nullable|exists:users,id',
             // 個人資料
             'id_number' => 'nullable|string|max:20',
@@ -157,11 +154,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $departments = Department::where('is_active', true)->orderBy('name')->get();
         $supervisors = User::where('is_active', true)->where('id', '!=', $user->id)->orderBy('name')->get();
         $currentRole = $user->roles->first()?->name ?? '';
         
-        return view('tenant.users.edit', compact('user', 'departments', 'supervisors', 'currentRole'));
+        return view('tenant.users.edit', compact('user', 'supervisors', 'currentRole'));
     }
 
     /**

@@ -32,20 +32,6 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">客戶/廠商代碼生成規則設定</p>
     </a>
 
-    <!-- 代碼管理設定 -->
-    <a href="{{ route('tenant.settings.codes') }}" 
-       class="block bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md hover:border-primary dark:hover:border-primary transition-all">
-        <div class="flex items-center mb-4">
-            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/20">
-                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
-                </svg>
-            </div>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">代碼管理設定</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">統一管理所有模組的代碼生成規則</p>
-    </a>
-
     <!-- 系統設定 -->
     <a href="{{ route('tenant.settings.system') }}" 
        class="block bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md hover:border-primary dark:hover:border-primary transition-all">

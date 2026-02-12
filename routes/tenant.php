@@ -58,17 +58,7 @@ Route::middleware([
             'destroy' => 'tenant.companies.destroy',
         ]);
         
-        // 部門管理
-        Route::resource('departments', \App\Http\Controllers\Tenant\DepartmentController::class)->names([
-            'index' => 'tenant.departments.index',
-            'create' => 'tenant.departments.create',
-            'store' => 'tenant.departments.store',
-            'show' => 'tenant.departments.show',
-            'edit' => 'tenant.departments.edit',
-            'update' => 'tenant.departments.update',
-            'destroy' => 'tenant.departments.destroy',
-        ]);
-        
+
         // 專案管理
         Route::get('projects', [\App\Http\Controllers\Tenant\ProjectController::class, 'index'])->name('tenant.projects.index');
         Route::get('projects/create', [\App\Http\Controllers\Tenant\ProjectController::class, 'create'])->name('tenant.projects.create');
@@ -136,15 +126,6 @@ Route::middleware([
         Route::delete('payable-payments/{payment}', [\App\Http\Controllers\Tenant\PayablePaymentController::class, 'destroy'])->name('tenant.payable-payments.destroy');
         Route::post('payables/{payable}/reset-payments', [\App\Http\Controllers\Tenant\PayableController::class, 'resetPayments'])->name('tenant.payables.reset-payments');
 
-        // 代碼管理
-        Route::get('codes', [\App\Http\Controllers\Tenant\CodeController::class, 'index'])->name('tenant.codes.index');
-        Route::get('codes/{category}', [\App\Http\Controllers\Tenant\CodeController::class, 'category'])->name('tenant.codes.category');
-        Route::get('codes/{category}/create', [\App\Http\Controllers\Tenant\CodeController::class, 'create'])->name('tenant.codes.create');
-        Route::post('codes/{category}', [\App\Http\Controllers\Tenant\CodeController::class, 'store'])->name('tenant.codes.store');
-        Route::get('codes/{category}/{code}/edit', [\App\Http\Controllers\Tenant\CodeController::class, 'edit'])->name('tenant.codes.edit');
-        Route::put('codes/{category}/{code}', [\App\Http\Controllers\Tenant\CodeController::class, 'update'])->name('tenant.codes.update');
-        Route::delete('codes/{category}/{code}', [\App\Http\Controllers\Tenant\CodeController::class, 'destroy'])->name('tenant.codes.destroy');
-
         // 設定管理
         Route::prefix('settings')->name('tenant.settings.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SettingsController::class, 'index'])->name('index');
@@ -153,10 +134,7 @@ Route::middleware([
             Route::get('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'company'])->name('company');
             Route::post('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateCompany'])->name('company.update');
             
-            // 代碼管理設定
-            Route::get('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'codes'])->name('codes');
-            Route::post('codes', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateCodes'])->name('codes.update');
-            
+
             // 財務設定
             Route::get('financial', [\App\Http\Controllers\Tenant\SettingsController::class, 'financial'])->name('financial');
             Route::post('financial', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateFinancial'])->name('financial.update');

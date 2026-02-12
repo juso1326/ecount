@@ -21,7 +21,6 @@ class Project extends Model
         'name',
         'project_type',
         'company_id',
-        'department_id',
         'manager_id',
         'responsible_user_id',
         'status',
@@ -59,14 +58,6 @@ class Project extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
-    }
-
-    /**
-     * 關聯：負責部門
-     */
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class);
     }
 
     /**

@@ -123,39 +123,7 @@ class SettingsController extends Controller
             ->with('success', '帳號設定已更新');
     }
     
-    /**
-     * Display code management settings
-     */
-    public function codes()
-    {
-        return view('tenant.settings.codes');
-    }
     
-    /**
-     * Update code management settings
-     */
-    public function updateCodes(Request $request)
-    {
-        $validated = $request->validate([
-            'company_code_prefix' => 'required|string|max:5',
-            'company_code_length' => 'required|integer|min:1|max:10',
-            'company_code_auto' => 'nullable|boolean',
-            'department_code_prefix' => 'required|string|max:5',
-            'department_code_length' => 'required|integer|min:1|max:10',
-            'department_code_auto' => 'nullable|boolean',
-            'project_code_prefix' => 'required|string|max:5',
-            'project_code_length' => 'required|integer|min:1|max:10',
-            'project_code_auto' => 'nullable|boolean',
-        ]);
-        
-        foreach ($validated as $key => $value) {
-            TenantSetting::set($key, $value ?? false);
-        }
-        
-        return redirect()->route('tenant.settings.codes')
-            ->with('success', '代碼設定已更新');
-    }
-
     /**
      * Display financial settings
      */

@@ -81,20 +81,6 @@
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- 部門 -->
-            <div>
-                <label for="department_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">部門</label>
-                <select name="department_id" id="department_id"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">請選擇</option>
-                    @foreach($departments as $dept)
-                        <option value="{{ $dept->id }}" {{ old('department_id', $user->department_id ?? '') == $dept->id ? 'selected' : '' }}>
-                            {{ $dept->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
             <!-- 角色層級 -->
             <div>
                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">

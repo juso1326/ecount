@@ -11,22 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. 程式碼表（分類碼系統）- 用於各種下拉選單
-        Schema::create('codes', function (Blueprint $table) {
-            $table->id();
-            $table->string('category', 50)->comment('分類（如：department_type, project_status）');
-            $table->string('code', 50)->comment('代碼');
-            $table->string('name')->comment('名稱');
-            $table->integer('sort_order')->default(0)->comment('排序');
-            $table->boolean('is_active')->default(true)->comment('是否啟用');
-            $table->text('description')->nullable()->comment('說明');
-            $table->timestamps();
-            
-            $table->unique(['category', 'code']);
-            $table->index('category');
-        });
-
-        // 2. 公司資料表
+        // 1. 公司資料表
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('code', 50)->unique()->comment('公司代碼');
@@ -44,28 +29,12 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        // 3. 部門資料表
-        Schema::create('departments', function (Blueprint $table) {
-            $table->id();
-            $table->string('code', 50)->unique()->comment('部門代碼');
-            $table->string('name')->comment('部門名稱');
-            $table->foreignId('parent_id')->nullable()->constrained('departments')->onDelete('set null')->comment('上層部門');
-            $table->string('type', 50)->nullable()->comment('部門類型（關聯 codes）');
-            $table->foreignId('manager_id')->nullable()->constrained('users')->onDelete('set null')->comment('部門主管');
-            $table->integer('sort_order')->default(0)->comment('排序');
-            $table->text('note')->nullable()->comment('備註');
-            $table->boolean('is_active')->default(true)->comment('是否啟用');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        // 4. 專案資料表
+        // 2. 專案資料表
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('code', 50)->unique()->comment('專案代碼');
             $table->string('name')->comment('專案名稱');
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade')->comment('所屬公司');
-            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null')->comment('負責部門');
             $table->foreignId('manager_id')->nullable()->constrained('users')->onDelete('set null')->comment('專案經理');
             $table->string('status', 50)->default('planning')->comment('專案狀態');
             $table->date('start_date')->nullable()->comment('開始日期');

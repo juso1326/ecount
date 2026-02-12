@@ -30,7 +30,6 @@ class User extends Authenticatable
         'employee_no',
         'short_name',
         'position',
-        'department_id',
         'supervisor_id',
         // 個人資料
         'id_number',
@@ -80,14 +79,6 @@ class User extends Authenticatable
             'resign_date' => 'date',
             'suspended_at' => 'datetime',
         ];
-    }
-
-    /**
-     * 部門關係
-     */
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
     }
 
     /**

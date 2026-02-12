@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Company;
-use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +17,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Project::with(['company', 'department', 'manager', 'members', 'tags']);
+        $query = Project::with(['company', 'manager', 'members', 'tags']);
 
         // 智能搜尋（支援專案名稱/代碼/成員/負責人/發票號/報價單號）
         if ($request->filled('smart_search')) {
@@ -129,7 +128,6 @@ class ProjectController extends Controller
             'code' => 'nullable|string|max:50|unique:projects,code',
             'name' => 'required|string|max:255',
             'company_id' => 'required|exists:companies,id',
-            'department_id' => 'nullable|exists:departments,id',
             'manager_id' => 'nullable|exists:users,id',
             'status' => 'nullable|string',
             'start_date' => 'nullable|date',
@@ -158,7 +156,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        $project->load(['company', 'department', 'manager', 'members', 'receivables', 'payables']);
+        $project->load(['company', 'manager', 'members', 'receivables', 'payables']);
 
         // 格式化資料供 JavaScript 使用
         $receivablesData = $project->receivables->map(function($r) {

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\Company;
-use App\Models\Department;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -22,7 +21,6 @@ class DashboardController extends Controller
         // 基本統計
         $stats = [
             'total_companies' => Company::count(),
-            'total_departments' => Department::count(),
             'total_projects' => Project::count(),
             'total_users' => User::count(),
             'active_projects' => Project::where('status', 'in_progress')->count(),
@@ -37,7 +35,7 @@ class DashboardController extends Controller
             ->toArray();
 
         // 最近專案
-        $recentProjects = Project::with(['company', 'department'])
+        $recentProjects = Project::with(['company'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
