@@ -3,7 +3,7 @@
 @section('title', isset($project) ? '編輯專案' : '新增專案')
 
 @section('content')
-<div class="mb-6">
+<div class="mb-3">
     <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ isset($project) ? '編輯專案' : '新增專案' }}</h1>
 </div>
 
@@ -14,7 +14,7 @@
             @method('PUT')
         @endif
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <!-- 專案代碼 -->
             <div>
                 <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">專案代碼 <span class="text-gray-500">(自動)</span></label>

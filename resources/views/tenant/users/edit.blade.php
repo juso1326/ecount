@@ -3,13 +3,8 @@
 @section('title', '編輯使用者')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">專案帳戶管理 &gt; 使用者管理 &gt; 編輯使用者</p>
-</div>
-
 <!-- 頁面標題 -->
-<div class="mb-6">
+<div class="mb-3">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">編輯使用者</h1>
 </div>
 

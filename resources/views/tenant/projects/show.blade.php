@@ -5,16 +5,8 @@
 @section('page-title', '專案詳情')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        <a href="{{ route('tenant.projects.index') }}" class="hover:text-primary">專案帳戶管理 &gt; 專案管理</a>
-        &gt; 查看
-    </p>
-</div>
-
 <!-- 頁面標題與按鈕 -->
-<div class="mb-6 flex justify-between items-center">
+<div class="mb-3 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">專案詳情</h1>
     <div class="flex gap-3">
         <a href="{{ route('tenant.projects.show', $project) }}" 
@@ -29,21 +21,21 @@
 </div>
 
 @if(session('success'))
-    <div class="mb-6 bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded">
+    <div class="mb-3 bg-green-100 dark:bg-green-900/20 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded">
         {{ session('success') }}
     </div>
 @endif
 
 @if(session('error'))
-    <div class="mb-6 bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
+    <div class="mb-3 bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
         {{ session('error') }}
     </div>
 @endif
 
 <!-- 內容區域 - 左右佈局 -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
     <!-- 左側：專案資訊 (2/3寬度) -->
-    <div class="lg:col-span-2 space-y-4">
+    <div class="lg:col-span-2 space-y-2">
         <!-- 基本資訊 -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
@@ -51,7 +43,7 @@
             </h2>
             
             <!-- 快速編輯表單 -->
-            <form method="POST" action="{{ route('tenant.projects.quick-update', $project) }}" class="mb-4">
+            <form method="POST" action="{{ route('tenant.projects.quick-update', $project) }}" class="mb-2">
                 @csrf
                 @method('PATCH')
                 
@@ -191,14 +183,14 @@
                                         <span class="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未收</span>
                                     @endif
                                 </div>
-                                <div class="text-gray-500 dark:text-gray-400 mt-0.5">
+                                <div class="text-gray-500 dark:text-gray-400.5">
                                     {{ $receivable->receipt_date?->format('Y-m-d') }} 
                                     @if($receivable->due_date)
                                         <span class="text-gray-400">| 發票日: {{ $receivable->due_date->format('Y-m-d') }}</span>
                                     @endif
                                 </div>
                                 @if($receivable->content)
-                                    <div class="text-gray-600 dark:text-gray-400 mt-0.5">{{ $receivable->content }}</div>
+                                    <div class="text-gray-600 dark:text-gray-400.5">{{ $receivable->content }}</div>
                                 @endif
                             </div>
                             <div class="text-right flex items-start gap-2">
@@ -207,7 +199,7 @@
                                     <div class="text-gray-500 dark:text-gray-400">已收: {{ number_format($receivable->received_amount, 0) }}</div>
                                 </div>
                                 <button onclick="openEditReceivableModal({{ $receivable->id }})" 
-                                   class="text-blue-500 hover:text-blue-700 ml-2">
+                                   class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
@@ -285,17 +277,17 @@
                                         <span class="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未付</span>
                                     @endif
                                 </div>
-                                <div class="text-gray-500 dark:text-gray-400 mt-0.5">
+                                <div class="text-gray-500 dark:text-gray-400.5">
                                     {{ $payable->payment_date?->format('Y-m-d') }}
                                     @if($payable->due_date)
                                         <span class="text-gray-400">| 到期: {{ $payable->due_date->format('Y-m-d') }}</span>
                                     @endif
                                 </div>
                                 @if($payable->content)
-                                    <div class="text-gray-600 dark:text-gray-400 mt-0.5">{{ $payable->content }}</div>
+                                    <div class="text-gray-600 dark:text-gray-400.5">{{ $payable->content }}</div>
                                 @endif
                                 @if($payable->vendor)
-                                    <div class="text-gray-500 dark:text-gray-400 mt-0.5">對象: {{ $payable->vendor }}</div>
+                                    <div class="text-gray-500 dark:text-gray-400.5">對象: {{ $payable->vendor }}</div>
                                 @endif
                             </div>
                             <div class="text-right flex items-start gap-2">
@@ -304,7 +296,7 @@
                                     <div class="text-gray-500 dark:text-gray-400">已付: {{ number_format($payable->paid_amount, 0) }}</div>
                                 </div>
                                 <button onclick="openEditPayableModal({{ $payable->id }})" 
-                                   class="text-blue-500 hover:text-blue-700 ml-2">
+                                   class="text-blue-500 hover:text-blue-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
@@ -351,7 +343,7 @@
     </div>
 
     <!-- 右側：專案標籤與成員 (1/3寬度) -->
-    <div class="lg:col-span-1 space-y-4">
+    <div class="lg:col-span-1 space-y-2">
         <!-- 專案標籤 -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
@@ -408,7 +400,7 @@
                                 <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->name }}</h3>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->email }}</p>
                                 @if($member->pivot->role)
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $member->pivot->role }}</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500.5">{{ $member->pivot->role }}</p>
                                 @endif
                             </div>
                             <form action="{{ route('tenant.projects.members.remove', [$project, $member]) }}" 
@@ -452,7 +444,7 @@
 
 <!-- 系統資訊 -->
 <div class="mt-4 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-3">
-    <div class="grid grid-cols-2 gap-4 text-xs text-gray-500 dark:text-gray-400">
+    <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
         <div>建立時間：{{ $project->created_at->format('Y-m-d H:i:s') }}</div>
         <div>最後更新：{{ $project->updated_at->format('Y-m-d H:i:s') }}</div>
     </div>
@@ -462,12 +454,12 @@
 <div id="addMemberModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">新增專案成員</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">新增專案成員</h3>
             
             <form action="{{ route('tenant.projects.members.add', $project) }}" method="POST">
                 @csrf
                 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         選擇成員 <span class="text-red-500">*</span>
                     </label>
@@ -482,7 +474,7 @@
                     </select>
                 </div>
                 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         角色/職務
                     </label>
@@ -512,7 +504,7 @@
     <div class="relative top-20 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">快速新增應收帳款</h3>
-            <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                 <p>專案：{{ $project->name }}</p>
                 <p>客戶：{{ $project->company?->name ?? '-' }} | 統編：{{ $project->company?->tax_id ?? '-' }}</p>
             </div>
@@ -574,7 +566,7 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-end gap-3 mt-4">
+                <div class="flex justify-end gap-3">
                     <button type="button"
                             onclick="document.getElementById('addReceivableModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
@@ -595,7 +587,7 @@
     <div class="relative top-20 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">快速新增應付帳款</h3>
-            <div class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                 <p>專案：{{ $project->name }}</p>
                 <p>客戶：{{ $project->company?->name ?? '-' }} | 統編：{{ $project->company?->tax_id ?? '-' }}</p>
             </div>
@@ -647,7 +639,7 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-end gap-3 mt-4">
+                <div class="flex justify-end gap-3">
                     <button type="button"
                             onclick="document.getElementById('addPayableModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
@@ -667,14 +659,14 @@
 <div id="editReceivableModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">快速編輯應收帳款</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">快速編輯應收帳款</h3>
             
             <!-- 專案和客戶資訊 -->
-            <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm">
+            <div class="mb-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm">
                 <div class="text-gray-700 dark:text-gray-300">
                     <strong>專案：</strong>{{ $project->name }}
                 </div>
-                <div class="text-gray-600 dark:text-gray-400 mt-1">
+                <div class="text-gray-600 dark:text-gray-400">
                     <strong>客戶：</strong>{{ $project->company->name ?? '-' }} | 
                     <strong>統編：</strong>{{ $project->company->tax_id ?? '-' }}
                 </div>
@@ -738,7 +730,7 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-end gap-3 mt-4">
+                <div class="flex justify-end gap-3">
                     <button type="button"
                             onclick="document.getElementById('editReceivableModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
@@ -758,14 +750,14 @@
 <div id="editPayableModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">快速編輯應付帳款</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">快速編輯應付帳款</h3>
             
             <!-- 專案和客戶資訊 -->
-            <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm">
+            <div class="mb-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm">
                 <div class="text-gray-700 dark:text-gray-300">
                     <strong>專案：</strong>{{ $project->name }}
                 </div>
-                <div class="text-gray-600 dark:text-gray-400 mt-1">
+                <div class="text-gray-600 dark:text-gray-400">
                     <strong>客戶：</strong>{{ $project->company->name ?? '-' }} | 
                     <strong>統編：</strong>{{ $project->company->tax_id ?? '-' }}
                 </div>
@@ -819,7 +811,7 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-end gap-3 mt-4">
+                <div class="flex justify-end gap-3">
                     <button type="button"
                             onclick="document.getElementById('editPayableModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">

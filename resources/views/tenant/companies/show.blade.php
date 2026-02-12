@@ -5,16 +5,8 @@
 @section('page-title', '客戶/廠商詳情')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        <a href="{{ route('tenant.companies.index') }}" class="hover:text-primary">專案帳戶管理 &gt; 客戶/廠商管理</a>
-        &gt; 查看
-    </p>
-</div>
-
 <!-- 頁面標題與按鈕 -->
-<div class="mb-6 flex justify-between items-center">
+<div class="mb-3 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">客戶/廠商詳情</h1>
     <div class="flex gap-3">
         <a href="{{ route('tenant.companies.edit', $company) }}" 
@@ -29,16 +21,16 @@
 </div>
 
 <!-- 內容區域 - 左右佈局 -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
     <!-- 左側：基本資訊和聯絡資訊 (2/3寬度) -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2 space-y-3">
         <!-- 基本資訊 -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 pb-3 border-b border-gray-200 dark:border-gray-700">
                 基本資訊
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <label class="text-sm font-medium text-gray-500 dark:text-gray-400">公司代碼</label>
                     <p class="mt-1 text-gray-900 dark:text-white">{{ $company->code }}</p>
@@ -106,11 +98,11 @@
 
         <!-- 聯絡資訊 -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 pb-3 border-b border-gray-200 dark:border-gray-700">
                 聯絡資訊
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <label class="text-sm font-medium text-gray-500 dark:text-gray-400">聯絡人</label>
                     <p class="mt-1 text-gray-900 dark:text-white">{{ $company->contact_name ?? '-' }}</p>
@@ -154,7 +146,7 @@
         <!-- 備註區域 -->
         @if($company->note)
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 pb-3 border-b border-gray-200 dark:border-gray-700">
                 備註
             </h2>
             <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $company->note }}</div>
@@ -163,11 +155,11 @@
 
         <!-- 系統資訊 -->
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 pb-3 border-b border-gray-200 dark:border-gray-700">
                 系統資訊
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <label class="text-sm font-medium text-gray-500 dark:text-gray-400">建立時間</label>
                     <p class="mt-1 text-gray-900 dark:text-white">{{ $company->created_at->format('Y-m-d H:i:s') }}</p>
@@ -184,7 +176,7 @@
     <!-- 右側：相關專案 (1/3寬度) -->
     <div class="lg:col-span-1">
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 pb-3 border-b border-gray-200 dark:border-gray-700">
                 相關專案 ({{ $company->projects->count() }})
             </h2>
             

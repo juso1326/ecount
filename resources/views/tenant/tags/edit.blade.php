@@ -5,17 +5,8 @@
 @section('page-title', '編輯標籤')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        系統設定 &gt; 
-        <a href="{{ route('tenant.tags.index') }}" class="text-primary hover:underline">標籤管理</a> &gt; 
-        編輯標籤
-    </p>
-</div>
-
 <!-- 頁面標題 -->
-<div class="mb-6">
+<div class="mb-3">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">編輯標籤</h1>
 </div>
 
@@ -26,7 +17,7 @@
         @method('PUT')
 
         <!-- 標籤類型 -->
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 標籤類型 <span class="text-red-500">*</span>
             </label>
@@ -46,7 +37,7 @@
         </div>
 
         <!-- 標籤名稱 -->
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 標籤名稱 <span class="text-red-500">*</span>
             </label>
@@ -61,7 +52,7 @@
         </div>
 
         <!-- 標籤顏色 -->
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 標籤顏色 <span class="text-red-500">*</span>
             </label>
@@ -82,7 +73,7 @@
         </div>
 
         <!-- 說明 -->
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 說明
             </label>
@@ -92,7 +83,7 @@
         </div>
 
         <!-- 排序 -->
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 排序
             </label>
@@ -104,7 +95,7 @@
         </div>
 
         <!-- 是否啟用 -->
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="flex items-center">
                 <input type="checkbox" 
                        name="is_active" 

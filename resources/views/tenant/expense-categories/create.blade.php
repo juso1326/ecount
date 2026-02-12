@@ -3,7 +3,7 @@
 @section('title', '新增支出項目')
 
 @section('content')
-<div class="mb-4">
+<div class="mb-2">
     <p class="text-sm text-gray-600 dark:text-gray-400">
         財務設定 &gt; 
         <a href="{{ route('tenant.expense-categories.index') }}" class="text-primary hover:underline">支出項目管理</a> &gt; 
@@ -11,7 +11,7 @@
     </p>
 </div>
 
-<div class="mb-6">
+<div class="mb-3">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增支出項目</h1>
 </div>
 
@@ -19,7 +19,7 @@
     <form action="{{ route('tenant.expense-categories.store') }}" method="POST">
         @csrf
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 父分類
             </label>
@@ -34,7 +34,7 @@
             </select>
         </div>
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 代碼 <span class="text-red-500">*</span>
             </label>
@@ -46,7 +46,7 @@
             @enderror
         </div>
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 名稱 <span class="text-red-500">*</span>
             </label>
@@ -58,19 +58,19 @@
             @enderror
         </div>
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">說明</label>
             <textarea name="description" rows="3"
                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">{{ old('description') }}</textarea>
         </div>
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">排序</label>
             <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0"
                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
         </div>
 
-        <div class="mb-6">
+        <div class="mb-3">
             <label class="flex items-center">
                 <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
                        class="w-4 h-4 text-primary border-gray-300 rounded">

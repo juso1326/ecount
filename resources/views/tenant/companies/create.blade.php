@@ -3,7 +3,7 @@
 @section('title', '新增客戶/廠商')
 
 @section('content')
-<div class="mb-6">
+<div class="mb-3">
     <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">新增客戶/廠商</h1>
 </div>
 
@@ -11,7 +11,7 @@
     <form method="POST" action="{{ route('tenant.companies.store') }}">
         @csrf
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <!-- 公司代碼 -->
             <div>
                 <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -53,7 +53,7 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     類型 <span class="text-red-500">*</span>
                 </label>
-                <div class="flex gap-4">
+                <div class="flex gap-2">
                     <label class="flex items-center">
                         <input type="radio" name="type" value="company" {{ old('type', 'company') == 'company' ? 'checked' : '' }} required
                             class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
@@ -73,7 +73,7 @@
             <!-- 屬性 -->
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">屬性</label>
-                <div class="flex gap-4">
+                <div class="flex gap-2">
                     <label class="flex items-center">
                         <input type="checkbox" name="is_client" value="1" {{ old('is_client') ? 'checked' : '' }}
                             class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">

@@ -5,18 +5,10 @@
 @section('page-title', '薪資明細')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        <a href="{{ route('tenant.salaries.index', ['year' => $year, 'month' => $month]) }}" class="hover:text-primary">薪資管理</a> &gt; 
-        {{ $user->name }}
-    </p>
-</div>
-
 <!-- 頁面標題與導航 -->
-<div class="mb-6">
+<div class="mb-3">
     <!-- 月份導航 -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-2">
         <a href="{{ route('tenant.salaries.show', ['user' => $user->id, 'year' => $year, 'month' => $month, 'nav' => 'prev']) }}" 
            class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,35 +43,35 @@
 </div>
 
 <!-- 薪資摘要 -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3">
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">基本薪資</div>
-        <div class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">
             ${{ number_format($salary['base_salary'], 0) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">加項</div>
-        <div class="text-2xl font-bold text-green-600 mt-1">
+        <div class="text-2xl font-bold text-green-600">
             +${{ number_format($salary['additions'], 0) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">扣項</div>
-        <div class="text-2xl font-bold text-red-600 mt-1">
+        <div class="text-2xl font-bold text-red-600">
             -${{ number_format($salary['deductions'], 0) }}
         </div>
     </div>
     <div class="bg-blue-50 dark:bg-blue-900 shadow-sm rounded-lg border border-blue-200 dark:border-blue-700 p-4">
         <div class="text-sm text-blue-600 dark:text-blue-300">總計</div>
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-300 mt-1">
+        <div class="text-2xl font-bold text-blue-600 dark:text-blue-300">
             ${{ number_format($salary['total'], 0) }}
         </div>
     </div>
 </div>
 
 <!-- 薪資明細 -->
-<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-3">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">薪資項目</h2>
     </div>
@@ -140,20 +132,20 @@
 <div id="payModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-4">確認薪資撥款</h3>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-2">確認薪資撥款</h3>
             <form action="{{ route('tenant.salaries.pay', $user) }}" method="POST">
                 @csrf
                 <input type="hidden" name="year" value="{{ $year }}">
                 <input type="hidden" name="month" value="{{ $month }}">
                 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">應付總額</label>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">
                         ${{ number_format($salary['total'], 0) }}
                     </div>
                 </div>
                 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">實發金額 *</label>
                     <input type="number" name="actual_amount" 
                            value="{{ $salary['total'] }}"
@@ -162,7 +154,7 @@
                            required>
                 </div>
                 
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">備註</label>
                     <textarea name="remark" rows="3"
                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"></textarea>

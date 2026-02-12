@@ -1,5 +1,5 @@
 @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-2">
         <ul class="list-disc list-inside">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -23,9 +23,9 @@
         <input type="hidden" name="type" value="{{ old('type', isset($payable) ? $payable->type : 'expense') }}">
 
 <!-- 專案資訊區塊 -->
-        <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">專案</h3>
-            <div class="space-y-4">
+        <div class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">專案</h3>
+            <div class="space-y-2">
                 <!-- 客戶 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">客戶</label>
@@ -66,9 +66,9 @@
         </div>
 
         <!-- 給付對象區塊 -->
-        <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">給付對象</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">給付對象</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <!-- 對象類型 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -114,9 +114,9 @@
         </div>
 
         <!-- 支出資訊區塊（給付對象為外製或已支出時顯示） -->
-        <div id="expense_info_section" class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">支出資訊</h3>
-            <div class="space-y-4">
+        <div id="expense_info_section" class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">支出資訊</h3>
+            <div class="space-y-2">
                 <!-- 支出項目 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -161,7 +161,7 @@
                 </div>
 
                 <!-- 稅款設定 -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅款</label>
                         <select name="tax_setting_id" id="tax_setting_id"
@@ -179,7 +179,7 @@
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額計算</label>
-                        <div class="flex gap-4 pt-2">
+                        <div class="flex gap-2 pt-2">
                             <label class="flex items-center">
                                 <input type="radio" name="tax_inclusive" id="tax_inclusive_0" value="0" 
                                        {{ old('tax_inclusive', isset($payable) ? $payable->tax_inclusive : 0) == 0 ? 'checked' : '' }}
@@ -216,9 +216,9 @@
         </div>
 
         <!-- 支出明細區塊 -->
-        <div class="mb-6">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">支出明細</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="mb-3">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">支出明細</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <!-- 付款日期 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">付款日期</label>
@@ -235,7 +235,7 @@
                            min="2000" max="2100"
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"
                            placeholder="YYYY">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">可手動調整年度</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">可手動調整年度</p>
                 </div>
 
                 <!-- 發票號碼 -->
@@ -248,7 +248,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <!-- 預計付款日 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">預計付款日</label>

@@ -3,7 +3,7 @@
 @section('title', '使用者詳情')
 
 @section('content')
-<div class="mb-6 flex justify-between items-center">
+<div class="mb-3 flex justify-between items-center">
     <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">使用者詳情</h1>
     <div class="space-x-2">
         <a href="{{ route('tenant.users.edit', $user) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg">
@@ -16,9 +16,9 @@
 </div>
 
 <!-- 基本信息 -->
-<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 border border-gray-200 dark:border-gray-700">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">基本資訊</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-3 border border-gray-200 dark:border-gray-700">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">基本資訊</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
             <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">姓名</label>
             <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ $user->name }}</p>
@@ -63,8 +63,8 @@
 
 <!-- 參與專案 -->
 @if($user->projects->count() > 0)
-<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 border border-gray-200 dark:border-gray-700">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">參與的專案</h2>
+<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-3 border border-gray-200 dark:border-gray-700">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">參與的專案</h2>
     
     @php
         $activeProjects = $user->projects->filter(fn($p) => in_array($p->status, ['planning', 'in_progress']));
@@ -72,9 +72,9 @@
     @endphp
 
     @if($activeProjects->count() > 0)
-        <div class="mb-6">
+        <div class="mb-3">
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">進行中的專案</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 @foreach($activeProjects as $project)
                     <div class="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                         <div class="flex justify-between items-start mb-2">
@@ -110,7 +110,7 @@
     @if($completedProjects->count() > 0)
         <div>
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">已完成的專案</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 @foreach($completedProjects as $project)
                     <div class="border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4">
                         <div class="flex justify-between items-start mb-2">

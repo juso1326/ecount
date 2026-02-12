@@ -1,5 +1,5 @@
 @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-2">
         <ul class="list-disc list-inside">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -16,7 +16,7 @@
             @method('PUT')
         @endif
 
-        <div class="space-y-4">
+        <div class="space-y-2">
             <!-- 客戶 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -80,7 +80,7 @@
             </div>
 
             <!-- 稅款設定 -->
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-2">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅款</label>
                     <select name="tax_setting_id" id="tax_setting_id"
@@ -98,7 +98,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額計算</label>
-                    <div class="flex gap-4 pt-2">
+                    <div class="flex gap-2 pt-2">
                         <label class="flex items-center">
                             <input type="radio" name="tax_inclusive" id="tax_inclusive_0" value="0" 
                                    {{ old('tax_inclusive', isset($receivable) ? $receivable->tax_inclusive : 0) == 0 ? 'checked' : '' }}
@@ -133,9 +133,9 @@
             </div>
 
             <!-- 開立資訊 -->
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">開立資訊</h3>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-3 gap-2">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">日期</label>
                         <input type="date" name="receipt_date" id="receipt_date"
@@ -150,7 +150,7 @@
                                min="2000" max="2100"
                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
                                placeholder="YYYY">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">可手動調整年度</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">可手動調整年度</p>
                     </div>
                     
                     <div>
@@ -169,7 +169,7 @@
         </div>
 
         <!-- 按鈕 -->
-        <div class="flex gap-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button type="submit"
                     class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
                 {{ isset($receivable) ? '更新' : '新增' }}
