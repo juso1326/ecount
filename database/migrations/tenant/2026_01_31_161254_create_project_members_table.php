@@ -11,17 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_members', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('role')->nullable()->comment('成員角色');
-            $table->timestamp('joined_at')->nullable()->comment('加入日期');
-            $table->timestamps();
-            
-            // 確保同一個專案不會有重複的成員
-            $table->unique(['project_id', 'user_id']);
-        });
+        // Table already created in create_tenant_core_tables migration
+        if (!Schema::hasTable('project_members')) {
+            Schema::create('project_members', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('project_id')->constrained()->onDelete('cascade');
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->string('role')->nullable()->comment('成員角色');
+                $table->timestamp('joined_at')->nullable()->comment('加入日期');
+                $table->timestamps();
+                
+                // 確保同一個專案不會有重複的成員
+                $table->unique(['project_id', 'user_id']);
+            });
+        }
     }
 
     /**
