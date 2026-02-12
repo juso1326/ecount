@@ -5,28 +5,21 @@
 @section('page-title', '應付帳款管理')
 
 @section('content')
-<div class="mb-3 flex justify-end items-center">
+<div class="mb-2 flex justify-end items-center">
     <a href="{{ route('tenant.payables.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增應付帳款
     </a>
 </div>
 
-<!-- 分頁資訊 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        第 {{ $payables->currentPage() }} / {{ $payables->lastPage() }} 頁，每頁15筆，共{{ $payables->total() }}筆
-    </p>
-</div>
-
 @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded mb-4">
         {{ session('success') }}
     </div>
 @endif
 
 <!-- 搜尋與篩選 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
     <form method="GET" action="{{ route('tenant.payables.index') }}">
         <!-- 年度選擇器 -->
         <div class="flex items-center gap-3 mb-4">
@@ -159,7 +152,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    <td colspan="9" class="px-4 py-1 text-center text-gray-500 dark:text-gray-400 text-sm">
                         目前沒有應付帳款資料
                     </td>
                 </tr>

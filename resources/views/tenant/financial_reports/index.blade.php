@@ -3,7 +3,7 @@
 @section('title', '財務報表')
 
 @section('content')
-<div class="mb-6 flex justify-between items-center">
+<div class="mb-2 flex justify-between items-center">
     <div>
         <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">財務報表</h1>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">查看應收應付、收支統計與財務分析</p>
@@ -120,7 +120,7 @@
 </div>
 
 <!-- 年度統計說明卡片 -->
-<div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+<div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-2">
     <div class="flex items-start space-x-3">
         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -135,7 +135,7 @@
 </div>
 
 <!-- 報表功能說明 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-2">
     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📊 報表功能說明</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
         <div class="flex items-start space-x-2">

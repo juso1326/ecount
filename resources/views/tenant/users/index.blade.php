@@ -5,22 +5,15 @@
 @section('page-title', '使用者管理')
 
 @section('content')
-<div class="mb-3 flex justify-end items-center">
+<div class="mb-2 flex justify-end items-center">
     <a href="{{ route('tenant.users.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增使用者
     </a>
 </div>
 
-<!-- 分頁資訊 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        第 {{ $users->currentPage() }} / {{ $users->lastPage() }} 頁，每頁15筆，共{{ $users->total() }}筆
-    </p>
-</div>
-
 <!-- 搜尋與篩選 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
     <form method="GET" action="{{ route('tenant.users.index') }}" class="flex gap-4 items-end">
         <!-- 搜尋框 -->
         <div class="flex-1">
@@ -57,38 +50,38 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工編號</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">姓名</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">部門</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">參與專案</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工編號</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">姓名</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">部門</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">參與專案</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($users as $user)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="px-6 py-2 whitespace-nowrap text-sm">
                     <a href="{{ route('tenant.users.edit', $user) }}" 
                        class="text-primary hover:text-primary-dark font-medium">
                         編輯
                     </a>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $user->employee_id }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $user->name }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $user->email }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $user->department?->name }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-6 py-2 text-sm text-gray-500 dark:text-gray-400">
                     @if($user->projects && $user->projects->count() > 0)
                         <div class="flex flex-wrap gap-1">
                             @foreach($user->projects->take(3) as $project)
@@ -108,7 +101,7 @@
                         <span class="text-gray-400 dark:text-gray-500">無</span>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     @if($user->hasRole('admin'))
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                             系統管理員
@@ -123,7 +116,7 @@
                         </span>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <td class="px-6 py-2 whitespace-nowrap text-sm">
                     @if($user->is_active)
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                             啟用

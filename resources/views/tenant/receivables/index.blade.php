@@ -5,28 +5,21 @@
 @section('page-title', '應收帳款管理')
 
 @section('content')
-<div class="mb-3 flex justify-end items-center">
+<div class="mb-2 flex justify-end items-center">
     <a href="{{ route('tenant.receivables.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增應收帳款
     </a>
 </div>
 
-<!-- 分頁資訊 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        第 {{ $receivables->currentPage() }} / {{ $receivables->lastPage() }} 頁，每頁15筆，共{{ $receivables->total() }}筆
-    </p>
-</div>
-
 @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded mb-4">
         {{ session('success') }}
     </div>
 @endif
 
 <!-- 智能搜尋 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-2">
     <form method="GET" action="{{ route('tenant.receivables.index') }}">
         <!-- 年度選擇器 -->
         <div class="flex items-center gap-3 mb-4">
@@ -54,15 +47,15 @@
                        name="smart_search" 
                        value="{{ request('smart_search') }}" 
                        placeholder="🔍 聰明尋找：找專案/找專案成員/找負責人/找發票號/報價單號..." 
-                       class="w-full border-2 border-primary/30 dark:border-primary/50 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-3 text-base focus:ring-2 focus:ring-primary focus:border-primary">
+                       class="w-full border-2 border-primary/30 dark:border-primary/50 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-1 text-base focus:ring-2 focus:ring-primary focus:border-primary">
             </div>
             <button type="submit" 
-                    class="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-3 rounded-lg shadow-sm whitespace-nowrap">
+                    class="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-1 rounded-lg shadow-sm whitespace-nowrap">
                 搜尋
             </button>
             @if(request('smart_search') || request('fiscal_year') != date('Y'))
                 <a href="{{ route('tenant.receivables.index') }}" 
-                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium px-6 py-3 rounded-lg whitespace-nowrap">
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium px-6 py-1 rounded-lg whitespace-nowrap">
                     清除
                 </a>
             @endif
@@ -76,9 +69,9 @@
 </div>
 
 <!-- 進階篩選 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6" x-data="{ showFilters: {{ request()->hasAny(['search', 'project_id', 'company_id', 'status', 'year', 'month', 'date_start', 'date_end']) ? 'true' : 'false' }} }">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-2" x-data="{ showFilters: {{ request()->hasAny(['search', 'project_id', 'company_id', 'status', 'year', 'month', 'date_start', 'date_end']) ? 'true' : 'false' }} }">
     <button @click="showFilters = !showFilters" 
-            class="w-full px-4 py-3 flex items-center justify-between text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition">
+            class="w-full px-4 py-1 flex items-center justify-between text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition">
         <span class="font-medium">進階篩選</span>
         <svg class="w-5 h-5 transition-transform" :class="{ 'rotate-180': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -232,7 +225,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="px-4 py-3 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    <td colspan="9" class="px-4 py-1 text-center text-gray-500 dark:text-gray-400 text-sm">
                         目前沒有應收帳款資料
                     </td>
                 </tr>
@@ -241,16 +234,16 @@
         @if($receivables->count() > 0)
         <tfoot class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <td colspan="4" class="px-6 py-3 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
+                <td colspan="4" class="px-6 py-1 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
                     總計：
                 </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                <td class="px-6 py-1 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     NT$ {{ number_format($totalAmount, 0) }}
                 </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-green-600 dark:text-green-400">
+                <td class="px-6 py-1 text-right text-sm font-bold text-green-600 dark:text-green-400">
                     NT$ {{ number_format($totalReceived, 0) }}
                 </td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-red-600 dark:text-red-400">
+                <td class="px-6 py-1 text-right text-sm font-bold text-red-600 dark:text-red-400">
                     NT$ {{ number_format($totalAmount - $totalReceived, 0) }}
                 </td>
                 <td colspan="2"></td>

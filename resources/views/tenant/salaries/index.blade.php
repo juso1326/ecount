@@ -11,7 +11,7 @@
 </div>
 
 <!-- 頁面標題 -->
-<div class="mb-6 flex justify-between items-center">
+<div class="mb-2 flex justify-between items-center">
     <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">薪資總表</h1>
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $period['label'] }}</p>
@@ -28,7 +28,7 @@
 </div>
 
 <!-- 月份選擇與導航 -->
-<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-2">
     <div class="flex items-center justify-between">
         <!-- 上個月按鈕 -->
         <a href="{{ route('tenant.salaries.index', ['year' => $year, 'month' => $month, 'nav' => 'prev']) }}" 
@@ -69,49 +69,49 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">基本薪資</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">加項</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣項</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總計</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工</th>
+                <th class="px-6 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">基本薪資</th>
+                <th class="px-6 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">加項</th>
+                <th class="px-6 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣項</th>
+                <th class="px-6 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總計</th>
+                <th class="px-6 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
+                <th class="px-6 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($salaries as $salary)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-2 whitespace-nowrap">
                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $salary['user']->name }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
                     ${{ number_format($salary['base_salary'], 0) }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-green-600">
                     @if($salary['additions'] > 0)
                         +${{ number_format($salary['additions'], 0) }}
                     @else
                         -
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm text-red-600">
                     @if($salary['deductions'] > 0)
                         -${{ number_format($salary['deductions'], 0) }}
                     @else
                         -
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900 dark:text-white">
+                <td class="px-6 py-2 whitespace-nowrap text-right text-sm font-bold text-gray-900 dark:text-white">
                     ${{ number_format($salary['total'], 0) }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center">
+                <td class="px-6 py-2 whitespace-nowrap text-center">
                     @if($salary['items']->where('is_salary_paid', true)->count() > 0)
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已撥款</span>
                     @else
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">未撥款</span>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                <td class="px-6 py-2 whitespace-nowrap text-center text-sm">
                     <a href="{{ route('tenant.salaries.show', ['user' => $salary['user'], 'year' => $year, 'month' => $month]) }}" 
                        class="text-primary hover:text-primary-dark">
                         查看明細
@@ -129,9 +129,9 @@
         @if($salaries)
         <tfoot class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <td class="px-6 py-3 text-sm font-bold text-gray-900 dark:text-white">總計</td>
+                <td class="px-6 py-1 text-sm font-bold text-gray-900 dark:text-white">總計</td>
                 <td colspan="3"></td>
-                <td class="px-6 py-3 text-right text-sm font-bold text-gray-900 dark:text-white">
+                <td class="px-6 py-1 text-right text-sm font-bold text-gray-900 dark:text-white">
                     ${{ number_format($total, 0) }}
                 </td>
                 <td colspan="2"></td>
