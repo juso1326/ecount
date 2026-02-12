@@ -118,18 +118,6 @@ class Payable extends Model
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
-    public function payeeUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'payee_user_id');
-    }
-    
-    /**
-     * 關聯：給付記錄（薪資入帳）
-     */
-    public function payments()
-    {
-        return $this->hasMany(PayablePayment::class);
-    }
 
     /**
      * 取得收款對象名稱
