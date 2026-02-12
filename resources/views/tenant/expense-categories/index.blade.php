@@ -5,14 +5,7 @@
 @section('page-title', '支出項目管理')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">財務設定 &gt; 支出項目管理</p>
-</div>
-
-<!-- 頁面標題與按鈕 -->
-<div class="mb-6 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">支出項目管理</h1>
+<div class="mb-3 flex justify-end items-center">
     <a href="{{ route('tenant.expense-categories.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增支出項目

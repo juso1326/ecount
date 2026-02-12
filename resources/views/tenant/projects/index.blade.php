@@ -5,23 +5,18 @@
 @section('page-title', '專案管理')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">專案帳戶管理 &gt; 專案管理</p>
-</div>
-
-<!-- 頁面標題與按鈕 -->
-<div class="mb-6 flex justify-between items-center">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">專案管理</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            第 {{ $projects->currentPage() }} / {{ $projects->lastPage() }} 頁，每頁15筆，共{{ $projects->total() }}筆
-        </p>
-    </div>
+<div class="mb-3 flex justify-end items-center">
     <a href="{{ route('tenant.projects.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增專案
     </a>
+</div>
+
+<!-- 分頁資訊 -->
+<div class="mb-4">
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+        第 {{ $projects->currentPage() }} / {{ $projects->lastPage() }} 頁，每頁15筆，共{{ $projects->total() }}筆
+    </p>
 </div>
 
 <!-- 搜尋與篩選 -->

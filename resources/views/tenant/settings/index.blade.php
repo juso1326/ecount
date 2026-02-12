@@ -5,17 +5,6 @@
 @section('page-title', '系統設定')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">系統設定</p>
-</div>
-
-<!-- 頁面標題 -->
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">系統設定</h1>
-    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">管理系統各項設定與代碼規則</p>
-</div>
-
 <!-- 設定卡片 -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     <!-- 公司設定 -->
