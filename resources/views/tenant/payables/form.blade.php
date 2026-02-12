@@ -22,7 +22,7 @@
         <!-- 類型（隱藏，預設為 expense） -->
         <input type="hidden" name="type" value="{{ old('type', isset($payable) ? $payable->type : 'expense') }}">
 
-        <!-- 專案資訊區塊 -->
+<!-- 專案資訊區塊 -->
         <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">專案</h3>
             <div class="space-y-4">
@@ -30,7 +30,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">客戶</label>
                     <select name="company_id" id="company_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 select2-company">
                         <option value="">請選擇客戶</option>
                         @foreach($companies as $company)
                             <option value="{{ $company->id }}" 
@@ -46,7 +46,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
                     <select name="project_id" id="project_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 select2-project">
                         <option value="">請選擇專案</option>
                         @foreach($projects as $project)
                             <option value="{{ $project->id }}" 

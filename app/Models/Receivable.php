@@ -90,6 +90,14 @@ class Receivable extends Model
     }
 
     /**
+     * 關聯：標籤
+     */
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    /**
      * 計算屬性：未收金額
      */
     public function getRemainingAmountAttribute(): float

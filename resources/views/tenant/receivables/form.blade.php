@@ -23,7 +23,7 @@
                     <span class="text-red-500">*</span> 客戶
                 </label>
                 <select name="company_id" id="company_id" required
-                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent select2-company">
                     <option value="">請選擇客戶</option>
                     @foreach($companies as $company)
                         <option value="{{ $company->id }}" 
@@ -47,7 +47,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
                 <select name="project_id" id="project_id"
-                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent select2-project">
                     <option value="">請選擇專案</option>
                     @foreach($projects as $project)
                         <option value="{{ $project->id }}" 
@@ -182,8 +182,28 @@
     </form>
 </div>
 
+@push('head')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+$(document).ready(function() {
+    // 初始化 Select2
+    $('.select2-company').select2({
+        placeholder: '請搜尋客戶',
+        width: '100%',
+        allowClear: true
+    });
+    
+    $('.select2-project').select2({
+        placeholder: '請搜尋專案',
+        width: '100%',
+        allowClear: true
+    });
+});
+
 // 當選擇客戶時，顯示統編並篩選對應的專案
 document.getElementById('company_id').addEventListener('change', function() {
     const companyId = this.value;
@@ -214,6 +234,7 @@ document.getElementById('company_id').addEventListener('change', function() {
     
     // 重置專案選擇
     projectSelect.value = '';
+    $('#project_id').val(null).trigger('change');
     document.getElementById('responsible_user_id').value = '{{ auth()->id() }}';
 });
 

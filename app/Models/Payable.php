@@ -104,6 +104,26 @@ class Payable extends Model
     }
     
     /**
+     * 關聯：出款記錄
+     */
+    public function payments()
+    {
+        return $this->hasMany(PayablePayment::class);
+    }
+
+    /**
+     * 關聯：標籤
+     */
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+    public function payeeUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'payee_user_id');
+    }
+    
+    /**
      * 關聯：給付記錄（薪資入帳）
      */
     public function payments()
