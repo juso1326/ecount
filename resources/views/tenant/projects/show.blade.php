@@ -415,23 +415,6 @@
                                 </button>
                             </form>
                         </div>
-                        
-                        <!-- 成員的專案列表 -->
-                        @php
-                            $memberProjects = $member->projects->where('id', '!=', $project->id);
-                        @endphp
-                        @if($memberProjects->count() > 0 && $memberProjects->count() <= 3)
-                            <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5">其他專案：</p>
-                                <div class="space-y-0.5">
-                                    @foreach($memberProjects->take(3) as $mp)
-                                        <p class="text-xs text-gray-600 dark:text-gray-400">
-                                            • {{ $mp->name }}
-                                        </p>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     </div>
                     @endforeach
                 </div>

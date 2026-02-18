@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\SalaryAdjustment;
 use App\Services\SalaryService;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SalaryController extends Controller
 {
@@ -80,6 +81,11 @@ class SalaryController extends Controller
 
         $salary = $this->salaryService->calculateMonthlySalary($user->id, $year, $month);
         $isPaid = $this->salaryService->isPaid($user->id, $year, $month);
+        
+        // 取得加扣項明細，按週期分組
+        $adjustmentsDetail = $salary['adjustments_items'] ?? collect();
+        $periodicAdjustments = $adjustmentsDetail->whereIn('recurrence', ['monthly', 'yearly']);
+        $onceAdjustments = $adjustmentsDetail->where('recurrence', 'once');
 
         return view('tenant.salaries.show', [
             'user' => $user,
@@ -87,6 +93,10 @@ class SalaryController extends Controller
             'isPaid' => $isPaid,
             'year' => $year,
             'month' => $month,
+            'currentYear' => $year,
+            'currentMonth' => $month,
+            'periodicAdjustments' => $periodicAdjustments,
+            'onceAdjustments' => $onceAdjustments,
         ]);
     }
 
@@ -129,10 +139,118 @@ class SalaryController extends Controller
     }
 
     /**
+     * 快速新增加扣項（薪資頁面專用）
+     */
+    public function storeQuickAdjustment(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:add,deduct',
+            'title' => 'required|string|max:100',
+            'amount' => 'required|numeric|min:0',
+            'recurrence' => 'required|in:once,monthly,yearly',
+            'year' => 'required|integer',
+            'month' => 'required|integer|between:1,12',
+            'remark' => 'nullable|string|max:500',
+        ]);
+        
+        // 檢查該月是否已撥款
+        if ($this->salaryService->isPaid($user->id, $validated['year'], $validated['month'])) {
+            return response()->json([
+                'success' => false,
+                'message' => '該月份薪資已撥款，無法新增加扣項'
+            ], 403);
+        }
+        
+        // 自動計算日期
+        $startDate = Carbon::create($validated['year'], $validated['month'], 1);
+        $endDate = $validated['recurrence'] === 'once' 
+            ? $startDate->copy()->endOfMonth() 
+            : null;
+        
+        $adjustment = SalaryAdjustment::create([
+            'user_id' => $user->id,
+            'type' => $validated['type'],
+            'title' => $validated['title'],
+            'amount' => $validated['amount'],
+            'recurrence' => $validated['recurrence'],
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'is_active' => true,
+            'remark' => $validated['remark'] ?? null,
+        ]);
+        
+        // 重新計算薪資
+        $salary = $this->salaryService->calculateMonthlySalary(
+            $user->id, 
+            $validated['year'], 
+            $validated['month']
+        );
+        
+        return response()->json([
+            'success' => true,
+            'message' => '加扣項新增成功',
+            'adjustment' => $adjustment,
+            'new_totals' => [
+                'base_salary' => $salary['base_salary'],
+                'additions' => $salary['additions'],
+                'deductions' => $salary['deductions'],
+                'total' => $salary['total'],
+            ]
+        ]);
+    }
+    
+    /**
+     * 更新加扣項
+     */
+    public function updateAdjustment(Request $request, SalaryAdjustment $adjustment)
+    {
+        // 只允許編輯單次加扣項
+        if ($adjustment->recurrence !== 'once') {
+            return response()->json([
+                'success' => false,
+                'message' => '週期性加扣項請至加扣項管理頁面編輯'
+            ], 403);
+        }
+        
+        // 檢查是否已撥款
+        $period = Carbon::parse($adjustment->start_date);
+        if ($this->salaryService->isPaid($adjustment->user_id, $period->year, $period->month)) {
+            return response()->json([
+                'success' => false,
+                'message' => '該月份薪資已撥款，無法編輯'
+            ], 403);
+        }
+        
+        $validated = $request->validate([
+            'title' => 'required|string|max:100',
+            'amount' => 'required|numeric|min:0',
+            'remark' => 'nullable|string|max:500',
+        ]);
+        
+        $adjustment->update($validated);
+        
+        return response()->json([
+            'success' => true,
+            'message' => '加扣項更新成功',
+            'adjustment' => $adjustment
+        ]);
+    }
+
+    /**
      * 刪除加扣項
      */
     public function destroyAdjustment(SalaryAdjustment $adjustment)
     {
+        // 如果是 AJAX 請求，返回 JSON
+        if (request()->wantsJson()) {
+            $adjustment->delete();
+            return response()->json([
+                'success' => true,
+                'message' => '加扣項刪除成功'
+            ]);
+        }
+        
+        // 原有的重定向邏輯
         $userId = $adjustment->user_id;
         $adjustment->delete();
 
@@ -229,6 +347,40 @@ class SalaryController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
         }
+    }
+
+    /**
+     * 排除週期性加扣項（本月停用）
+     */
+    public function excludeAdjustment(Request $request, User $user, SalaryAdjustment $adjustment)
+    {
+        $year = $request->input('year');
+        $month = $request->input('month');
+
+        \App\Models\SalaryAdjustmentExclusion::firstOrCreate([
+            'salary_adjustment_id' => $adjustment->id,
+            'year' => $year,
+            'month' => $month,
+        ]);
+
+        return redirect()->back()->with('success', '已停用本月加扣項');
+    }
+
+    /**
+     * 恢復週期性加扣項
+     */
+    public function restoreAdjustment(Request $request, User $user, SalaryAdjustment $adjustment)
+    {
+        $year = $request->input('year');
+        $month = $request->input('month');
+
+        \App\Models\SalaryAdjustmentExclusion::where([
+            'salary_adjustment_id' => $adjustment->id,
+            'year' => $year,
+            'month' => $month,
+        ])->delete();
+
+        return redirect()->back()->with('success', '已恢復本月加扣項');
     }
 }
 

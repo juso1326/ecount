@@ -54,7 +54,6 @@
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工編號</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">姓名</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">部門</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">參與專案</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
@@ -77,9 +76,6 @@
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $user->email }}
-                </td>
-                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {{ $user->department?->name }}
                 </td>
                 <td class="px-6 py-2 text-sm text-gray-500 dark:text-gray-400">
                     @if($user->projects && $user->projects->count() > 0)
@@ -130,7 +126,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何使用者資料
                 </td>
             </tr>

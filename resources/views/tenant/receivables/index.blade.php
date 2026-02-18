@@ -49,11 +49,19 @@
                        placeholder="🔍 聰明尋找：找專案/找專案成員/找負責人/找發票號/報價單號..." 
                        class="w-full border-2 border-primary/30 dark:border-primary/50 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-1 text-base focus:ring-2 focus:ring-primary focus:border-primary">
             </div>
+            <select name="project_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <option value="">全部專案</option>
+                @foreach(\App\Models\Project::where('is_active', true)->orderBy('code')->get() as $project)
+                    <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
+                        {{ $project->code }} - {{ $project->name }}
+                    </option>
+                @endforeach
+            </select>
             <button type="submit" 
                     class="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-1 rounded-lg shadow-sm whitespace-nowrap">
                 搜尋
             </button>
-            @if(request('smart_search') || request('fiscal_year') != date('Y'))
+            @if(request('smart_search') || request('project_id') || request('fiscal_year') != date('Y'))
                 <a href="{{ route('tenant.receivables.index') }}" 
                    class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium px-6 py-1 rounded-lg whitespace-nowrap">
                     清除
@@ -66,85 +74,6 @@
             </p>
         @endif
     </form>
-</div>
-
-<!-- 進階篩選 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-2" x-data="{ showFilters: {{ request()->hasAny(['search', 'project_id', 'company_id', 'status', 'year', 'month', 'date_start', 'date_end']) ? 'true' : 'false' }} }">
-    <button @click="showFilters = !showFilters" 
-            class="w-full px-4 py-1 flex items-center justify-between text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition">
-        <span class="font-medium">進階篩選</span>
-        <svg class="w-5 h-5 transition-transform" :class="{ 'rotate-180': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-    </button>
-    
-    <div x-show="showFilters" x-collapse class="border-t border-gray-200 dark:border-gray-700 p-4">
-        <form method="GET" action="{{ route('tenant.receivables.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input type="hidden" name="fiscal_year" value="{{ request('fiscal_year') }}">
-        
-        <!-- 搜尋框 -->
-        <input type="text" name="search" value="{{ request('search') }}" 
-               placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 
-               class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-        
-        <!-- 專案篩選 -->
-        <select name="project_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部專案</option>
-            @foreach(\App\Models\Project::where('is_active', true)->orderBy('code')->get() as $project)
-                <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                    {{ $project->code }} - {{ $project->name }}
-                </option>
-            @endforeach
-        </select>
-        
-        <!-- 客戶篩選 -->
-        <select name="company_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部客戶</option>
-            @foreach(\App\Models\Company::where('is_active', true)->orderBy('name')->get() as $company)
-                <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
-            @endforeach
-        </select>
-        
-        <!-- 狀態篩選 -->
-        <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部狀態</option>
-            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待收款</option>
-            <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分收款</option>
-            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已收款</option>
-            <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
-        </select>
-
-        <!-- 年份 -->
-        <select name="year" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部年份</option>
-            @for($y = now()->year; $y >= 2020; $y--)
-                <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}年</option>
-            @endfor
-        </select>
-
-        <!-- 月份 -->
-        <select name="month" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            <option value="">全部月份</option>
-            @for($m = 1; $m <= 12; $m++)
-                <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>{{ $m }}月</option>
-            @endfor
-        </select>
-        
-        <!-- 搜尋按鈕 -->
-        <div class="md:col-span-6 flex gap-2">
-            <button type="submit"
-                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg flex-1">
-                搜尋
-            </button>
-            @if(request()->hasAny(['search', 'project_id', 'company_id', 'status', 'year', 'month']))
-                <a href="{{ route('tenant.receivables.index') }}" 
-                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
-                    清除
-                </a>
-            @endif
-        </div>
-    </form>
-    </div>
 </div>
 
 <!-- 資料表格 -->
@@ -211,6 +140,9 @@
                                 收款
                             </button>
                         @endif
+                        
+                        <a href="{{ route('tenant.receivables.quick-receive', $receivable) }}" 
+                           class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">記錄</a>
                         
                         <form action="{{ route('tenant.receivables.destroy', $receivable) }}" 
                               method="POST" 

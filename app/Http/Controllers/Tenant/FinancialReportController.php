@@ -67,7 +67,7 @@ class FinancialReportController extends Controller
         }
         
         $receivables = $receivablesQuery->with(['project', 'company'])
-            ->orderBy('invoice_date', 'desc')
+            ->orderBy('receipt_date', 'desc')
             ->paginate(20);
         
         // 應付統計
@@ -204,7 +204,7 @@ class FinancialReportController extends Controller
             $monthStart = $date->format('Y-m-d');
             $monthEnd = $date->endOfMonth()->format('Y-m-d');
             
-            $receivableSum = Receivable::whereBetween('invoice_date', [$monthStart, $monthEnd])
+            $receivableSum = Receivable::whereBetween('receipt_date', [$monthStart, $monthEnd])
                 ->sum('received_amount');
             
             $payableSum = Payable::whereBetween('payment_date', [$monthStart, $monthEnd])
@@ -449,7 +449,7 @@ class FinancialReportController extends Controller
             $unpaidQuery->where('company_id', $companyId);
         }
         
-        $unpaidReceivables = $unpaidQuery->orderBy('invoice_date')->get();
+        $unpaidReceivables = $unpaidQuery->orderBy('due_date')->get();
         
         // 依公司分組統計
         $companySummary = $unpaidReceivables->groupBy('company_id')->map(function($items, $companyId) {

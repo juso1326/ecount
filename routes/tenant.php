@@ -95,6 +95,12 @@ Route::middleware([
             'destroy' => 'tenant.users.destroy',
         ]);
         Route::post('users/{user}/toggle-active', [\App\Http\Controllers\Tenant\UserController::class, 'toggleActive'])->name('tenant.users.toggle-active');
+        
+        // 使用者銀行帳戶管理
+        Route::post('users/{user}/bank-accounts', [\App\Http\Controllers\Tenant\UserController::class, 'storeBankAccount'])->name('tenant.users.bank-accounts.store');
+        Route::put('users/{user}/bank-accounts/{bankAccount}', [\App\Http\Controllers\Tenant\UserController::class, 'updateBankAccount'])->name('tenant.users.bank-accounts.update');
+        Route::delete('users/{user}/bank-accounts/{bankAccount}', [\App\Http\Controllers\Tenant\UserController::class, 'destroyBankAccount'])->name('tenant.users.bank-accounts.destroy');
+        Route::post('users/{user}/bank-accounts/{bankAccount}/set-default', [\App\Http\Controllers\Tenant\UserController::class, 'setDefaultBankAccount'])->name('tenant.users.bank-accounts.set-default');
 
         // 應收帳款管理（簡化路由）
         Route::get('receivables', [\App\Http\Controllers\Tenant\ReceivableController::class, 'index'])->name('tenant.receivables.index');
@@ -134,6 +140,12 @@ Route::middleware([
             Route::get('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'company'])->name('company');
             Route::post('company', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateCompany'])->name('company.update');
             
+            // 銀行帳戶管理
+            Route::get('bank-accounts', [\App\Http\Controllers\Tenant\BankAccountController::class, 'index'])->name('bank-accounts');
+            Route::post('bank-accounts', [\App\Http\Controllers\Tenant\BankAccountController::class, 'store'])->name('bank-accounts.store');
+            Route::put('bank-accounts/{bankAccount}', [\App\Http\Controllers\Tenant\BankAccountController::class, 'update'])->name('bank-accounts.update');
+            Route::delete('bank-accounts/{bankAccount}', [\App\Http\Controllers\Tenant\BankAccountController::class, 'destroy'])->name('bank-accounts.destroy');
+            Route::post('bank-accounts/{bankAccount}/set-default', [\App\Http\Controllers\Tenant\BankAccountController::class, 'setDefault'])->name('bank-accounts.set-default');
 
             // 財務設定
             Route::get('financial', [\App\Http\Controllers\Tenant\SettingsController::class, 'financial'])->name('financial');
@@ -175,14 +187,23 @@ Route::middleware([
         ]);
         Route::post('tax-settings/{taxSetting}/set-default', [\App\Http\Controllers\Tenant\TaxSettingController::class, 'setDefault'])->name('tenant.tax-settings.set-default');
 
+        // 角色權限管理
+        Route::resource('roles', \App\Http\Controllers\Tenant\RoleController::class)->names([
+            'index' => 'tenant.roles.index',
+            'create' => 'tenant.roles.create',
+            'store' => 'tenant.roles.store',
+            'show' => 'tenant.roles.show',
+            'edit' => 'tenant.roles.edit',
+            'update' => 'tenant.roles.update',
+            'destroy' => 'tenant.roles.destroy',
+        ]);
+
         // 財務報表
         Route::prefix('reports')->name('tenant.reports.')->group(function () {
-            Route::get('financial', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'index'])->name('financial');
-            Route::get('financial/total-expenses', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'totalExpenses'])->name('financial.total-expenses');
-            Route::get('financial/project-analysis', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'projectAnalysis'])->name('financial.project-analysis');
-            Route::get('financial/unpaid-receivables', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'unpaidReceivables'])->name('financial.unpaid-receivables');
-            Route::get('financial/outsource-cost-recovery', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'outsourceCostRecovery'])->name('financial.outsource-cost-recovery');
-            Route::get('financial/export', [\App\Http\Controllers\Tenant\FinancialReportController::class, 'export'])->name('financial.export');
+            Route::get('financial-overview', [\App\Http\Controllers\Tenant\ReportsController::class, 'financialOverview'])->name('financial-overview');
+            Route::get('ar-ap-analysis', [\App\Http\Controllers\Tenant\ReportsController::class, 'arApAnalysis'])->name('ar-ap-analysis');
+            Route::get('project-profit-loss', [\App\Http\Controllers\Tenant\ReportsController::class, 'projectProfitLoss'])->name('project-profit-loss');
+            Route::get('payroll-labor', [\App\Http\Controllers\Tenant\ReportsController::class, 'payrollLabor'])->name('payroll-labor');
         });
         
         // 薪資管理
@@ -194,8 +215,12 @@ Route::middleware([
             Route::get('{user}', [\App\Http\Controllers\Tenant\SalaryController::class, 'show'])->name('show');
             Route::get('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'adjustments'])->name('adjustments');
             Route::post('{user}/adjustments', [\App\Http\Controllers\Tenant\SalaryController::class, 'storeAdjustment'])->name('adjustments.store');
+            Route::post('{user}/quick-adjustment', [\App\Http\Controllers\Tenant\SalaryController::class, 'storeQuickAdjustment'])->name('quick-adjustment.store');
+            Route::put('adjustments/{adjustment}', [\App\Http\Controllers\Tenant\SalaryController::class, 'updateAdjustment'])->name('adjustments.update');
             Route::delete('adjustments/{adjustment}', [\App\Http\Controllers\Tenant\SalaryController::class, 'destroyAdjustment'])->name('adjustments.destroy');
             Route::post('{user}/pay', [\App\Http\Controllers\Tenant\SalaryController::class, 'pay'])->name('pay');
+            Route::post('{user}/adjustments/{adjustment}/exclude', [\App\Http\Controllers\Tenant\SalaryController::class, 'excludeAdjustment'])->name('exclude-adjustment');
+            Route::post('{user}/adjustments/{adjustment}/restore', [\App\Http\Controllers\Tenant\SalaryController::class, 'restoreAdjustment'])->name('restore-adjustment');
         });
     });
 });

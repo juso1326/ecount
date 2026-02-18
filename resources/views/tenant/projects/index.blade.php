@@ -29,6 +29,12 @@
                     class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                 搜尋
             </button>
+            @if(request()->hasAny(['smart_search', 'date_start', 'date_end', 'status', 'company_id']))
+                <a href="{{ route('tenant.projects.index') }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                    清除
+                </a>
+            @endif
         </div>
 
         <!-- 進階篩選 -->
@@ -76,16 +82,6 @@
                 </div>
             </div>
         </details>
-        
-        <!-- 清除按鈕 -->
-        @if(request()->hasAny(['smart_search', 'date_start', 'date_end', 'status', 'company_id']))
-            <div class="flex justify-end">
-                <a href="{{ route('tenant.projects.index') }}" 
-                   class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary underline">
-                    清除所有篩選條件
-                </a>
-            </div>
-        @endif
     </form>
 </div>
 

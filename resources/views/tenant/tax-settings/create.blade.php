@@ -2,17 +2,9 @@
 
 @section('title', '新增稅率')
 
+@section('page-title', '新增稅率設定')
+
 @section('content')
-<div class="mb-2">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        財務設定 &gt; <a href="{{ route('tenant.tax-settings.index') }}" class="text-primary hover:underline">稅款設定</a> &gt; 新增
-    </p>
-</div>
-
-<div class="mb-3">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增稅率設定</h1>
-</div>
-
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
     <form action="{{ route('tenant.tax-settings.store') }}" method="POST">
         @csrf

@@ -13,16 +13,43 @@
         @method('PUT')
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <!-- 公司代碼 -->
+            <!-- 類型 -->
             <div>
-                <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    公司代碼 <span class="text-red-500">*</span>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    類型 <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="code" id="code" value="{{ old('code', $company->code) }}" required
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('code') border-red-500 @enderror">
-                @error('code')
+                <div class="flex gap-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="type" value="company" {{ old('type', $company->type) == 'company' ? 'checked' : '' }} required
+                            class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">公司</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="type" value="individual" {{ old('type', $company->type) == 'individual' ? 'checked' : '' }}
+                            class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">個人</span>
+                    </label>
+                </div>
+                @error('type')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror
+            </div>
+
+            <!-- 屬性 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">屬性</label>
+                <div class="flex gap-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="is_client" value="1" {{ old('is_client', $company->is_client) ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">客戶</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="is_outsource" value="1" {{ old('is_outsource', $company->is_outsource) ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">外製</span>
+                    </label>
+                </div>
             </div>
 
             <!-- 名稱 -->
@@ -49,49 +76,17 @@
                 @enderror
             </div>
 
-            <!-- 類型 -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    類型 <span class="text-red-500">*</span>
-                </label>
-                <div class="flex gap-2">
-                    <label class="flex items-center">
-                        <input type="radio" name="type" value="company" {{ old('type', $company->type) == 'company' ? 'checked' : '' }} required
-                            class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">公司</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="type" value="individual" {{ old('type', $company->type) == 'individual' ? 'checked' : '' }}
-                            class="rounded-full border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">個人</span>
-                    </label>
-                </div>
-                @error('type')
-                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- 屬性 -->
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">屬性</label>
-                <div class="flex gap-2">
-                    <label class="flex items-center">
-                        <input type="checkbox" name="is_client" value="1" {{ old('is_client', $company->is_client) ? 'checked' : '' }}
-                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">客戶</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" name="is_outsource" value="1" {{ old('is_outsource', $company->is_outsource) ? 'checked' : '' }}
-                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">外製</span>
-                    </label>
-                </div>
-            </div>
-
             <!-- 統一編號 -->
             <div>
                 <label for="tax_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">統一編號</label>
                 <input type="text" name="tax_id" id="tax_id" value="{{ old('tax_id', $company->tax_id) }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 電話 -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">電話</label>
+                <input type="text" name="phone" id="phone" value="{{ old('phone', $company->phone) }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
@@ -102,12 +97,8 @@
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- 電話 -->
-            <div>
-                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">電話</label>
-                <input type="text" name="phone" id="phone" value="{{ old('phone', $company->phone) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
+            <!-- 公司代碼 (隱藏，自動生成或保留) -->
+            <input type="hidden" name="code" value="{{ old('code', $company->code) }}">
 
             <!-- 傳真 -->
             <div>

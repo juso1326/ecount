@@ -268,7 +268,7 @@ class PayableController extends Controller
             $nextNumber = 1;
         }
 
-        return 'PAY-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        return 'PAY-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
     
     /**

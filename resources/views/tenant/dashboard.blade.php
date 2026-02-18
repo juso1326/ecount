@@ -91,7 +91,7 @@
 <div class="mb-6">
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">財務概覽（{{ $fiscalYear }} 年度）</h2>
-        <a href="{{ route('tenant.reports.financial', ['fiscal_year' => $fiscalYear]) }}" 
+        <a href="{{ route('tenant.reports.financial-overview', ['year' => $fiscalYear]) }}" 
            class="text-sm text-primary hover:text-primary-dark font-medium">
             查看完整報表 →
         </a>
@@ -113,7 +113,7 @@
                 已收：${{ number_format($financialStats['total_received'], 0) }}
             </p>
             @if($financialStats['unpaid_receivables'] > 0)
-            <a href="{{ route('tenant.reports.financial.unpaid-receivables', ['fiscal_year' => $fiscalYear]) }}" 
+            <a href="{{ route('tenant.reports.ar-ap-analysis') }}" 
                class="text-xs text-yellow-600 dark:text-yellow-400 hover:underline mt-1 block">
                 未收：${{ number_format($financialStats['unpaid_receivables'], 0) }}（{{ $financialStats['unpaid_count'] }} 筆）
             </a>
@@ -155,7 +155,7 @@
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
                 毛利率：{{ number_format($financialStats['profit_margin'], 1) }}%
             </p>
-            <a href="{{ route('tenant.reports.financial.project-analysis', ['fiscal_year' => $fiscalYear]) }}" 
+            <a href="{{ route('tenant.reports.project-profit-loss') }}" 
                class="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 block">
                 查看專案分析 →
             </a>
@@ -180,7 +180,7 @@
                     外包：${{ number_format($financialStats['outsource_cost'], 0) }}
                 </p>
             </div>
-            <a href="{{ route('tenant.reports.financial.total-expenses', ['fiscal_year' => $fiscalYear]) }}" 
+            <a href="{{ route('tenant.reports.payroll-labor', ['year' => $fiscalYear]) }}" 
                class="text-xs text-purple-600 dark:text-purple-400 hover:underline mt-1 block">
                 查看詳細支出 →
             </a>
@@ -193,7 +193,7 @@
     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">常用報表</h2>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <!-- 應收未收 -->
-        <a href="{{ route('tenant.reports.financial.unpaid-receivables', ['fiscal_year' => $fiscalYear]) }}" 
+        <a href="{{ route('tenant.reports.ar-ap-analysis') }}" 
            class="group block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-all hover:border-yellow-300 dark:hover:border-yellow-600">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-lg p-2">
@@ -222,7 +222,7 @@
         </a>
 
         <!-- 專案收支 -->
-        <a href="{{ route('tenant.reports.financial.project-analysis', ['fiscal_year' => $fiscalYear]) }}" 
+        <a href="{{ route('tenant.reports.project-profit-loss') }}" 
            class="group block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-all hover:border-blue-300 dark:hover:border-blue-600">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-lg p-2">
@@ -245,7 +245,7 @@
         </a>
 
         <!-- 外製成本 -->
-        <a href="{{ route('tenant.reports.financial.outsource-cost-recovery', ['fiscal_year' => $fiscalYear]) }}" 
+        <a href="{{ route('tenant.reports.payroll-labor') }}" 
            class="group block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-all hover:border-purple-300 dark:hover:border-purple-600">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0 bg-purple-100 dark:bg-purple-900 rounded-lg p-2">
@@ -268,7 +268,7 @@
         </a>
 
         <!-- 總支出 -->
-        <a href="{{ route('tenant.reports.financial.total-expenses', ['fiscal_year' => $fiscalYear]) }}" 
+        <a href="{{ route('tenant.reports.financial-overview') }}" 
            class="group block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md transition-all hover:border-red-300 dark:hover:border-red-600">
             <div class="flex items-center space-x-3">
                 <div class="flex-shrink-0 bg-red-100 dark:bg-red-900 rounded-lg p-2">

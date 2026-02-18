@@ -1,8 +1,8 @@
 @extends('layouts.tenant')
 
-@section('title', '入帳記錄')
+@section('title', '快速收款')
 
-@section('page-title', '入帳記錄')
+@section('page-title', '快速收款 - ' . $receivable->receipt_no)
 
 @section('content')
 <!-- 麵包屑 -->
@@ -10,13 +10,8 @@
     <p class="text-sm text-gray-600 dark:text-gray-400">
         <a href="{{ route('tenant.receivables.index') }}" class="hover:text-primary">應收帳款</a> &gt;
         <a href="{{ route('tenant.projects.show', $receivable->project_id) }}" class="hover:text-primary">{{ $receivable->project->name ?? '專案' }}</a> &gt;
-        入帳記錄
+        快速收款
     </p>
-</div>
-
-<!-- 頁面標題 -->
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">入帳記錄 #{{ $receivable->receipt_no }}</h1>
 </div>
 
 <!-- 應收資訊 -->
@@ -35,67 +30,53 @@
             </form>
         @endif
     </div>
-    <ul class="space-y-2 text-red-600 dark:text-red-400 font-medium">
-        <li><strong>客戶：</strong>{{ $receivable->company->name ?? '-' }}</li>
-        <li><strong>專案名稱：</strong>{{ $receivable->project->name ?? '-' }}</li>
-        <li><strong>內容：</strong>{{ $receivable->content ?? '-' }}</li>
-        <li><strong>總金額：</strong>NT$ {{ number_format($receivable->amount, 0) }}</li>
-        <li><strong>已收款：</strong>NT$ {{ number_format($totalReceived, 0) }}</li>
-        <li><strong>剩餘應收：</strong>NT$ {{ number_format($remainingAmount, 0) }}</li>
-    </ul>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+        <div><span class="text-gray-600 dark:text-gray-400">客戶：</span><span class="font-medium">{{ $receivable->company->name ?? '-' }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">專案：</span><span class="font-medium">{{ $receivable->project->name ?? '-' }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">內容：</span><span class="font-medium">{{ $receivable->content ?? '-' }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">總金額：</span><span class="font-medium text-blue-600 dark:text-blue-400">NT$ {{ number_format($receivable->amount, 0) }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">已收款：</span><span class="font-medium text-green-600 dark:text-green-400">NT$ {{ number_format($totalReceived, 0) }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">剩餘應收：</span><span class="font-medium text-red-600 dark:text-red-400">NT$ {{ number_format($remainingAmount, 0) }}</span></div>
+    </div>
 </div>
 
-<!-- 入帳記錄列表 -->
+<!-- 收款記錄 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-        入帳記錄
+        收款記錄
     </h2>
     
     @if($payments->count() > 0)
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">日期</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">金額</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">方式</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">比例</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">備註</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">操作</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($payments as $payment)
-                        <tr>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $payment->payment_date }}
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                NT$ {{ number_format($payment->amount, 0) }}
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                                {{ $payment->payment_method ?? '-' }}
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-600 dark:text-gray-400">
-                                {{ round($payment->amount / $receivable->amount * 100, 1) }}%
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                {{ $payment->note ?? '-' }}
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-center text-sm">
-                                <form action="{{ route('tenant.receivable-payments.destroy', $payment) }}" method="POST" 
-                                      onsubmit="return confirm('確定要刪除此入帳記錄嗎？');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-                                        刪除
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="space-y-2">
+            @foreach($payments as $payment)
+                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                            {{ $payment->payment_date }} 
+                            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ $payment->payment_method ?? '未指定方式' }}</span>
+                        </div>
+                        @if($payment->note)
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $payment->note }}</div>
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-right">
+                            <div class="text-sm font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payment->amount, 0) }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ round($payment->amount / $receivable->amount * 100, 1) }}%</div>
+                        </div>
+                        <form action="{{ route('tenant.receivable-payments.destroy', $payment) }}" method="POST" 
+                              onsubmit="return confirm('確定要刪除此收款記錄嗎？');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
         </div>
     @else
         <p class="text-gray-500 dark:text-gray-400 text-center py-4">尚無入帳記錄</p>

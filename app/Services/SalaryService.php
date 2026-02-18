@@ -33,6 +33,7 @@ class SalaryService
             'additions' => $adjustments['additions'],
             'deductions' => $adjustments['deductions'],
             'adjustments_total' => $adjustments['total'],
+            'adjustments_items' => $adjustments['items'],
             'total' => $total,
             'period' => $period,
             'items' => $this->getSalaryItems($userId, $period['start'], $period['end']),

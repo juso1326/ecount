@@ -309,7 +309,7 @@ class ProjectController extends Controller
             $nextNumber = 1;
         }
         
-        $validated['receipt_no'] = 'REC-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        $validated['receipt_no'] = 'REC-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         $validated['project_id'] = $project->id;
         $validated['company_id'] = $project->company_id;
         $validated['status'] = \App\Models\Receivable::STATUS_UNPAID;
@@ -348,7 +348,7 @@ class ProjectController extends Controller
             $nextNumber = 1;
         }
         
-        $validated['payment_no'] = 'PAY-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        $validated['payment_no'] = 'PAY-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         $validated['project_id'] = $project->id;
         $validated['company_id'] = $project->company_id;
         $validated['status'] = \App\Models\Payable::STATUS_UNPAID;
@@ -380,7 +380,7 @@ class ProjectController extends Controller
             $nextNumber = 1;
         }
 
-        return 'PRJ-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        return 'PRJ-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
     
     /**

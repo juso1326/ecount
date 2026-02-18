@@ -207,34 +207,3 @@
         </div>
     </div>
 </div>
-
-<!-- 銀行資訊 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">銀行資訊</h3>
-    </div>
-    <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 銀行 -->
-            <div>
-                <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行</label>
-                <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $user->bank_name ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 分行 -->
-            <div>
-                <label for="bank_branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300">分行</label>
-                <input type="text" name="bank_branch" id="bank_branch" value="{{ old('bank_branch', $user->bank_branch ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 帳號 -->
-            <div>
-                <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">帳號</label>
-                <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account', $user->bank_account ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-        </div>
-    </div>
-</div>

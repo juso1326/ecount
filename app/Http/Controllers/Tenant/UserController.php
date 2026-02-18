@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserBankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -154,6 +155,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        $user->load('bankAccounts');
         $supervisors = User::where('is_active', true)->where('id', '!=', $user->id)->orderBy('name')->get();
         $currentRole = $user->roles->first()?->name ?? '';
         
@@ -228,6 +230,22 @@ class UserController extends Controller
             return back()->with('error', '無法刪除自己的帳號');
         }
 
+        // 防止刪除最後一個管理員
+        if ($user->hasRole('admin')) {
+            $adminCount = User::whereHas('roles', function($query) {
+                $query->where('name', 'admin');
+            })->where('is_active', true)->count();
+            
+            if ($adminCount <= 1) {
+                if (request()->wantsJson()) {
+                    return response()->json([
+                        'message' => '無法刪除最後一個系統管理員'
+                    ], 422);
+                }
+                return back()->with('error', '無法刪除最後一個系統管理員');
+            }
+        }
+
         $user->delete();
 
         if (request()->wantsJson()) {
@@ -238,5 +256,113 @@ class UserController extends Controller
 
         return redirect()->route('tenant.users.index')
             ->with('success', '使用者刪除成功');
+    }
+
+    /**
+     * 新增銀行帳戶
+     */
+    public function storeBankAccount(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'bank_name' => 'required|string|max:100',
+            'bank_branch' => 'nullable|string|max:100',
+            'bank_account' => 'required|string|max:50',
+            'account_name' => 'nullable|string|max:100',
+            'is_default' => 'boolean',
+            'note' => 'nullable|string',
+        ], [
+            'bank_name.required' => '銀行名稱為必填',
+            'bank_account.required' => '帳號為必填',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => '驗證失敗',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $bankAccount = $user->bankAccounts()->create($request->all());
+
+        return response()->json([
+            'message' => '銀行帳戶新增成功',
+            'data' => $bankAccount
+        ], 201);
+    }
+
+    /**
+     * 更新銀行帳戶
+     */
+    public function updateBankAccount(Request $request, User $user, UserBankAccount $bankAccount)
+    {
+        if ($bankAccount->user_id !== $user->id) {
+            return response()->json([
+                'message' => '無權限操作此銀行帳戶'
+            ], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'bank_name' => 'required|string|max:100',
+            'bank_branch' => 'nullable|string|max:100',
+            'bank_account' => 'required|string|max:50',
+            'account_name' => 'nullable|string|max:100',
+            'is_default' => 'boolean',
+            'note' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => '驗證失敗',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $bankAccount->update($request->all());
+
+        return response()->json([
+            'message' => '銀行帳戶更新成功',
+            'data' => $bankAccount
+        ]);
+    }
+
+    /**
+     * 刪除銀行帳戶
+     */
+    public function destroyBankAccount(User $user, UserBankAccount $bankAccount)
+    {
+        if ($bankAccount->user_id !== $user->id) {
+            return response()->json([
+                'message' => '無權限操作此銀行帳戶'
+            ], 403);
+        }
+
+        $bankAccount->delete();
+
+        return response()->json([
+            'message' => '銀行帳戶刪除成功'
+        ]);
+    }
+
+    /**
+     * 設為預設銀行帳戶
+     */
+    public function setDefaultBankAccount(User $user, UserBankAccount $bankAccount)
+    {
+        if ($bankAccount->user_id !== $user->id) {
+            return response()->json([
+                'message' => '無權限操作此銀行帳戶'
+            ], 403);
+        }
+
+        // 取消其他帳戶的預設狀態
+        $user->bankAccounts()->update(['is_default' => false]);
+        
+        // 設為預設
+        $bankAccount->update(['is_default' => true]);
+
+        return response()->json([
+            'message' => '已設為預設銀行帳戶',
+            'data' => $bankAccount
+        ]);
     }
 }

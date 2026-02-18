@@ -3,11 +3,6 @@
 @section('title', '新增使用者')
 
 @section('content')
-<!-- 頁面標題 -->
-<div class="mb-3">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">新增使用者</h1>
-</div>
-
 <form method="POST" action="{{ route('tenant.users.store') }}">
     @csrf
     

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SalaryAdjustment extends Model
 {
@@ -32,6 +33,25 @@ class SalaryAdjustment extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * 關聯：排除月份
+     */
+    public function exclusions(): HasMany
+    {
+        return $this->hasMany(SalaryAdjustmentExclusion::class);
+    }
+
+    /**
+     * 檢查是否在指定月份被排除
+     */
+    public function isExcludedForMonth(int $year, int $month): bool
+    {
+        return $this->exclusions()
+            ->where('year', $year)
+            ->where('month', $month)
+            ->exists();
     }
 
     /**

@@ -83,7 +83,7 @@ class Project extends Model
      */
     public function receivables(): HasMany
     {
-        return $this->hasMany(Receivable::class);
+        return $this->hasMany(Receivable::class)->orderBy('receipt_date', 'desc');
     }
 
     /**
@@ -91,7 +91,7 @@ class Project extends Model
      */
     public function payables(): HasMany
     {
-        return $this->hasMany(Payable::class);
+        return $this->hasMany(Payable::class)->orderBy('payment_date', 'desc');
     }
 
     /**

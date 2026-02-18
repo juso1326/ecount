@@ -5,11 +5,6 @@
 @section('page-title', '編輯標籤')
 
 @section('content')
-<!-- 頁面標題 -->
-<div class="mb-3">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">編輯標籤</h1>
-</div>
-
 <!-- 表單 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
     <form action="{{ route('tenant.tags.update', $tag) }}" method="POST">

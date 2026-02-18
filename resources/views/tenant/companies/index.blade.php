@@ -15,28 +15,25 @@
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
     <form method="GET" action="{{ route('tenant.companies.index') }}" class="flex gap-4 items-end">
-        <!-- 類型篩選 -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">類型</label>
-            <div class="flex gap-4">
-                <label class="flex items-center">
-                    <input type="checkbox" name="is_client" value="1" {{ request('is_client') ? 'checked' : '' }}
-                           class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">客戶</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="is_outsource" value="1" {{ request('is_outsource') ? 'checked' : '' }}
-                           class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">外製</span>
-                </label>
-            </div>
-        </div>
-
         <!-- 搜尋框 -->
         <div class="flex-1">
             <input type="text" name="search" value="{{ request('search') }}" 
-                   placeholder="搜尋名稱、簡稱、統編..." 
-                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                   placeholder="🔍 聰明尋找：搜尋名稱、簡稱、統編..." 
+                   class="w-full border-2 border-primary/30 dark:border-primary/50 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 text-base focus:ring-2 focus:ring-primary focus:border-primary">
+        </div>
+
+        <!-- 類型篩選 -->
+        <div class="flex gap-4">
+            <label class="flex items-center">
+                <input type="checkbox" name="is_client" value="1" {{ request('is_client') ? 'checked' : '' }}
+                       class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">客戶</span>
+            </label>
+            <label class="flex items-center">
+                <input type="checkbox" name="is_outsource" value="1" {{ request('is_outsource') ? 'checked' : '' }}
+                       class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">外製</span>
+            </label>
         </div>
         
         <button type="submit" 
@@ -82,9 +79,6 @@
                         編輯
                     </a>
                 </td>
-                <td class="px-6 py-2 whitespace-nowrap text-sm">
-
-                </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $company->type === 'company' ? '公司' : '個人' }}
                 </td>
@@ -112,7 +106,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="10" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="9" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何客戶/廠商資料
                 </td>
             </tr>

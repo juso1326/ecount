@@ -2,19 +2,9 @@
 
 @section('title', '編輯支出項目')
 
+@section('page-title', '編輯支出項目')
+
 @section('content')
-<div class="mb-2">
-    <p class="text-sm text-gray-600 dark:text-gray-400">
-        財務設定 &gt; 
-        <a href="{{ route('tenant.expense-categories.index') }}" class="text-primary hover:underline">支出項目管理</a> &gt; 
-        編輯
-    </p>
-</div>
-
-<div class="mb-3">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">編輯支出項目</h1>
-</div>
-
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
     <form action="{{ route('tenant.expense-categories.update, $expenseCategory') }}" method="POST">
         @csrf

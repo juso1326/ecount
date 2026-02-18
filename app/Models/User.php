@@ -114,4 +114,20 @@ class User extends Authenticatable
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
+
+    /**
+     * 銀行帳戶（一對多關聯）
+     */
+    public function bankAccounts()
+    {
+        return $this->hasMany(UserBankAccount::class);
+    }
+
+    /**
+     * 取得預設銀行帳戶
+     */
+    public function defaultBankAccount()
+    {
+        return $this->hasOne(UserBankAccount::class)->where('is_default', true);
+    }
 }
