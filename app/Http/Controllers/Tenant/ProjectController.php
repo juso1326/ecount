@@ -159,7 +159,7 @@ class ProjectController extends Controller
         $project->load(['company', 'manager', 'members', 'receivables', 'payables']);
         
         // 獲取可用的用戶（排除已在其他專案的成員）
-        $existingMemberIds = $project->members->pluck('id')->toArray();
+        $existingMemberIds = $project->members ? $project->members->pluck('id')->toArray() : [];
         $availableUsers = User::where('is_active', true)
             ->whereNotIn('id', $existingMemberIds)
             ->orderBy('name')
