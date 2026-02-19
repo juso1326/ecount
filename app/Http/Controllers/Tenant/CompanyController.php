@@ -248,4 +248,73 @@ class CompanyController extends Controller
         return redirect()->route('tenant.companies.index')
             ->with('success', '公司刪除成功');
     }
+
+    /**
+     * 匯出公司清單
+     */
+    public function export(Request $request)
+    {
+        $query = Company::query();
+
+        // 套用與 index 相同的篩選條件
+        if ($request->filled('smart_search')) {
+            $search = $request->smart_search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('tax_id', 'like', "%{$search}%")
+                  ->orWhere('contact_person', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->is_active === '1');
+        }
+
+        $companies = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = '公司清單_' . date('Y-m-d_His') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($companies) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+
+            // 標題列
+            fputcsv($file, ['公司代碼', '公司名稱', '類型', '統一編號', '聯絡人', '電話', 'Email', '地址', '狀態']);
+
+            // 資料列
+            foreach ($companies as $company) {
+                $type = match($company->type) {
+                    'client' => '客戶',
+                    'vendor' => '廠商',
+                    default => '其他',
+                };
+
+                fputcsv($file, [
+                    $company->code,
+                    $company->name,
+                    $type,
+                    $company->tax_id,
+                    $company->contact_person,
+                    $company->phone,
+                    $company->email,
+                    $company->address,
+                    $company->is_active ? '啟用' : '停用',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

@@ -5,14 +5,30 @@
 @section('page-title', '使用者管理')
 
 @section('content')
-@can('users.create')
-<div class="mb-2 flex justify-end items-center">
-    <a href="{{ route('tenant.users.create') }}" 
-       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
-        + 新增使用者
-    </a>
+<!-- 分頁資訊與操作按鈕 -->
+<div class="mb-2 flex justify-between items-center">
+    <div class="text-sm text-gray-600 dark:text-gray-400">
+        @if($users->total() > 0)
+            顯示第 <span class="font-medium">{{ $users->firstItem() }}</span> 
+            到 <span class="font-medium">{{ $users->lastItem() }}</span> 筆，
+            共 <span class="font-medium">{{ number_format($users->total()) }}</span> 筆
+        @else
+            <span>無資料</span>
+        @endif
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ route('tenant.users.export') }}" 
+           class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-sm">
+            匯出 Excel
+        </a>
+        @can('users.create')
+        <a href="{{ route('tenant.users.create') }}" 
+           class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
+            + 新增使用者
+        </a>
+        @endcan
+    </div>
 </div>
-@endcan
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">

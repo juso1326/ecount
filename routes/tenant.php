@@ -87,6 +87,7 @@ Route::middleware([
         Route::patch('payables/{payable}/quick-update', [\App\Http\Controllers\Tenant\PayableController::class, 'quickUpdate'])->name('tenant.payables.quick-update');
         
         // 使用者管理
+        Route::get('users/export', [\App\Http\Controllers\Tenant\UserController::class, 'export'])->name('tenant.users.export');
         Route::resource('users', \App\Http\Controllers\Tenant\UserController::class)->names([
             'index' => 'tenant.users.index',
             'create' => 'tenant.users.create',

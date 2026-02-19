@@ -5,7 +5,17 @@
 @section('page-title', '支出項目管理')
 
 @section('content')
-<div class="mb-2 flex justify-end items-center">
+<!-- 分頁資訊與操作按鈕 -->
+<div class="mb-2 flex justify-between items-center">
+    <div class="text-sm text-gray-600 dark:text-gray-400">
+        @if($categories->total() > 0)
+            顯示第 <span class="font-medium">{{ $categories->firstItem() }}</span> 
+            到 <span class="font-medium">{{ $categories->lastItem() }}</span> 筆，
+            共 <span class="font-medium">{{ number_format($categories->total()) }}</span> 筆
+        @else
+            <span>無資料</span>
+        @endif
+    </div>
     <a href="{{ route('tenant.expense-categories.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增支出項目

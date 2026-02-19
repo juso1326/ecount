@@ -341,4 +341,82 @@ class PayableController extends Controller
         return redirect()->route('tenant.payables.quick-pay', $payable)
             ->with('success', '給付記錄已重設');
     }
+
+    /**
+     * 匯出應付帳款清單
+     */
+    public function export(Request $request)
+    {
+        $query = Payable::with(['project', 'company', 'responsibleUser', 'payeeUser', 'payeeCompany']);
+
+        // 套用與 index 相同的篩選條件
+        $fiscalYear = $request->input('fiscal_year', date('Y'));
+        if ($fiscalYear) {
+            $query->where('fiscal_year', $fiscalYear);
+        }
+
+        if ($request->filled('smart_search')) {
+            $search = $request->smart_search;
+            $query->where(function($q) use ($search) {
+                $q->where('payment_no', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%")
+                  ->orWhereHas('project', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $payables = $query->orderBy('payment_date', 'desc')->get();
+
+        $filename = '應付帳款清單_' . date('Y-m-d_His') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($payables) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+
+            // 標題列
+            fputcsv($file, ['付款單號', '付款日期', '到期日', '專案', '廠商', '內容', '金額', '已付款', '未付款', '狀態', '負責人']);
+
+            // 資料列
+            foreach ($payables as $payable) {
+                $status = match($payable->status) {
+                    'paid' => '已付',
+                    'partial' => '部分',
+                    'overdue' => '逾期',
+                    default => '待付',
+                };
+
+                fputcsv($file, [
+                    $payable->payment_no,
+                    $payable->payment_date->format('Y-m-d'),
+                    $payable->due_date?->format('Y-m-d'),
+                    $payable->project?->name,
+                    $payable->company?->name,
+                    $payable->content,
+                    $payable->amount,
+                    $payable->paid_amount ?? 0,
+                    $payable->remaining_amount,
+                    $status,
+                    $payable->responsibleUser?->name,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

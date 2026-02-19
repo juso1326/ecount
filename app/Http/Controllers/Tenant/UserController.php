@@ -365,4 +365,61 @@ class UserController extends Controller
             'data' => $bankAccount
         ]);
     }
+
+    /**
+     * 匯出使用者清單
+     */
+    public function export(Request $request)
+    {
+        $query = User::with(['projects', 'role']);
+
+        // 套用與 index 相同的篩選條件
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('employee_id', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->is_active === '1');
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->get();
+
+        $filename = '使用者清單_' . date('Y-m-d_His') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($users) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+
+            // 標題列
+            fputcsv($file, ['員工編號', '姓名', 'Email', '角色', '手機', '分機', '狀態', '建立日期']);
+
+            // 資料列
+            foreach ($users as $user) {
+                fputcsv($file, [
+                    $user->employee_id,
+                    $user->name,
+                    $user->email,
+                    $user->role?->name,
+                    $user->phone,
+                    $user->extension,
+                    $user->is_active ? '啟用' : '停用',
+                    $user->created_at->format('Y-m-d'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
