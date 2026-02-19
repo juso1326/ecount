@@ -156,49 +156,114 @@
                 @foreach($periodicAdjustments as $adj)
                 @php
                     $isExcluded = $adj->isExcludedForMonth($currentYear, $currentMonth);
+                    
+                    // 計算生效月份範圍
+                    $startDate = $adj->start_date ? \Carbon\Carbon::parse($adj->start_date) : null;
+                    $endDate = $adj->end_date ? \Carbon\Carbon::parse($adj->end_date) : null;
+                    $today = \Carbon\Carbon::now();
+                    
+                    $effectiveMonths = [];
+                    if ($startDate) {
+                        $start = $startDate->copy()->startOfMonth();
+                        $end = $endDate ? $endDate->copy()->endOfMonth() : $today->copy()->addYears(2)->endOfMonth();
+                        
+                        $current = $start->copy();
+                        while ($current->lte($end)) {
+                            $effectiveMonths[] = [
+                                'year' => $current->year,
+                                'month' => $current->month,
+                                'label' => $current->format('Y/m'),
+                                'excluded' => $adj->isExcludedForMonth($current->year, $current->month)
+                            ];
+                            $current->addMonth();
+                            if (count($effectiveMonths) >= 24) break; // 最多顯示24個月
+                        }
+                    }
                 @endphp
-                <div class="flex items-center justify-between py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg {{ $isExcluded ? 'opacity-50' : '' }}">
-                    <div class="flex items-center gap-3 flex-1">
-                        <span class="text-gray-400 text-xl">●</span>
-                        <div class="flex-1">
-                            <div class="font-medium text-gray-900 dark:text-white">
-                                {{ $adj->title }}
-                                @if($isExcluded)
-                                <span class="ml-2 text-xs bg-gray-500 text-white px-2 py-0.5 rounded">本月已停用</span>
-                                @endif
-                            </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ $adj->recurrence === 'monthly' ? '每月固定' : '每年固定' }}
-                                @if($adj->remark)
-                                <span class="ml-2">• {{ $adj->remark }}</span>
-                                @endif
+                <div class="py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="flex items-center justify-between {{ $isExcluded ? 'opacity-50' : '' }}">
+                        <div class="flex items-center gap-3 flex-1">
+                            <span class="text-gray-400 text-xl">●</span>
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900 dark:text-white">
+                                    {{ $adj->title }}
+                                    @if($isExcluded)
+                                    <span class="ml-2 text-xs bg-gray-500 text-white px-2 py-0.5 rounded">本月已停用</span>
+                                    @endif
+                                </div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $adj->recurrence === 'monthly' ? '每月固定' : '每年固定' }}
+                                    @if($adj->start_date)
+                                        • 生效期間: {{ \Carbon\Carbon::parse($adj->start_date)->format('Y/m') }} 
+                                        ~ {{ $adj->end_date ? \Carbon\Carbon::parse($adj->end_date)->format('Y/m') : '永久' }}
+                                    @endif
+                                    @if($adj->remark)
+                                    <span class="ml-2">• {{ $adj->remark }}</span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="text-lg font-semibold {{ $adj->type === 'add' ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $adj->type === 'add' ? '+' : '-' }}${{ number_format($adj->amount, 0) }}
+                        <div class="flex items-center gap-3">
+                            <div class="text-lg font-semibold {{ $adj->type === 'add' ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $adj->type === 'add' ? '+' : '-' }}${{ number_format($adj->amount, 0) }}
+                            </div>
+                            @if(count($effectiveMonths) > 0)
+                            <button onclick="toggleExclusionManager({{ $adj->id }})" 
+                                    class="text-xs bg-purple-100 hover:bg-purple-200 text-purple-700 px-3 py-1 rounded" 
+                                    title="管理排除月份">
+                                排除月份
+                            </button>
+                            @endif
+                            @if($isExcluded)
+                            <form method="POST" action="{{ route('tenant.salaries.restore-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" class="inline">
+                                @csrf
+                                <input type="hidden" name="year" value="{{ $currentYear }}">
+                                <input type="hidden" name="month" value="{{ $currentMonth }}">
+                                <button type="submit" class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded" title="恢復本月">
+                                    恢復
+                                </button>
+                            </form>
+                            @else
+                            <form method="POST" action="{{ route('tenant.salaries.exclude-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" class="inline">
+                                @csrf
+                                <input type="hidden" name="year" value="{{ $currentYear }}">
+                                <input type="hidden" name="month" value="{{ $currentMonth }}">
+                                <button type="submit" class="text-xs bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded" title="本月停用">
+                                    停用
+                                </button>
+                            </form>
+                            @endif
                         </div>
-                        @if($isExcluded)
-                        <form method="POST" action="{{ route('tenant.salaries.restore-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" class="inline">
-                            @csrf
-                            <input type="hidden" name="year" value="{{ $currentYear }}">
-                            <input type="hidden" name="month" value="{{ $currentMonth }}">
-                            <button type="submit" class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded" title="恢復本月">
-                                恢復
-                            </button>
-                        </form>
-                        @else
-                        <form method="POST" action="{{ route('tenant.salaries.exclude-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" class="inline">
-                            @csrf
-                            <input type="hidden" name="year" value="{{ $currentYear }}">
-                            <input type="hidden" name="month" value="{{ $currentMonth }}">
-                            <button type="submit" class="text-xs bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded" title="本月停用">
-                                停用
-                            </button>
-                        </form>
-                        @endif
                     </div>
+                    
+                    @if(count($effectiveMonths) > 0)
+                    <!-- 月份排除管理區 -->
+                    <div id="exclusion-manager-{{ $adj->id }}" class="hidden mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                        <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                            💡 點擊月份可切換該月是否發放此加扣項（已排除月份會顯示為灰色）
+                        </div>
+                        <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2">
+                            @foreach($effectiveMonths as $month)
+                            <form method="POST" 
+                                  action="{{ $month['excluded'] 
+                                      ? route('tenant.salaries.restore-adjustment', ['user' => $user->id, 'adjustment' => $adj->id])
+                                      : route('tenant.salaries.exclude-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" 
+                                  class="inline">
+                                @csrf
+                                <input type="hidden" name="year" value="{{ $month['year'] }}">
+                                <input type="hidden" name="month" value="{{ $month['month'] }}">
+                                <button type="submit" 
+                                        class="w-full text-xs px-2 py-1 rounded {{ $month['excluded'] 
+                                            ? 'bg-gray-300 text-gray-500 line-through' 
+                                            : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-500 border border-gray-300 dark:border-gray-500' }}"
+                                        title="{{ $month['excluded'] ? '點擊恢復' : '點擊排除' }}">
+                                    {{ $month['label'] }}
+                                </button>
+                            </form>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 @endforeach
             </div>
@@ -493,6 +558,16 @@ function toggleRecurrenceFields() {
         // 固定：開始日為生效起始月份
         startDate.required = true;
         endDate.required = false;
+    }
+}
+
+// 切換排除月份管理區
+function toggleExclusionManager(adjId) {
+    const manager = document.getElementById(`exclusion-manager-${adjId}`);
+    if (manager.classList.contains('hidden')) {
+        manager.classList.remove('hidden');
+    } else {
+        manager.classList.add('hidden');
     }
 }
 
