@@ -71,6 +71,18 @@ class PayableController extends Controller
 
         $payables = $query->paginate(15);
 
+        // 付款提醒統計
+        $today = now();
+        $overduePayables = Payable::where('due_date', '<', $today)
+            ->whereIn('status', ['pending', 'partial'])
+            ->count();
+        $dueSoon7Days = Payable::whereBetween('due_date', [$today, $today->copy()->addDays(7)])
+            ->whereIn('status', ['pending', 'partial'])
+            ->count();
+        $dueSoon30Days = Payable::whereBetween('due_date', [$today, $today->copy()->addDays(30)])
+            ->whereIn('status', ['pending', 'partial'])
+            ->count();
+
         // 可用年度清單
         $availableYears = Payable::select('fiscal_year')
             ->whereNotNull('fiscal_year')
@@ -117,7 +129,18 @@ class PayableController extends Controller
         $totalAmount = $stats->total_amount ?? 0;
         $totalPaid = $stats->total_paid ?? 0;
 
-        return view('tenant.payables.index', compact('payables', 'dateStart', 'dateEnd', 'totalAmount', 'totalPaid', 'availableYears', 'fiscalYear'));
+        return view('tenant.payables.index', compact(
+            'payables', 
+            'dateStart', 
+            'dateEnd', 
+            'totalAmount', 
+            'totalPaid', 
+            'availableYears', 
+            'fiscalYear',
+            'overduePayables',
+            'dueSoon7Days',
+            'dueSoon30Days'
+        ));
     }
 
     /**

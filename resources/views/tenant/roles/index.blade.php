@@ -65,7 +65,13 @@
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($roles as $role)
                 @php
-                    $isSystem = in_array($role->name, ['總管理', '財務主管', '專案經理']);
+                    $isSystemRole = in_array($role->name, ['super_admin', 'financial_manager', 'project_manager', 'employee']);
+                    $roleLabels = [
+                        'super_admin' => '總管理',
+                        'financial_manager' => '財務主管',
+                        'project_manager' => '專案經理',
+                        'employee' => '一般員工',
+                    ];
                 @endphp
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
@@ -75,70 +81,59 @@
                         </a>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
-                        @if(!$isSystem)
+                        @if(!$isSystemRole)
                         <a href="{{ route('tenant.roles.edit', $role) }}" 
                            class="text-primary hover:text-primary-dark font-medium">
                             編輯
                         </a>
                         @else
-                        <span class="text-gray-400">-</span>
+                        <span class="text-gray-400 text-xs">系統角色</span>
                         @endif
                     </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {{ $role->name }}
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {{ $role->permissions_count }} 個權限
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {{ $role->users_count }} 位用戶
-                    </td>
                     <td class="px-6 py-2 whitespace-nowrap">
-                        @if($isSystem)
-                        <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded">
-                            系統預設
-                        </span>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                            {{ $isSystemRole ? $roleLabels[$role->name] : $role->name }}
+                            @if($isSystemRole)
+                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                系統預設
+                            </span>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                        {{ $role->permissions_count ?? 0 }} 個權限
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                        {{ $role->users_count ?? 0 }} 位用戶
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap text-sm">
+                        @if($isSystemRole)
+                            <span class="px-2 py-1 text-xs rounded-full bg-indigo-100 text-indigo-800">系統</span>
                         @else
-                        <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 rounded">
-                            自訂角色
-                        </span>
+                            <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">自訂</span>
                         @endif
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
-                        @if(!$isSystem)
-                        <form action="{{ route('tenant.roles.destroy', $role) }}" method="POST" class="inline"
-                              onsubmit="return confirm('確定要刪除「{{ $role->name }}」角色嗎？\n\n注意：該角色下的 {{ $role->users_count }} 位用戶將失去此角色權限。');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 font-medium">
-                                刪除
-                            </button>
-                        </form>
+                        @if(!$isSystemRole)
+                            @if($role->users_count > 0)
+                            <span class="text-gray-400 text-xs cursor-not-allowed" title="此角色已分配給用戶，無法刪除">
+                                不可刪除
+                            </span>
+                            @else
+                            <form action="{{ route('tenant.roles.destroy', $role) }}" 
+                                  method="POST" 
+                                  class="inline"
+                                  onsubmit="return confirm('確定要刪除「{{ $role->name }}」角色嗎？');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        class="text-red-600 hover:text-red-800 dark:text-red-400 font-medium">
+                                    刪除
+                                </button>
+                            </form>
+                            @endif
                         @else
-                        <span class="text-gray-400">-</span>
-                        @endif
-                    </td>
-                            檢視
-                        </a>
-                        @if(!$isSystem)
-                        <a href="{{ route('tenant.roles.edit', $role) }}" 
-                           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 mr-3">
-                            編輯
-                        </a>
-                        @if($role->users_count == 0)
-                        <form action="{{ route('tenant.roles.destroy', $role) }}" 
-                              method="POST" 
-                              class="inline"
-                              onsubmit="return confirm('確定要刪除此角色嗎？')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400">
-                                刪除
-                            </button>
-                        </form>
-                        @endif
-                        @else
-                        <span class="text-gray-400 dark:text-gray-600">系統保護</span>
+                        <span class="text-gray-400 text-xs">系統保護</span>
                         @endif
                     </td>
                 </tr>
