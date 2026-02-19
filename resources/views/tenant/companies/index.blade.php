@@ -5,11 +5,34 @@
 @section('page-title', '客戶/廠商管理')
 
 @section('content')
-<div class="mb-2 flex justify-end items-center">
-    <a href="{{ route('tenant.companies.create') }}" 
-       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
-        + 新增客戶/廠商
-    </a>
+<div class="mb-2 flex justify-between items-center">
+    <!-- 左側：分頁資訊 -->
+    <div class="text-sm text-gray-600 dark:text-gray-400">
+        @if($companies->total() > 0)
+            顯示第 <span class="font-medium">{{ $companies->firstItem() }}</span> 
+            到 <span class="font-medium">{{ $companies->lastItem() }}</span> 筆，
+            共 <span class="font-medium">{{ number_format($companies->total()) }}</span> 筆
+        @else
+            <span>無資料</span>
+        @endif
+    </div>
+    
+    <!-- 右側：操作按鈕 -->
+    <div class="flex gap-2">
+        @if($companies->total() > 0)
+        <a href="{{ route('tenant.companies.export', request()->all()) }}" 
+           class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            匯出
+        </a>
+        @endif
+        <a href="{{ route('tenant.companies.create') }}" 
+           class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
+            + 新增客戶/廠商
+        </a>
+    </div>
 </div>
 
 <!-- 搜尋與篩選 -->
@@ -128,5 +151,10 @@
     </table>
 </div>
 
-<x-pagination-info :paginator="$companies" :exportRoute="route('tenant.companies.export', request()->all())" />
+<!-- 分頁導航 -->
+@if($companies->hasPages())
+<div class="mt-6">
+    {{ $companies->appends(request()->except('page'))->links() }}
+</div>
+@endif
 @endsection

@@ -11,14 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:projects.view')->only(['index', 'show', 'export']);
-        $this->middleware('permission:projects.create')->only(['create', 'store']);
-        $this->middleware('permission:projects.edit')->only(['edit', 'update', 'toggleMember', 'quickUpdate']);
-        $this->middleware('permission:projects.delete')->only(['destroy']);
-    }
-
     /**
      * Display a listing of the resource.
      * 按照舊系統 PRJ01 邏輯重寫

@@ -5,47 +5,68 @@
 @section('page-title', '應付帳款管理')
 
 @section('content')
-<div class="mb-2 flex justify-between items-center gap-4">
-    <!-- 付款提醒（左側） -->
-    @if($overduePayables > 0 || $dueSoon7Days > 0)
-    <div class="flex-1 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700 rounded-lg px-4 py-2">
-        <div class="flex items-center gap-3">
-            <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+<!-- 第一行：分頁資訊 + 操作按鈕 -->
+<div class="mb-2 flex justify-between items-center">
+    <!-- 左側：分頁資訊 -->
+    <div class="text-sm text-gray-600 dark:text-gray-400">
+        @if($payables->total() > 0)
+            顯示第 <span class="font-medium">{{ $payables->firstItem() }}</span> 
+            到 <span class="font-medium">{{ $payables->lastItem() }}</span> 筆，
+            共 <span class="font-medium">{{ number_format($payables->total()) }}</span> 筆
+        @else
+            <span>無資料</span>
+        @endif
+    </div>
+    
+    <!-- 右側：操作按鈕 -->
+    <div class="flex gap-2">
+        @if($payables->total() > 0)
+        <a href="{{ route('tenant.payables.export', request()->all()) }}" 
+           class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <div class="flex items-center gap-4 flex-wrap text-sm">
-                <span class="font-semibold text-red-800 dark:text-red-300">付款提醒：</span>
-                @if($overduePayables > 0)
-                <div class="flex items-center gap-1.5">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">逾期</span>
-                    <span class="text-red-700 dark:text-red-300">有 <strong>{{ $overduePayables }}</strong> 筆已逾期</span>
-                </div>
-                @endif
-                @if($dueSoon7Days > 0)
-                <div class="flex items-center gap-1.5">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-500 text-white">7天內</span>
-                    <span class="text-orange-700 dark:text-orange-300">有 <strong>{{ $dueSoon7Days }}</strong> 筆即將到期</span>
-                </div>
-                @endif
-                @if($dueSoon30Days > 0)
-                <div class="flex items-center gap-1.5">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-white">30天內</span>
-                    <span class="text-yellow-700 dark:text-yellow-300">有 <strong>{{ $dueSoon30Days }}</strong> 筆將到期</span>
-                </div>
-                @endif
+            匯出
+        </a>
+        @endif
+        <a href="{{ route('tenant.payables.create') }}" 
+           class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm whitespace-nowrap">
+            + 新增應付帳款
+        </a>
+    </div>
+</div>
+
+<!-- 第二行：付款提醒 -->
+@if($overduePayables > 0 || $dueSoon7Days > 0)
+<div class="mb-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700 rounded-lg px-4 py-2">
+    <div class="flex items-center gap-3">
+        <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div class="flex items-center gap-4 flex-wrap text-sm">
+            <span class="font-semibold text-red-800 dark:text-red-300">付款提醒：</span>
+            @if($overduePayables > 0)
+            <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">逾期</span>
+                <span class="text-red-700 dark:text-red-300">有 <strong>{{ $overduePayables }}</strong> 筆已逾期</span>
             </div>
+            @endif
+            @if($dueSoon7Days > 0)
+            <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-500 text-white">7天內</span>
+                <span class="text-orange-700 dark:text-orange-300">有 <strong>{{ $dueSoon7Days }}</strong> 筆即將到期</span>
+            </div>
+            @endif
+            @if($dueSoon30Days > 0)
+            <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-white">30天內</span>
+                <span class="text-yellow-700 dark:text-yellow-300">有 <strong>{{ $dueSoon30Days }}</strong> 筆將到期</span>
+            </div>
+            @endif
         </div>
     </div>
-    @else
-    <div class="flex-1"></div>
-    @endif
-    
-    <!-- 新增按鈕（右側） -->
-    <a href="{{ route('tenant.payables.create') }}" 
-       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm whitespace-nowrap">
-        + 新增應付帳款
-    </a>
 </div>
+@endif
 
 @if(session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded mb-4">
@@ -228,5 +249,10 @@
     </table>
 </div>
 
-<x-pagination-info :paginator="$payables" :exportRoute="route('tenant.payables.export', request()->all())" />
+<!-- 分頁導航 -->
+@if($payables->hasPages())
+<div class="mt-6">
+    {{ $payables->withQueryString()->links() }}
+</div>
+@endif
 @endsection
