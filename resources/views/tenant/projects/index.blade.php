@@ -122,7 +122,6 @@
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案負責</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">成員</th>
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總額</th>
-                <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣繳</th>
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案支出</th>
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">累計</th>
                 <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
@@ -208,10 +207,6 @@
                 <!-- 總額 (應收總額) -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white font-medium">
                     ${{ number_format($project->total_receivable ?? 0, 0) }}
-                </td>
-                <!-- 扣繳 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
-                    ${{ number_format($project->withholding_tax ?? 0, 0) }}
                 </td>
                 <!-- 專案支出 (應付總額) -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
