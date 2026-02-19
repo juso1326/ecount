@@ -91,8 +91,7 @@
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">序號</th>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">詳細</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案名</th>
@@ -113,18 +112,15 @@
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-white">
                     {{ ($projects->currentPage() - 1) * $projects->perPage() + $index + 1 }}
                 </td>
-                <!-- 編輯 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
-                    <a href="{{ route('tenant.projects.edit', $project) }}" 
-                       class="text-primary hover:text-primary-dark font-medium">
-                        編輯
-                    </a>
-                </td>
-                <!-- 詳細 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                <!-- 操作 -->
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                     <a href="{{ route('tenant.projects.show', $project) }}" 
                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
                         詳細
+                    </a>
+                    <a href="{{ route('tenant.projects.edit', $project) }}" 
+                       class="text-primary hover:text-primary-dark font-medium">
+                        編輯
                     </a>
                 </td>
                 <!-- 開案日 -->
@@ -230,7 +226,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="14" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="13" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何專案資料
                 </td>
             </tr>

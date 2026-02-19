@@ -66,60 +66,72 @@
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
-    <form method="GET" action="{{ route('tenant.payables.index') }}">
-        <!-- 年度選擇器 -->
-        <div class="flex items-center gap-3 mb-4">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">帳務年度：</label>
-            <select name="fiscal_year" 
-                    onchange="this.form.submit()"
-                    class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option value="">全部年度</option>
-                @foreach($availableYears as $year)
-                    <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
-                        {{ $year }} 年
-                    </option>
-                @endforeach
-            </select>
-            @if(request('fiscal_year'))
-                <span class="text-sm text-gray-600 dark:text-gray-400">
-                    目前顯示：<span class="font-semibold text-primary">{{ request('fiscal_year') }} 年度</span> 的應付帳款
-                </span>
+    <form method="GET" action="{{ route('tenant.payables.index') }}" class="space-y-4">
+        <!-- 智能搜尋框 -->
+        <div class="flex gap-2">
+            <div class="flex-1">
+                <input type="text" name="smart_search" value="{{ request('smart_search') }}" 
+                       placeholder="🔍 聰明尋找：單號/專案/廠商/內容..." 
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+            </div>
+            <button type="submit" 
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                搜尋
+            </button>
+            @if(request()->hasAny(['smart_search', 'type', 'status', 'fiscal_year']))
+                <a href="{{ route('tenant.payables.index') }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                    清除
+                </a>
             @endif
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input type="hidden" name="fiscal_year" value="{{ request('fiscal_year') }}">
+        <!-- 進階篩選 -->
+        <details class="group">
+            <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
+                <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
+                進階篩選
+            </summary>
             
-            <input type="text" name="search" value="{{ request('search') }}" 
-                   placeholder="搜尋單號、專案代碼/名稱、廠商、內容..." 
-                   class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-            
-            <select name="type" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                <option value="">全部類型</option>
-                <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
-                <option value="expense" {{ request('type') === 'expense' ? 'selected' : '' }}>費用</option>
-                <option value="service" {{ request('type') === 'service' ? 'selected' : '' }}>服務</option>
-                <option value="other" {{ request('type') === 'other' ? 'selected' : '' }}>其他</option>
-            </select>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <!-- 年度選擇器 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">帳務年度</label>
+                    <select name="fiscal_year" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部年度</option>
+                        @foreach($availableYears as $year)
+                            <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
+                                {{ $year }} 年
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-            <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                <option value="">全部狀態</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
-                <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
-                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
-                <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
-            </select>
+                <!-- 類型篩選 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">付款類型</label>
+                    <select name="type" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部類型</option>
+                        <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
+                        <option value="expense" {{ request('type') === 'expense' ? 'selected' : '' }}>費用</option>
+                        <option value="service" {{ request('type') === 'service' ? 'selected' : '' }}>服務</option>
+                        <option value="other" {{ request('type') === 'other' ? 'selected' : '' }}>其他</option>
+                    </select>
+                </div>
 
-            <div class="flex gap-2">
-                <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg flex-1">
-                    搜尋
-                </button>
-                @if(request()->hasAny(['search', 'type', 'status', 'fiscal_year']))
-                    <a href="{{ route('tenant.payables.index') }}" 
-                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg">清除</a>
-                @endif
+                <!-- 狀態篩選 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">付款狀態</label>
+                    <select name="status" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部狀態</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
+                        <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
+                        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
+                        <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
+                    </select>
+                </div>
             </div>
-        </div>
+        </details>
     </form>
 </div>
 
@@ -138,6 +150,20 @@
                 <th class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">狀態</th>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">操作</th>
             </tr>
+            @if($payables->count() > 0)
+            <tr class="bg-blue-50 dark:bg-blue-900/30">
+                <td colspan="5" class="px-6 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                    總計（本頁）：
+                </td>
+                <td class="px-6 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
+                    NT$ {{ number_format($totalAmount, 0) }}
+                </td>
+                <td class="px-6 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
+                    NT$ {{ number_format($totalAmount - $totalPaid, 0) }}
+                </td>
+                <td colspan="2"></td>
+            </tr>
+            @endif
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($payables as $payable)
@@ -210,20 +236,6 @@
                 </tr>
             @endforelse
         </tbody>
-        @if($payables->count() > 0)
-        <tfoot class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-                <td colspan="5" class="px-4 py-2 text-right text-xs font-semibold text-gray-900 dark:text-gray-100">總計：</td>
-                <td class="px-4 py-2 text-right text-xs font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount, 0) }}
-                </td>
-                <td class="px-4 py-2 text-right text-xs font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount - $totalPaid, 0) }}
-                </td>
-                <td colspan="2"></td>
-            </tr>
-        </tfoot>
-        @endif
     </table>
 </div>
 

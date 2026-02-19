@@ -44,12 +44,12 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
+                <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">操作</th>
                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">名稱</th>
                 <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">稅率</th>
                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">說明</th>
                 <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">預設</th>
                 <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">狀態</th>
-                <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">操作</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -58,6 +58,15 @@
                     stripos($tax->name, request('search')) !== false || 
                     stripos($tax->description, request('search')) !== false)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <td class="px-4 py-2 whitespace-nowrap text-center text-xs font-medium space-x-2">
+                        <a href="{{ route('tenant.tax-settings.edit', $tax) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
+                        <form action="{{ route('tenant.tax-settings.destroy', $tax) }}" method="POST" class="inline" 
+                              onsubmit="return confirm('確定要刪除此稅率設定嗎？');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">刪除</button>
+                        </form>
+                    </td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                         {{ $tax->name }}
                     </td>
@@ -83,15 +92,6 @@
                         <span class="px-2 inline-flex text-xs font-semibold rounded-full {{ $tax->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                             {{ $tax->is_active ? '啟用' : '停用' }}
                         </span>
-                    </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-center text-xs font-medium space-x-2">
-                        <a href="{{ route('tenant.tax-settings.edit', $tax) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
-                        <form action="{{ route('tenant.tax-settings.destroy', $tax) }}" method="POST" class="inline" 
-                              onsubmit="return confirm('確定要刪除此稅率設定嗎？');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">刪除</button>
-                        </form>
                     </td>
                 </tr>
                 @endif

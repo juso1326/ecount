@@ -29,7 +29,19 @@
     </div>
 
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">權限設定</h2>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">權限設定</h2>
+            <div class="space-x-2">
+                <button type="button" onclick="selectAllPermissions()"
+                        class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium">
+                    全選
+                </button>
+                <button type="button" onclick="deselectAllPermissions()"
+                        class="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white rounded text-sm font-medium">
+                    取消全選
+                </button>
+            </div>
+        </div>
         
         <div class="space-y-6">
             @foreach($permissions as $module => $perms)
@@ -97,5 +109,26 @@ document.addEventListener('DOMContentLoaded', function() {
         updateModuleCheckbox();
     });
 });
+
+function selectAllPermissions() {
+    document.querySelectorAll('.permission-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
+    // 更新模塊複選框
+    document.querySelectorAll('.module-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
+}
+
+function deselectAllPermissions() {
+    document.querySelectorAll('.permission-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+    // 更新模塊複選框
+    document.querySelectorAll('.module-checkbox').forEach(cb => {
+        cb.checked = false;
+        cb.indeterminate = false;
+    });
+}
 </script>
 @endsection

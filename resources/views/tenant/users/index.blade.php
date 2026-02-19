@@ -61,8 +61,7 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">詳細</th>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工編號</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">姓名</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
@@ -74,13 +73,11 @@
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($users as $user)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                     <a href="{{ route('tenant.users.show', $user) }}" 
                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
                         詳細
                     </a>
-                </td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
                     <a href="{{ route('tenant.users.edit', $user) }}" 
                        class="text-primary hover:text-primary-dark font-medium">
                         編輯
@@ -144,7 +141,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何使用者資料
                 </td>
             </tr>

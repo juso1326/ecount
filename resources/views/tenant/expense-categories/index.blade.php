@@ -54,8 +54,7 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">刪除</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">代碼</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">名稱</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">說明</th>
@@ -66,13 +65,11 @@
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($categories as $category)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                         <a href="{{ route('tenant.expense-categories.edit', $category) }}" 
                            class="text-primary hover:text-primary-dark font-medium">
                             編輯
                         </a>
-                    </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
                         <form action="{{ route('tenant.expense-categories.destroy', $category) }}" method="POST" class="inline"
                               onsubmit="return confirm('確定要刪除此支出項目嗎？');">
                             @csrf
@@ -82,19 +79,6 @@
                             </button>
                         </form>
                     </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {{ $category->name }}
-                    </td>
-                    <td class="px-6 py-2 text-sm text-gray-500 dark:text-gray-400">
-                        {{ $category->description ?? '-' }}
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-center text-sm text-gray-900 dark:text-white">
-                        {{ $category->sort_order }}
-                    </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-center">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                            {{ $category->is_active ? '啟用' : '停用' }}
-                        </span>
                     <td class="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                         {{ $category->code }}
                     </td>
@@ -118,13 +102,11 @@
                 @if($category->children->count() > 0)
                     @foreach($category->children as $child)
                         <tr class="bg-gray-50 dark:hover:bg-gray-750">
-                            <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                            <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                                 <a href="{{ route('tenant.expense-categories.edit', $child) }}" 
                                    class="text-primary hover:text-primary-dark font-medium">
                                     編輯
                                 </a>
-                            </td>
-                            <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
                                 <form action="{{ route('tenant.expense-categories.destroy', $child) }}" method="POST" class="inline"
                                       onsubmit="return confirm('確定要刪除此支出項目嗎？');">
                                     @csrf
@@ -150,22 +132,6 @@
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $child->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                                     {{ $child->is_active ? '啟用' : '停用' }}
                                 </span>
-                            </td>
-                            <td class="px-6 py-2 whitespace-nowrap text-center text-sm font-medium">
-                                <a href="{{ route('tenant.expense-categories.edit', $child) }}" 
-                                   class="text-primary hover:text-primary-dark mr-3">
-                                    編輯
-                                </a>
-                                <form action="{{ route('tenant.expense-categories.destroy', $child) }}" 
-                                      method="POST" 
-                                      class="inline"
-                                      onsubmit="return confirm('確定要刪除此支出項目嗎？');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">
-                                        刪除
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                     @endforeach

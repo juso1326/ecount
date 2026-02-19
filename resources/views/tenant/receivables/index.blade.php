@@ -91,6 +91,23 @@
                 <th class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">狀態</th>
                 <th class="px-3 py-1 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
+            @if($receivables->count() > 0)
+            <tr class="bg-blue-50 dark:bg-blue-900/30">
+                <td colspan="4" class="px-6 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                    總計（本頁）：
+                </td>
+                <td class="px-6 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                    NT$ {{ number_format($totalAmount, 0) }}
+                </td>
+                <td class="px-6 py-2 text-right text-sm font-bold text-green-600 dark:text-green-400">
+                    NT$ {{ number_format($totalReceived, 0) }}
+                </td>
+                <td class="px-6 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
+                    NT$ {{ number_format($totalAmount - $totalReceived, 0) }}
+                </td>
+                <td colspan="2"></td>
+            </tr>
+            @endif
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($receivables as $receivable)
@@ -129,7 +146,7 @@
                         @endif
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
-                        <a href="{{ route('tenant.receivables.show', $receivable) }}" 
+                        <a href="{{ route('tenant.receivables.quick-receive', $receivable) }}" 
                            class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">詳細</a>
                         <a href="{{ route('tenant.receivables.edit', $receivable) }}" 
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
@@ -140,9 +157,6 @@
                                 收款
                             </button>
                         @endif
-                        
-                        <a href="{{ route('tenant.receivables.quick-receive', $receivable) }}" 
-                           class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300">記錄</a>
                         
                         <form action="{{ route('tenant.receivables.destroy', $receivable) }}" 
                               method="POST" 
@@ -163,25 +177,6 @@
                 </tr>
             @endforelse
         </tbody>
-        @if($receivables->count() > 0)
-        <tfoot class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-                <td colspan="4" class="px-6 py-1 text-right text-sm font-medium text-gray-900 dark:text-gray-100">
-                    總計：
-                </td>
-                <td class="px-6 py-1 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
-                    NT$ {{ number_format($totalAmount, 0) }}
-                </td>
-                <td class="px-6 py-1 text-right text-sm font-bold text-green-600 dark:text-green-400">
-                    NT$ {{ number_format($totalReceived, 0) }}
-                </td>
-                <td class="px-6 py-1 text-right text-sm font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount - $totalReceived, 0) }}
-                </td>
-                <td colspan="2"></td>
-            </tr>
-        </tfoot>
-        @endif
     </table>
 </div>
 

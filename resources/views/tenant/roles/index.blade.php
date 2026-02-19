@@ -53,8 +53,7 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                    <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">詳細</th>
-                    <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
+                    <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                     <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色名稱</th>
                     <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">權限數量</th>
                     <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">用戶數量</th>
@@ -74,13 +73,11 @@
                     ];
                 @endphp
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                         <a href="{{ route('tenant.roles.show', $role) }}" 
                            class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
                             詳細
                         </a>
-                    </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
                         @if(!$isSystemRole)
                         <a href="{{ route('tenant.roles.edit', $role) }}" 
                            class="text-primary hover:text-primary-dark font-medium">
@@ -139,7 +136,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                         尚無角色資料
                     </td>
                 </tr>
