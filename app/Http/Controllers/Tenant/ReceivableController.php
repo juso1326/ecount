@@ -183,7 +183,7 @@ class ReceivableController extends Controller
      */
     public function show(Receivable $receivable)
     {
-        $receivable->load(['project', 'company', 'responsibleUser']);
+        $receivable->load(['project', 'company', 'responsibleUser', 'payments']);
         
         return view('tenant.receivables.show', compact('receivable'));
     }
