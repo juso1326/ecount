@@ -360,12 +360,32 @@
                 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">週期類型 *</label>
-                    <select id="adj_recurrence" onchange="toggleEndDate()" 
+                    <select id="adj_recurrence" onchange="toggleRecurrenceFields()" 
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="once">單次（僅本月）</option>
+                        <option value="once">單次（指定期間）</option>
                         <option value="monthly">每月固定</option>
                         <option value="yearly">每年固定</option>
                     </select>
+                </div>
+                
+                <div id="date_range_fields" class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">生效期間 *</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <input type="date" id="adj_start_date" 
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm"
+                                   required>
+                            <p class="text-xs text-gray-500 mt-1">開始日</p>
+                        </div>
+                        <div>
+                            <input type="date" id="adj_end_date" 
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                            <p class="text-xs text-gray-500 mt-1">結束日（選填）</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        💡 單次：指定起訖日期 | 固定：開始日為生效起始月份，結束日為終止月份（不填則永久有效）
+                    </p>
                 </div>
                 
                 <div class="mb-4">
@@ -445,15 +465,35 @@
 function openAddModal() {
     document.getElementById('addAdjustmentModal').classList.remove('hidden');
     document.getElementById('addAdjustmentForm').reset();
+    // 設定預設開始日期為本月1號
+    const today = new Date();
+    const year = {{ $year }};
+    const month = ('{{ $month }}').padStart(2, '0');
+    document.getElementById('adj_start_date').value = `${year}-${month}-01`;
+    toggleRecurrenceFields();
 }
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
 }
 
-function toggleEndDate() {
+function toggleRecurrenceFields() {
     const recurrence = document.getElementById('adj_recurrence').value;
-    // 單次類型的日期由後端自動設定為本月
+    const dateFields = document.getElementById('date_range_fields');
+    const startDate = document.getElementById('adj_start_date');
+    const endDate = document.getElementById('adj_end_date');
+    
+    if (recurrence === 'once') {
+        // 單次：需要起訖日期
+        startDate.required = true;
+        endDate.required = false;
+        dateFields.querySelector('.text-xs.text-gray-500.mt-1:last-child').textContent = 
+            '💡 單次：指定起訖日期 | 固定：開始日為生效起始月份，結束日為終止月份（不填則永久有效）';
+    } else {
+        // 固定：開始日為生效起始月份
+        startDate.required = true;
+        endDate.required = false;
+    }
 }
 
 // 新增加扣項
@@ -465,6 +505,8 @@ async function addAdjustment(event) {
         title: document.getElementById('adj_title').value,
         amount: parseFloat(document.getElementById('adj_amount').value),
         recurrence: document.getElementById('adj_recurrence').value,
+        start_date: document.getElementById('adj_start_date').value,
+        end_date: document.getElementById('adj_end_date').value || null,
         year: {{ $year }},
         month: {{ $month }},
         remark: document.getElementById('adj_remark').value
