@@ -180,7 +180,7 @@
                             {{ $adj->type === 'add' ? '+' : '-' }}${{ number_format($adj->amount, 0) }}
                         </div>
                         @if($isExcluded)
-                        <form method="POST" action="{{ route('tenant.salaries.restore-adjustment', ['userId' => $user->id, 'adjustmentId' => $adj->id]) }}" class="inline">
+                        <form method="POST" action="{{ route('tenant.salaries.restore-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" class="inline">
                             @csrf
                             <input type="hidden" name="year" value="{{ $currentYear }}">
                             <input type="hidden" name="month" value="{{ $currentMonth }}">
@@ -189,7 +189,7 @@
                             </button>
                         </form>
                         @else
-                        <form method="POST" action="{{ route('tenant.salaries.exclude-adjustment', ['userId' => $user->id, 'adjustmentId' => $adj->id]) }}" class="inline">
+                        <form method="POST" action="{{ route('tenant.salaries.exclude-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" class="inline">
                             @csrf
                             <input type="hidden" name="year" value="{{ $currentYear }}">
                             <input type="hidden" name="month" value="{{ $currentMonth }}">
