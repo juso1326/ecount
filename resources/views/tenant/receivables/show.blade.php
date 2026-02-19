@@ -69,111 +69,114 @@
     </div>
 </div>
 
-<!-- 入帳記錄 -->
-<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-        入帳記錄
-    </h2>
-    
-    @if(isset($receivable->payments) && $receivable->payments->count() > 0)
-        <div class="space-y-2">
-            @foreach($receivable->payments as $payment)
-                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <div class="flex-1">
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">
-                            {{ $payment->payment_date->format('Y/m/d') }}
-                            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ $payment->payment_method ?? '未指定方式' }}</span>
+<!-- 入帳記錄與新增入帳（左右並排） -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- 入帳記錄（左側） -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+            入帳記錄
+        </h2>
+        
+        @if(isset($receivable->payments) && $receivable->payments->count() > 0)
+            <div class="space-y-2">
+                @foreach($receivable->payments as $payment)
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                {{ $payment->payment_date->format('Y/m/d') }}
+                                <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ $payment->payment_method ?? '未指定方式' }}</span>
+                            </div>
+                            @if($payment->note)
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $payment->note }}</div>
+                            @endif
                         </div>
-                        @if($payment->note)
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $payment->note }}</div>
-                        @endif
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="text-right">
-                            <div class="text-sm font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payment->amount, 0) }}</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ round($payment->amount / $receivable->amount * 100, 1) }}%</div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <div class="text-sm font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payment->amount, 0) }}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ round($payment->amount / $receivable->amount * 100, 1) }}%</div>
+                            </div>
+                            <form action="{{ route('tenant.receivable-payments.destroy', $payment) }}" method="POST" 
+                                  onsubmit="return confirm('確定要刪除此入帳記錄嗎？');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
-                        <form action="{{ route('tenant.receivable-payments.destroy', $payment) }}" method="POST" 
-                              onsubmit="return confirm('確定要刪除此入帳記錄嗎？');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </form>
                     </div>
-                </div>
-            @endforeach
-        </div>
-    @else
-        <p class="text-gray-500 dark:text-gray-400 text-center py-4">尚無入帳記錄</p>
-    @endif
-</div>
+                @endforeach
+            </div>
+        @else
+            <p class="text-gray-500 dark:text-gray-400 text-center py-4">尚無入帳記錄</p>
+        @endif
+    </div>
 
-<!-- 新增入帳 -->
-<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-        新增入帳
-    </h2>
-    
-    <form action="{{ route('tenant.receivable-payments.store', $receivable) }}" method="POST">
-        @csrf
+    <!-- 新增入帳（右側） -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+            新增入帳
+        </h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    <em class="text-red-500">*</em> 入帳日
-                </label>
-                <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2">
+        <form action="{{ route('tenant.receivable-payments.store', $receivable) }}" method="POST">
+            @csrf
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <em class="text-red-500">*</em> 入帳日
+                    </label>
+                    <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <em class="text-red-500">*</em> 入帳金額
+                    </label>
+                    <input type="number" name="amount" value="{{ $receivable->remaining_amount }}" required min="0" step="1"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2"
+                           placeholder="建議: {{ number_format($receivable->remaining_amount, 0) }}">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        入帳方式
+                    </label>
+                    <select name="payment_method" 
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2">
+                        <option value="">請選擇</option>
+                        <option value="現金">現金</option>
+                        <option value="轉帳">轉帳</option>
+                        <option value="支票">支票</option>
+                        <option value="信用卡">信用卡</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        備註
+                    </label>
+                    <input type="text" name="note" 
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2"
+                           placeholder="選填">
+                </div>
             </div>
             
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    <em class="text-red-500">*</em> 入帳金額
-                </label>
-                <input type="number" name="amount" value="{{ $receivable->remaining_amount }}" required min="0" step="1"
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2"
-                       placeholder="建議: {{ number_format($receivable->remaining_amount, 0) }}">
+            <div class="mt-6 flex gap-3">
+                <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+                    記錄入帳
+                </button>
+                <a href="{{ route('tenant.receivables.index') }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
+                    取消
+                </a>
             </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    入帳方式
-                </label>
-                <select name="payment_method" 
-                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2">
-                    <option value="">請選擇</option>
-                    <option value="現金">現金</option>
-                    <option value="轉帳">轉帳</option>
-                    <option value="支票">支票</option>
-                    <option value="信用卡">信用卡</option>
-                    <option value="其他">其他</option>
-                </select>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    備註
-                </label>
-                <input type="text" name="note" 
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2"
-                       placeholder="選填">
-            </div>
-        </div>
-        
-        <div class="mt-6 flex gap-3">
-            <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
-                記錄入帳
-            </button>
-            <a href="{{ route('tenant.receivables.index') }}" 
-               class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
-                取消
-            </a>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 <!-- 詳細資訊（摺疊區） -->
