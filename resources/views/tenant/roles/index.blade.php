@@ -2,18 +2,38 @@
 
 @section('title', '角色權限管理')
 
+@section('page-title', '角色權限管理')
+
 @section('content')
-<div class="mb-6">
-    <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">角色權限管理</h1>
-        <a href="{{ route('tenant.roles.create') }}" 
-           class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            新增角色
-        </a>
-    </div>
+<div class="mb-2 flex justify-end items-center">
+    <a href="{{ route('tenant.roles.create') }}" 
+       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
+        + 新增角色
+    </a>
+</div>
+
+<!-- 搜尋與篩選 -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
+    <form method="GET" action="{{ route('tenant.roles.index') }}" class="space-y-4">
+        <!-- 智能搜尋框 -->
+        <div class="flex gap-2">
+            <div class="flex-1">
+                <input type="text" name="search" value="{{ request('search') }}" 
+                       placeholder="🔍 智能搜尋：角色名稱..." 
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+            </div>
+            <button type="submit" 
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                搜尋
+            </button>
+            @if(request('search'))
+                <a href="{{ route('tenant.roles.index') }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                    清除
+                </a>
+            @endif
+        </div>
+    </form>
 </div>
 
 @if(session('success'))
@@ -33,45 +53,47 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        角色名稱
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        權限數量
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        用戶數量
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        類型
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        操作
-                    </th>
+                    <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">詳細</th>
+                    <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
+                    <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色名稱</th>
+                    <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">權限數量</th>
+                    <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">用戶數量</th>
+                    <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
+                    <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">刪除</th>
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($roles as $role)
                 @php
-                    $isSystem = in_array($role->name, ['總管理', '財務主管', '專案經理', '會計人員', '一般員工']);
+                    $isSystem = in_array($role->name, ['總管理', '財務主管', '專案經理']);
                 @endphp
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">
-                            {{ $role->name }}
-                        </div>
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                        <a href="{{ route('tenant.roles.show', $role) }}" 
+                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
+                            詳細
+                        </a>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ $role->permissions_count }} 個權限
-                        </div>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                        @if(!$isSystem)
+                        <a href="{{ route('tenant.roles.edit', $role) }}" 
+                           class="text-primary hover:text-primary-dark font-medium">
+                            編輯
+                        </a>
+                        @else
+                        <span class="text-gray-400">-</span>
+                        @endif
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ $role->users_count }} 位用戶
-                        </div>
+                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        {{ $role->name }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {{ $role->permissions_count }} 個權限
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {{ $role->users_count }} 位用戶
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap">
                         @if($isSystem)
                         <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded">
                             系統預設
@@ -82,9 +104,20 @@
                         </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{{ route('tenant.roles.show', $role) }}" 
-                           class="text-blue-600 hover:text-blue-900 dark:text-blue-400 mr-3">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                        @if(!$isSystem)
+                        <form action="{{ route('tenant.roles.destroy', $role) }}" method="POST" class="inline"
+                              onsubmit="return confirm('確定要刪除「{{ $role->name }}」角色嗎？\n\n注意：該角色下的 {{ $role->users_count }} 位用戶將失去此角色權限。');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 font-medium">
+                                刪除
+                            </button>
+                        </form>
+                        @else
+                        <span class="text-gray-400">-</span>
+                        @endif
+                    </td>
                             檢視
                         </a>
                         @if(!$isSystem)

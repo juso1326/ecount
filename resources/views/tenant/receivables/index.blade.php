@@ -89,7 +89,7 @@
                 <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">已收金額</th>
                 <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">未收金額</th>
                 <th class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">狀態</th>
-                <th class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">操作</th>
+                <th class="px-3 py-1 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -128,21 +128,21 @@
                             <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">待收</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
                         <a href="{{ route('tenant.receivables.show', $receivable) }}" 
-                           class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">檢視</a>
+                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">詳細</a>
                         <a href="{{ route('tenant.receivables.edit', $receivable) }}" 
-                           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
+                           class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
                         
                         @if($receivable->status !== 'paid' && $receivable->remaining_amount > 0)
                             <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ $receivable->receipt_no }}')"
-                                    class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                                    class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">
                                 收款
                             </button>
                         @endif
                         
                         <a href="{{ route('tenant.receivables.quick-receive', $receivable) }}" 
-                           class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">記錄</a>
+                           class="text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300">記錄</a>
                         
                         <form action="{{ route('tenant.receivables.destroy', $receivable) }}" 
                               method="POST" 
@@ -151,7 +151,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" 
-                                    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">刪除</button>
+                                    class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">刪除</button>
                         </form>
                     </td>
                 </tr>

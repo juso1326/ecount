@@ -14,39 +14,52 @@
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
-    <form method="GET" action="{{ route('tenant.companies.index') }}" class="flex gap-4 items-end">
-        <!-- 搜尋框 -->
-        <div class="flex-1">
-            <input type="text" name="search" value="{{ request('search') }}" 
-                   placeholder="🔍 聰明尋找：搜尋名稱、簡稱、統編..." 
-                   class="w-full border-2 border-primary/30 dark:border-primary/50 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 text-base focus:ring-2 focus:ring-primary focus:border-primary">
-        </div>
-
-        <!-- 類型篩選 -->
-        <div class="flex gap-4">
-            <label class="flex items-center">
-                <input type="checkbox" name="is_client" value="1" {{ request('is_client') ? 'checked' : '' }}
-                       class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
-                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">客戶</span>
-            </label>
-            <label class="flex items-center">
-                <input type="checkbox" name="is_outsource" value="1" {{ request('is_outsource') ? 'checked' : '' }}
-                       class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
-                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">外製</span>
-            </label>
+    <form method="GET" action="{{ route('tenant.companies.index') }}" class="space-y-4">
+        <!-- 智能搜尋框 -->
+        <div class="flex gap-2">
+            <div class="flex-1">
+                <input type="text" name="search" value="{{ request('search') }}" 
+                       placeholder="🔍 智能搜尋：公司名稱/簡稱/統編/聯絡人..." 
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+            </div>
+            <button type="submit" 
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                搜尋
+            </button>
+            @if(request()->hasAny(['search', 'is_client', 'is_outsource']))
+                <a href="{{ route('tenant.companies.index') }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                    清除
+                </a>
+            @endif
         </div>
         
-        <button type="submit" 
-                class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
-            搜尋
-        </button>
-        
-        @if(request()->hasAny(['search', 'is_client', 'is_outsource']))
-            <a href="{{ route('tenant.companies.index') }}" 
-               class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
-                清除
-            </a>
-        @endif
+        <!-- 進階篩選 -->
+        <details class="group">
+            <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
+                <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
+                進階篩選
+            </summary>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <!-- 類型篩選 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-2">公司類型</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_client" value="1" {{ request('is_client') ? 'checked' : '' }}
+                                   class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">客戶</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_outsource" value="1" {{ request('is_outsource') ? 'checked' : '' }}
+                                   class="rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">外製</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </details>
     </form>
 </div>
 
@@ -55,7 +68,8 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">查看</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">詳細</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">外製</th>
@@ -69,13 +83,15 @@
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($companies as $company)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                <td class="px-6 py-2 whitespace-nowrap text-sm">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
                     <a href="{{ route('tenant.companies.show', $company) }}" 
-                       class="text-primary hover:text-primary-dark font-medium">
-                        查看
+                       class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
+                        詳細
                     </a>
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
                     <a href="{{ route('tenant.companies.edit', $company) }}" 
-                       class="ml-1 text-primary hover:text-primary-dark font-medium">
+                       class="text-primary hover:text-primary-dark font-medium">
                         編輯
                     </a>
                 </td>

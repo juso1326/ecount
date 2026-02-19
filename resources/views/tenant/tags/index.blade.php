@@ -24,6 +24,31 @@
     </div>
 </div>
 
+<!-- 搜尋與篩選 -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
+    <form method="GET" action="{{ route('tenant.tags.index') }}" class="space-y-4">
+        <input type="hidden" name="type" value="{{ $type ?? 'project' }}">
+        <!-- 智能搜尋框 -->
+        <div class="flex gap-2">
+            <div class="flex-1">
+                <input type="text" name="search" value="{{ request('search') }}" 
+                       placeholder="🔍 智能搜尋：標籤名稱/說明..." 
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+            </div>
+            <button type="submit" 
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                搜尋
+            </button>
+            @if(request('search'))
+                <a href="{{ route('tenant.tags.index', ['type' => $type ?? 'project']) }}" 
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
+                    清除
+                </a>
+            @endif
+        </div>
+    </form>
+</div>
+
 <!-- 成功訊息 -->
 @if(session('success'))
     <div class="mb-2 bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded relative" role="alert">
@@ -42,17 +67,53 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">編輯</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">刪除</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">排序</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">標籤名稱</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">顏色</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">說明</th>
                 <th class="px-6 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
-                <th class="px-6 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($tags as $tag)
-                <tr>
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                        <a href="{{ route('tenant.tags.edit', $tag) }}"
+                           class="text-primary hover:text-primary-dark font-medium">
+                            編輯
+                        </a>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                        <form action="{{ route('tenant.tags.destroy', $tag) }}" method="POST" class="inline"
+                              onsubmit="return confirm('確定要刪除此標籤嗎？');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 font-medium">
+                                刪除
+                            </button>
+                        </form>
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" 
+                              style="background-color: {{ $tag->color }}20; color: {{ $tag->color }};">
+                            {{ $tag->name }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 rounded" style="background-color: {{ $tag->color }};"></div>
+                            <span class="ml-2">{{ $tag->color }}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        {{ $tag->description ?? '-' }}
+                    </td>
+                    <td class="px-6 py-2 whitespace-nowrap text-center">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $tag->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                            {{ $tag->is_active ? '啟用' : '停用' }}
+                        </span>
                     <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {{ $tag->sort_order }}
                     </td>
@@ -76,26 +137,10 @@
                             {{ $tag->is_active ? '啟用' : '停用' }}
                         </span>
                     </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-center text-sm font-medium">
-                        <a href="{{ route('tenant.tags.edit', $tag) }}" 
-                           class="text-primary hover:text-primary-dark mr-3">
-                            編輯
-                        </a>
-                        <form action="{{ route('tenant.tags.destroy', $tag) }}" 
-                              method="POST" 
-                              class="inline"
-                              onsubmit="return confirm('確定要刪除此標籤嗎？');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900">
-                                刪除
-                            </button>
-                        </form>
-                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-2 text-center text-sm text-gray-500 dark:text-gray-400">
+                    <td colspan="7" class="px-6 py-2 text-center text-sm text-gray-500 dark:text-gray-400">
                         目前沒有標籤資料
                     </td>
                 </tr>

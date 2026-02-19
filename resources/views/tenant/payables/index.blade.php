@@ -90,7 +90,7 @@
                 <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">應付金額</th>
                 <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">未付金額</th>
                 <th class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">狀態</th>
-                <th class="px-4 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">操作</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">操作</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -136,17 +136,23 @@
                             <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">待付</span>
                         @endif
                     </td>
-                    <td class="px-4 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
                         <a href="{{ route('tenant.payables.show', $payable) }}" 
-                           class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">檢視</a>
+                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">詳細</a>
                         <a href="{{ route('tenant.payables.edit', $payable) }}" 
-                           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
+                           class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
+                        
+                        @if($payable->status !== 'paid' && $payable->remaining_amount > 0)
+                            <a href="{{ route('tenant.payables.payment', $payable) }}"
+                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">付款</a>
+                        @endif
+                        
                         <form action="{{ route('tenant.payables.destroy', $payable) }}" 
                               method="POST" class="inline"
                               onsubmit="return confirm('確定要刪除此應付帳款嗎？');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">刪除</button>
+                            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">刪除</button>
                         </form>
                     </td>
                 </tr>
