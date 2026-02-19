@@ -5,6 +5,8 @@
 @section('page-title', '財務綜合分析')
 
 @section('content')
+<x-reports-nav current="financial-overview" />
+
 <div class="mb-4">
     <div class="flex justify-between items-center">
         <form method="GET" class="flex gap-2">

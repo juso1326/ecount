@@ -5,6 +5,8 @@
 @section('page-title', '應收應付帳款分析')
 
 @section('content')
+<x-reports-nav current="ar-ap-analysis" />
+
 <!-- 總覽卡片 -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">

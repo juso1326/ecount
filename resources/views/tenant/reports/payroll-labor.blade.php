@@ -5,6 +5,8 @@
 @section('page-title', '薪資與人力成本分析')
 
 @section('content')
+<x-reports-nav current="payroll-labor" />
+
 <div class="mb-6">
     <div class="flex justify-between items-center">
         <form method="GET" class="flex gap-2">
