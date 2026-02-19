@@ -52,7 +52,7 @@ class ProjectController extends Controller
         }
 
         // 排序
-        $orderBy = $request->input('order_by', 'start_date');
+        $orderBy = $request->input('order_by', 'id');
         $orderDir = $request->input('order_dir', 'desc');
         $query->orderBy($orderBy, $orderDir);
 
