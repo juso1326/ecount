@@ -172,43 +172,27 @@ class ReportsController extends Controller
             $aging['percentage'] = $apTotal > 0 ? round(($aging['amount'] / $apTotal) * 100, 1) : 0;
         }
         
-        // 客戶未收款排名 TOP 10
-        $topCustomers = Receivable::select(
-                'company_id',
+        // 專案未收款排名 TOP 10（按專案）
+        $topProjects = Receivable::select(
+                'project_id',
                 DB::raw('SUM(amount) as total_amount'),
                 DB::raw('SUM(received_amount) as received_amount'),
                 DB::raw('SUM(amount - received_amount) as outstanding_amount')
             )
             ->whereRaw('amount > received_amount')
-            ->with('company')
-            ->groupBy('company_id')
+            ->whereNotNull('project_id')
+            ->with('project')
+            ->groupBy('project_id')
             ->orderBy('outstanding_amount', 'desc')
             ->limit(10)
             ->get()
             ->map(function($item) {
-                $item->name = $item->company ? $item->company->name : '未指定客戶';
+                $item->name = $item->project ? $item->project->name : '未指定專案';
+                $item->code = $item->project ? $item->project->code : '-';
                 return $item;
             });
         
-        // 未來60天現金流預測
-        $cashFlowForecast = collect();
-        for ($i = 0; $i < 60; $i++) {
-            $date = date('Y-m-d', strtotime("+{$i} days"));
-            $expectedIn = (float)Receivable::where('due_date', $date)
-                ->sum(DB::raw('amount - received_amount'));
-            $expectedOut = (float)Payable::where('due_date', $date)
-                ->sum(DB::raw('amount - paid_amount'));
-            
-            if ($expectedIn > 0 || $expectedOut > 0) {
-                $cashFlowForecast->push([
-                    'date' => date('m/d', strtotime($date)),
-                    'expected_in' => $expectedIn,
-                    'expected_out' => $expectedOut,
-                ]);
-            }
-        }
-        
-        return view('tenant.reports.ar-ap-analysis', compact('arSummary', 'apSummary', 'arAging', 'apAging', 'topCustomers', 'cashFlowForecast'));
+        return view('tenant.reports.ar-ap-analysis', compact('arSummary', 'apSummary', 'arAging', 'apAging', 'topProjects', 'cashFlowForecast'));
     }
     
     /**

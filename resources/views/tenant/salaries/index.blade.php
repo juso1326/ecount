@@ -111,7 +111,7 @@
                         </div>
                         <div class="ml-4">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $salary['user']->name }}</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">員工編號: {{ $salary['user']->id }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">帳號開啟: {{ $salary['user']->created_at->format('Y-m-d') }}</div>
                         </div>
                     </div>
                 </td>

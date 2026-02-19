@@ -73,7 +73,7 @@
                 <!-- 公司篩選 -->
                 <div>
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">客戶公司</label>
-                    <select name="company_id" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <select name="company_id" id="company_filter" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         <option value="">全部客戶</option>
                         @foreach(\App\Models\Company::where('is_active', true)->orderBy('name')->get() as $company)
                             <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
@@ -265,4 +265,21 @@
 <div class="mt-6">
     {{ $projects->appends(request()->except('page'))->links() }}
 </div>
+@endsection
+
+@section('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#company_filter').select2({
+        placeholder: '請選擇客戶公司',
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
 @endsection

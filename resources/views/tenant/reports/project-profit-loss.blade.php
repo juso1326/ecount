@@ -67,7 +67,7 @@
                 @foreach($projectProfits as $project)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400">
-                        <a href="{{ route('tenant.projects.show', $project->id) }}" class="hover:underline">
+                        <a href="{{ route('tenant.projects.show', $project->id) }}" target="_blank" class="hover:underline">
                             {{ $project->code }}
                         </a>
                     </td>
