@@ -143,7 +143,7 @@
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
                         
                         @if($payable->status !== 'paid' && $payable->remaining_amount > 0)
-                            <a href="{{ route('tenant.payables.payment', $payable) }}"
+                            <a href="{{ route('tenant.payables.quick-pay', $payable) }}"
                                class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">付款</a>
                         @endif
                         
