@@ -18,61 +18,66 @@
     </div>
 @endif
 
-<!-- 智能搜尋 -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-2">
-    <form method="GET" action="{{ route('tenant.receivables.index') }}">
-        <!-- 年度選擇器 -->
-        <div class="flex items-center gap-3 mb-4">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">帳務年度：</label>
-            <select name="fiscal_year" 
-                    onchange="this.form.submit()"
-                    class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option value="">全部年度</option>
-                @foreach($availableYears as $year)
-                    <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
-                        {{ $year }} 年
-                    </option>
-                @endforeach
-            </select>
-            @if(request('fiscal_year'))
-                <span class="text-sm text-gray-600 dark:text-gray-400">
-                    目前顯示：<span class="font-semibold text-primary">{{ request('fiscal_year') }} 年度</span> 的應收帳款
-                </span>
-            @endif
-        </div>
-
-        <div class="flex gap-3">
+<!-- 搜尋與篩選 -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
+    <form method="GET" action="{{ route('tenant.receivables.index') }}" class="space-y-4">
+        <!-- 智能搜尋框 -->
+        <div class="flex gap-2">
             <div class="flex-1">
-                <input type="text" 
-                       name="smart_search" 
-                       value="{{ request('smart_search') }}" 
-                       placeholder="🔍 聰明尋找：找專案/找專案成員/找負責人/找發票號/報價單號..." 
-                       class="w-full border-2 border-primary/30 dark:border-primary/50 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-1 text-base focus:ring-2 focus:ring-primary focus:border-primary">
+                <input type="text" name="smart_search" value="{{ request('smart_search') }}" 
+                       placeholder="🔍 聰明尋找：單號/專案/客戶/負責人/發票號/報價單號..." 
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    💡 提示：輸入任何關鍵字即可搜尋單號、專案、客戶、負責人、發票號或報價單號
+                </p>
             </div>
-            <select name="project_id" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option value="">全部專案</option>
-                @foreach(\App\Models\Project::where('is_active', true)->orderBy('code')->get() as $project)
-                    <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
-                        {{ $project->code }} - {{ $project->name }}
-                    </option>
-                @endforeach
-            </select>
             <button type="submit" 
-                    class="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-1 rounded-lg shadow-sm whitespace-nowrap">
+                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                 搜尋
             </button>
-            @if(request('smart_search') || request('project_id') || request('fiscal_year') != date('Y'))
+            @if(request()->hasAny(['smart_search', 'project_id', 'fiscal_year']))
                 <a href="{{ route('tenant.receivables.index') }}" 
-                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium px-6 py-1 rounded-lg whitespace-nowrap">
+                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                     清除
                 </a>
             @endif
         </div>
-        @if(request('smart_search'))
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                搜尋關鍵字：<span class="font-semibold text-primary">{{ request('smart_search') }}</span>
-            </p>
-        @endif
+
+        <!-- 進階篩選 -->
+        <details class="group">
+            <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
+                <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
+                進階篩選
+            </summary>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <!-- 帳務年度 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">帳務年度</label>
+                    <select name="fiscal_year" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部年度</option>
+                        @foreach($availableYears as $year)
+                            <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
+                                {{ $year }} 年
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- 專案篩選 -->
+                <div>
+                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">專案</label>
+                    <select name="project_id" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">全部專案</option>
+                        @foreach(\App\Models\Project::where('is_active', true)->orderBy('code')->get() as $project)
+                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>
+                                {{ $project->code }} - {{ $project->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </details>
     </form>
 </div>
 
