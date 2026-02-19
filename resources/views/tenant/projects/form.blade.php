@@ -30,7 +30,7 @@
                 <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">開案日期</label>
                 <input type="date" name="start_date" id="start_date" 
                     value="{{ old('start_date', isset($project) ? $project->start_date?->format('Y-m-d') : date('Y-m-d')) }}"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('start_date') border-red-500 @enderror">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary @error('start_date') border-red-500 @enderror">
                 @error('start_date')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror
@@ -40,7 +40,7 @@
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">專案名稱 <span class="text-red-500">*</span></label>
                 <input type="text" name="name" id="name" value="{{ old('name', $project->name ?? '') }}" required
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('name') border-red-500 @enderror">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary @error('name') border-red-500 @enderror">
                 @error('name')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                 @enderror
@@ -50,7 +50,7 @@
             <div>
                 <label for="company_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">客戶 <span class="text-red-500">*</span></label>
                 <select name="company_id" id="company_id" required
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 @error('company_id') border-red-500 @enderror">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary @error('company_id') border-red-500 @enderror">
                     <option value="">請選擇</option>
                     @foreach($companies as $company)
                         <option value="{{ $company->id }}" {{ old('company_id', $project->company_id ?? '') == $company->id ? 'selected' : '' }}>
@@ -67,14 +67,14 @@
             <div>
                 <label for="quote_no" class="block text-sm font-medium text-gray-700 dark:text-gray-300">報價單號</label>
                 <input type="text" name="quote_no" id="quote_no" value="{{ old('quote_no', $project->quote_no ?? '') }}"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary">
             </div>
 
             <!-- 總額(含稅) -->
             <div>
                 <label for="budget" class="block text-sm font-medium text-gray-700 dark:text-gray-300">總額</label>
                 <input type="number" name="budget" id="budget" value="{{ old('budget', $project->budget ?? 0) }}" step="0.01" min="0"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary">
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">請填寫含稅總額</p>
             </div>
 
@@ -82,7 +82,7 @@
             <div>
                 <label for="manager_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">專案負責人</label>
                 <select name="manager_id" id="manager_id"
-                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary">
                     <option value="">請選擇</option>
                     @foreach($managers as $manager)
                         <option value="{{ $manager->id }}" {{ old('manager_id', $project->manager_id ?? auth()->id()) == $manager->id ? 'selected' : '' }}>
