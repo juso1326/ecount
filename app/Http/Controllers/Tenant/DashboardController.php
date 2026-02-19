@@ -175,9 +175,8 @@ class DashboardController extends Controller
      */
     public function updateAnnouncement(Request $request)
     {
-        // 檢查權限：admin 或 manager 角色可以編輯
-        $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'manager'])) {
+        // 檢查權限
+        if (!auth()->user()->can('announcements.edit')) {
             abort(403, '您沒有編輯系統公告的權限');
         }
 

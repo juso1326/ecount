@@ -80,7 +80,7 @@ class SettingsController extends Controller
         ]);
         
         foreach ($validated as $key => $value) {
-            TenantSetting::set($key, $value);
+            TenantSetting::set($key, $value, 'system', 'string');
         }
         
         return redirect()->route('tenant.settings.system')
@@ -157,6 +157,7 @@ class SettingsController extends Controller
             'default_currency' => 'required|string|max:3',
             'fiscal_year_start' => 'required|integer|min:1|max:12',
             'default_fiscal_year' => 'required|integer|min:2000|max:2100',
+            'currency_decimal_places' => 'nullable|integer|min:0|max:4',
         ], [
             'closing_day.required' => '請選擇關帳日',
             'closing_day.min' => '關帳日必須在 1-31 之間',
@@ -171,7 +172,7 @@ class SettingsController extends Controller
         ]);
 
         foreach ($validated as $key => $value) {
-            TenantSetting::set($key, $value);
+            TenantSetting::set($key, $value, 'financial', in_array($key, ['closing_day', 'fiscal_year_start', 'default_fiscal_year', 'currency_decimal_places']) ? 'number' : 'string');
         }
 
         return redirect()->route('tenant.settings.financial')

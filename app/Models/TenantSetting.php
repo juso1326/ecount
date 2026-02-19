@@ -45,12 +45,19 @@ class TenantSetting extends Model
     /**
      * Set a setting value
      */
-    public static function set(string $key, $value): bool
+    public static function set(string $key, $value, string $group = 'general', string $type = 'string'): bool
     {
         $setting = static::where('key', $key)->first();
         
         if (!$setting) {
-            return false;
+            // 自動建立設定
+            $setting = static::create([
+                'key' => $key,
+                'value' => '',
+                'type' => $type,
+                'group' => $group,
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+            ]);
         }
 
         // Convert value based on type

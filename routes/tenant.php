@@ -48,6 +48,7 @@ Route::middleware([
         Route::post('dashboard/announcement', [\App\Http\Controllers\Tenant\DashboardController::class, 'updateAnnouncement'])->name('tenant.dashboard.announcement');
         
         // 公司管理
+        Route::get('companies/export', [\App\Http\Controllers\Tenant\CompanyController::class, 'export'])->name('tenant.companies.export');
         Route::resource('companies', \App\Http\Controllers\Tenant\CompanyController::class)->names([
             'index' => 'tenant.companies.index',
             'create' => 'tenant.companies.create',
@@ -105,6 +106,7 @@ Route::middleware([
 
         // 應收帳款管理（簡化路由）
         Route::get('receivables', [\App\Http\Controllers\Tenant\ReceivableController::class, 'index'])->name('tenant.receivables.index');
+        Route::get('receivables/export', [\App\Http\Controllers\Tenant\ReceivableController::class, 'export'])->name('tenant.receivables.export');
         Route::get('receivables/create', [\App\Http\Controllers\Tenant\ReceivableController::class, 'create'])->name('tenant.receivables.create');
         Route::post('receivables', [\App\Http\Controllers\Tenant\ReceivableController::class, 'store'])->name('tenant.receivables.store');
         Route::get('receivables/{receivable}', [\App\Http\Controllers\Tenant\ReceivableController::class, 'show'])->name('tenant.receivables.show');
@@ -120,6 +122,7 @@ Route::middleware([
 
         // 應付帳款管理（簡化路由）
         Route::get('payables', [\App\Http\Controllers\Tenant\PayableController::class, 'index'])->name('tenant.payables.index');
+        Route::get('payables/export', [\App\Http\Controllers\Tenant\PayableController::class, 'export'])->name('tenant.payables.export');
         Route::get('payables/create', [\App\Http\Controllers\Tenant\PayableController::class, 'create'])->name('tenant.payables.create');
         Route::post('payables', [\App\Http\Controllers\Tenant\PayableController::class, 'store'])->name('tenant.payables.store');
         Route::get('payables/{payable}', [\App\Http\Controllers\Tenant\PayableController::class, 'show'])->name('tenant.payables.show');
