@@ -51,13 +51,17 @@
     <!-- 月度薪資趨勢 -->
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">月度薪資趨勢</h2>
-        <canvas id="monthlyTrendsChart" height="300"></canvas>
+        <div style="position: relative; height: 300px;">
+            <canvas id="monthlyTrendsChart"></canvas>
+        </div>
     </div>
     
     <!-- 部門成本分析 -->
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">部門成本分析</h2>
-        <canvas id="departmentCostChart" height="300"></canvas>
+        <div style="position: relative; height: 300px;">
+            <canvas id="departmentCostChart"></canvas>
+        </div>
     </div>
 </div>
 

@@ -59,7 +59,7 @@
     <!-- 支出比例分析 -->
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">支出比例分析</h2>
-        <div style="height: 300px;">
+        <div style="position: relative; height: 300px;">
             <canvas id="expenseBreakdownChart"></canvas>
         </div>
     </div>

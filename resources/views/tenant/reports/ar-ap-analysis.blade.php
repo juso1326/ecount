@@ -148,7 +148,9 @@
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">未來60天現金流預測</h2>
     </div>
     <div class="p-6">
-        <canvas id="cashFlowForecastChart" height="250"></canvas>
+        <div style="position: relative; height: 250px;">
+            <canvas id="cashFlowForecastChart"></canvas>
+        </div>
     </div>
 </div>
 
