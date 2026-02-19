@@ -158,27 +158,27 @@
                     $isExcluded = $adj->isExcludedForMonth($currentYear, $currentMonth);
                     
                     // 計算生效月份範圍
-                    $startDate = $adj->start_date ? \Carbon\Carbon::parse($adj->start_date) : null;
+                    $startDate = $adj->start_date ? \Carbon\Carbon::parse($adj->start_date) : \Carbon\Carbon::now()->startOfYear();
                     $endDate = $adj->end_date ? \Carbon\Carbon::parse($adj->end_date) : null;
                     $today = \Carbon\Carbon::now();
                     
                     $effectiveMonths = [];
-                    if ($startDate) {
-                        $start = $startDate->copy()->startOfMonth();
-                        $end = $endDate ? $endDate->copy()->endOfMonth() : $today->copy()->addYears(2)->endOfMonth();
-                        
-                        $current = $start->copy();
-                        while ($current->lte($end)) {
-                            $effectiveMonths[] = [
-                                'year' => $current->year,
-                                'month' => $current->month,
-                                'label' => $current->format('Y/m'),
-                                'excluded' => $adj->isExcludedForMonth($current->year, $current->month)
-                            ];
-                            $current->addMonth();
-                            if (count($effectiveMonths) >= 24) break; // 最多顯示24個月
-                        }
+                    
+                    $start = $startDate->copy()->startOfMonth();
+                    $end = $endDate ? $endDate->copy()->endOfMonth() : $today->copy()->addYears(2)->endOfMonth();
+                    
+                    $current = $start->copy();
+                    while ($current->lte($end)) {
+                        $effectiveMonths[] = [
+                            'year' => $current->year,
+                            'month' => $current->month,
+                            'label' => $current->format('Y/m'),
+                            'excluded' => $adj->isExcludedForMonth($current->year, $current->month)
+                        ];
+                        $current->addMonth();
+                        if (count($effectiveMonths) >= 24) break; // 最多顯示24個月
                     }
+                @endphp
                 @endphp
                 <div class="py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="flex items-center justify-between {{ $isExcluded ? 'opacity-50' : '' }}">
