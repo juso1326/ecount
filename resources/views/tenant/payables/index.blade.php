@@ -5,41 +5,44 @@
 @section('page-title', '應付帳款管理')
 
 @section('content')
-<!-- 付款提醒 -->
-@if($overduePayables > 0 || $dueSoon7Days > 0)
-<div class="mb-2 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700 rounded-lg px-4 py-2">
-    <div class="flex items-center gap-3">
-        <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        <div class="flex items-center gap-4 flex-wrap text-sm">
-            <span class="font-semibold text-red-800 dark:text-red-300">付款提醒：</span>
-            @if($overduePayables > 0)
-            <div class="flex items-center gap-1.5">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">逾期</span>
-                <span class="text-red-700 dark:text-red-300">有 <strong>{{ $overduePayables }}</strong> 筆已逾期</span>
+<div class="mb-2 flex justify-between items-center gap-4">
+    <!-- 付款提醒（左側） -->
+    @if($overduePayables > 0 || $dueSoon7Days > 0)
+    <div class="flex-1 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700 rounded-lg px-4 py-2">
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div class="flex items-center gap-4 flex-wrap text-sm">
+                <span class="font-semibold text-red-800 dark:text-red-300">付款提醒：</span>
+                @if($overduePayables > 0)
+                <div class="flex items-center gap-1.5">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">逾期</span>
+                    <span class="text-red-700 dark:text-red-300">有 <strong>{{ $overduePayables }}</strong> 筆已逾期</span>
+                </div>
+                @endif
+                @if($dueSoon7Days > 0)
+                <div class="flex items-center gap-1.5">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-500 text-white">7天內</span>
+                    <span class="text-orange-700 dark:text-orange-300">有 <strong>{{ $dueSoon7Days }}</strong> 筆即將到期</span>
+                </div>
+                @endif
+                @if($dueSoon30Days > 0)
+                <div class="flex items-center gap-1.5">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-white">30天內</span>
+                    <span class="text-yellow-700 dark:text-yellow-300">有 <strong>{{ $dueSoon30Days }}</strong> 筆將到期</span>
+                </div>
+                @endif
             </div>
-            @endif
-            @if($dueSoon7Days > 0)
-            <div class="flex items-center gap-1.5">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-500 text-white">7天內</span>
-                <span class="text-orange-700 dark:text-orange-300">有 <strong>{{ $dueSoon7Days }}</strong> 筆即將到期</span>
-            </div>
-            @endif
-            @if($dueSoon30Days > 0)
-            <div class="flex items-center gap-1.5">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-white">30天內</span>
-                <span class="text-yellow-700 dark:text-yellow-300">有 <strong>{{ $dueSoon30Days }}</strong> 筆將到期</span>
-            </div>
-            @endif
         </div>
     </div>
-</div>
-@endif
-
-<div class="mb-2 flex justify-end items-center">
+    @else
+    <div class="flex-1"></div>
+    @endif
+    
+    <!-- 新增按鈕（右側） -->
     <a href="{{ route('tenant.payables.create') }}" 
-       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
+       class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm whitespace-nowrap">
         + 新增應付帳款
     </a>
 </div>
