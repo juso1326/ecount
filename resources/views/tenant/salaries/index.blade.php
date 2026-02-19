@@ -36,7 +36,7 @@
         <!-- 月份選擇表單 -->
         <form method="GET" action="{{ route('tenant.salaries.index') }}" class="flex items-center gap-3">
             <select name="year" onchange="this.form.submit()" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                @for($y = date('Y'); $y >= 2014; $y--)
+                @for($y = $endYear; $y >= $startYear; $y--)
                     <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}年</option>
                 @endfor
             </select>
