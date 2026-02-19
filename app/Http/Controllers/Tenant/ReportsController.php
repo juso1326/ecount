@@ -192,6 +192,24 @@ class ReportsController extends Controller
                 return $item;
             });
         
+        // 未來60天現金流預測
+        $cashFlowForecast = collect();
+        for ($i = 0; $i < 60; $i++) {
+            $date = date('Y-m-d', strtotime("+{$i} days"));
+            $expectedIn = (float)Receivable::where('due_date', $date)
+                ->sum(DB::raw('amount - received_amount'));
+            $expectedOut = (float)Payable::where('due_date', $date)
+                ->sum(DB::raw('amount - paid_amount'));
+            
+            if ($expectedIn > 0 || $expectedOut > 0) {
+                $cashFlowForecast->push([
+                    'date' => date('m/d', strtotime($date)),
+                    'expected_in' => $expectedIn,
+                    'expected_out' => $expectedOut,
+                ]);
+            }
+        }
+        
         return view('tenant.reports.ar-ap-analysis', compact('arSummary', 'apSummary', 'arAging', 'apAging', 'topProjects', 'cashFlowForecast'));
     }
     

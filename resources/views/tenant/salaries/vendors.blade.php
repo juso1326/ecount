@@ -5,17 +5,8 @@
 @section('page-title', '廠商支付記錄')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">財務管理 &gt; 廠商支付記錄</p>
-</div>
-
 <!-- 頁面標題 -->
-<div class="mb-6 flex justify-between items-center">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">廠商支付記錄</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $period['label'] }}</p>
-    </div>
+<div class="mb-2 flex justify-between items-center">
     <a href="{{ route('tenant.salaries.index', ['year' => $year, 'month' => $month]) }}" 
        class="text-primary hover:underline">
         返回成員薪資
