@@ -449,10 +449,8 @@
                     <select name="user_id" required
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                         <option value="">請選擇</option>
-                        @foreach(\App\Models\User::where('is_active', true)->orderBy('name')->get() as $user)
-                            @if(!$project->members || !$project->members->contains($user->id))
-                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
-                            @endif
+                        @foreach($availableUsers as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                         @endforeach
                     </select>
                 </div>

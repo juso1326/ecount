@@ -157,6 +157,13 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         $project->load(['company', 'manager', 'members', 'receivables', 'payables']);
+        
+        // 獲取可用的用戶（排除已在其他專案的成員）
+        $existingMemberIds = $project->members->pluck('id')->toArray();
+        $availableUsers = User::where('is_active', true)
+            ->whereNotIn('id', $existingMemberIds)
+            ->orderBy('name')
+            ->get();
 
         // 格式化資料供 JavaScript 使用
         $receivablesData = $project->receivables->map(function($r) {
@@ -182,7 +189,7 @@ class ProjectController extends Controller
             ];
         });
 
-        return view('tenant.projects.show', compact('project', 'receivablesData', 'payablesData'));
+        return view('tenant.projects.show', compact('project', 'receivablesData', 'payablesData', 'availableUsers'));
     }
 
     /**
