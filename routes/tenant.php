@@ -61,6 +61,7 @@ Route::middleware([
 
         // 專案管理
         Route::get('projects', [\App\Http\Controllers\Tenant\ProjectController::class, 'index'])->name('tenant.projects.index');
+        Route::get('projects/export', [\App\Http\Controllers\Tenant\ProjectController::class, 'export'])->name('tenant.projects.export');
         Route::get('projects/create', [\App\Http\Controllers\Tenant\ProjectController::class, 'create'])->name('tenant.projects.create');
         Route::post('projects', [\App\Http\Controllers\Tenant\ProjectController::class, 'store'])->name('tenant.projects.store');
         Route::get('projects/{project}', [\App\Http\Controllers\Tenant\ProjectController::class, 'show'])->name('tenant.projects.show');

@@ -228,7 +228,5 @@
     </table>
 </div>
 
-<div class="mt-6">
-    {{ $payables->withQueryString()->links() }}
-</div>
+<x-pagination-info :paginator="$payables" :exportRoute="route('tenant.payables.export', request()->all())" />
 @endsection

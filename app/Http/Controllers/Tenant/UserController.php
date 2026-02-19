@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:users.view')->only(['index', 'show']);
+        $this->middleware('permission:users.create')->only(['create', 'store']);
+        $this->middleware('permission:users.edit')->only(['edit', 'update', 'toggleActive', 'storeBankAccount', 'updateBankAccount', 'destroyBankAccount']);
+        $this->middleware('permission:users.delete')->only(['destroy']);
+    }
+
     /**
      * Display a listing of users.
      */

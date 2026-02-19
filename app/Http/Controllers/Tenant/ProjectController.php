@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:projects.view')->only(['index', 'show', 'export']);
+        $this->middleware('permission:projects.create')->only(['create', 'store']);
+        $this->middleware('permission:projects.edit')->only(['edit', 'update', 'toggleMember', 'quickUpdate']);
+        $this->middleware('permission:projects.delete')->only(['destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      * 按照舊系統 PRJ01 邏輯重寫
@@ -405,5 +413,73 @@ class ProjectController extends Controller
         
         return redirect()->route('tenant.projects.show', $project)
             ->with('success', '標籤更新成功');
+    }
+
+    /**
+     * 匯出專案列表為 Excel
+     */
+    public function export(Request $request)
+    {
+        $query = Project::with(['company', 'manager', 'members', 'tags']);
+
+        // 套用與 index 相同的篩選條件
+        if ($request->filled('smart_search')) {
+            $query->smartSearch($request->smart_search);
+        }
+
+        $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
+        $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
+
+        if ($dateStart && $dateEnd) {
+            $query->whereBetween('start_date', [$dateStart, $dateEnd]);
+        }
+
+        if ($request->filled('company_id')) {
+            $query->where('company_id', $request->company_id);
+        }
+
+        if ($request->filled('manager_id')) {
+            $query->where('manager_id', $request->manager_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $projects = $query->get();
+
+        $filename = '專案列表_' . date('Y-m-d_His') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($projects) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+
+            // 標題列
+            fputcsv($file, ['專案代碼', '專案名稱', '客戶', '專案負責人', '開案日期', '結束日期', '預算金額', '狀態', '標籤']);
+
+            // 資料列
+            foreach ($projects as $project) {
+                fputcsv($file, [
+                    $project->code,
+                    $project->name,
+                    $project->company?->name,
+                    $project->manager?->name,
+                    $project->start_date?->format('Y-m-d'),
+                    $project->end_date?->format('Y-m-d'),
+                    $project->budget_amount,
+                    $project->status_label,
+                    $project->tags->pluck('name')->implode(', '),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

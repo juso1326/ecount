@@ -185,10 +185,7 @@
     </table>
 </div>
 
-<!-- 分頁 -->
-<div class="mt-6">
-    {{ $receivables->withQueryString()->links() }}
-</div>
+<x-pagination-info :paginator="$receivables" :exportRoute="route('tenant.receivables.export', request()->all())" />
 
 <!-- 快速收款 Modal -->
 <div id="quickReceiveModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">

@@ -128,8 +128,5 @@
     </table>
 </div>
 
-<!-- 分頁 -->
-<div class="mt-6">
-    {{ $companies->appends(request()->except('page'))->links() }}
-</div>
+<x-pagination-info :paginator="$companies" :exportRoute="route('tenant.companies.export', request()->all())" />
 @endsection

@@ -5,12 +5,14 @@
 @section('page-title', '使用者管理')
 
 @section('content')
+@can('users.create')
 <div class="mb-2 flex justify-end items-center">
     <a href="{{ route('tenant.users.create') }}" 
        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg shadow-sm">
         + 新增使用者
     </a>
 </div>
+@endcan
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
@@ -74,14 +76,18 @@
             @forelse($users as $user)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
+                    @can('users.view')
                     <a href="{{ route('tenant.users.show', $user) }}" 
                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
                         詳細
                     </a>
+                    @endcan
+                    @can('users.edit')
                     <a href="{{ route('tenant.users.edit', $user) }}" 
                        class="text-primary hover:text-primary-dark font-medium">
                         編輯
                     </a>
+                    @endcan
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $user->employee_id }}

@@ -257,10 +257,7 @@
     </table>
 </div>
 
-<!-- 分頁 -->
-<div class="mt-6">
-    {{ $projects->appends(request()->except('page'))->links() }}
-</div>
+<x-pagination-info :paginator="$projects" :exportRoute="route('tenant.projects.export', request()->all())" />
 @endsection
 
 @section('styles')
