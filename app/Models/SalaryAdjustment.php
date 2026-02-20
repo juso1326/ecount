@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HandlesEmptyDates;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SalaryAdjustment extends Model
 {
+    use HandlesEmptyDates;
     protected $fillable = [
         'user_id',
         'type',
