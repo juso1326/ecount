@@ -213,8 +213,14 @@ class ProjectController extends Controller
             'company_id' => 'required|exists:companies,id',
             'manager_id' => 'nullable|exists:users,id',
             'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'budget' => 'nullable|numeric|min:0',
+            'actual_cost' => 'nullable|numeric|min:0',
             'quote_no' => 'nullable|string',
+            'status' => 'nullable|string|in:planning,in_progress,on_hold,completed,cancelled',
+            'description' => 'nullable|string',
+            'content' => 'nullable|string',
+            'note' => 'nullable|string',
         ]);
         
         $project->update($validated);

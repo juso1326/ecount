@@ -32,13 +32,19 @@ class ReceivablePaymentController extends Controller
         // 建立入帳記錄
         $receivable->payments()->create($validated);
         
-        // 更新應收帳款狀態
+        // 更新應收帳款狀態和已收金額
         $newTotalReceived = $totalReceived + $validated['amount'];
         
         if ($newTotalReceived >= $receivable->amount) {
-            $receivable->update(['status' => 'paid']);
+            $receivable->update([
+                'status' => 'paid',
+                'received_amount' => $newTotalReceived,
+            ]);
         } elseif ($newTotalReceived > 0) {
-            $receivable->update(['status' => 'partial']);
+            $receivable->update([
+                'status' => 'partial',
+                'received_amount' => $newTotalReceived,
+            ]);
         }
         
         return redirect()->route('tenant.receivables.quick-receive', $receivable)
@@ -53,15 +59,24 @@ class ReceivablePaymentController extends Controller
         $receivable = $payment->receivable;
         $payment->delete();
         
-        // 重新計算狀態
+        // 重新計算狀態和已收金額
         $totalReceived = $receivable->payments()->sum('amount');
         
         if ($totalReceived >= $receivable->amount) {
-            $receivable->update(['status' => 'paid']);
+            $receivable->update([
+                'status' => 'paid',
+                'received_amount' => $totalReceived,
+            ]);
         } elseif ($totalReceived > 0) {
-            $receivable->update(['status' => 'partial']);
+            $receivable->update([
+                'status' => 'partial',
+                'received_amount' => $totalReceived,
+            ]);
         } else {
-            $receivable->update(['status' => 'unpaid']);
+            $receivable->update([
+                'status' => 'unpaid',
+                'received_amount' => 0,
+            ]);
         }
         
         return redirect()->route('tenant.receivables.quick-receive', $receivable)

@@ -170,14 +170,37 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:6|confirmed',
             'is_active' => 'boolean',
+            // 員工資訊
+            'employee_no' => 'nullable|string|max:50',
+            'short_name' => 'nullable|string|max:50',
+            'position' => 'nullable|string|max:100',
+            'supervisor_id' => 'nullable|exists:users,id',
+            // 個人資料
+            'id_number' => 'nullable|string|max:20',
+            'birth_date' => 'nullable|date',
+            'phone' => 'nullable|string|max:20',
+            'mobile' => 'nullable|string|max:20',
+            'backup_email' => 'nullable|email',
+            // 銀行資訊
+            'bank_name' => 'nullable|string|max:100',
+            'bank_branch' => 'nullable|string|max:100',
+            'bank_account' => 'nullable|string|max:50',
+            // 緊急聯絡人
+            'emergency_contact_name' => 'nullable|string|max:50',
+            'emergency_contact_phone' => 'nullable|string|max:20',
+            // 任職資訊
+            'hire_date' => 'nullable|date',
+            'resign_date' => 'nullable|date',
+            'suspend_date' => 'nullable|date',
+            'note' => 'nullable|string',
         ], [
             'name.required' => '姓名為必填',
             'email.required' => 'Email 為必填',
             'email.email' => 'Email 格式不正確',
             'email.unique' => 'Email 已被使用',
-            'password.min' => '密碼至少需要 8 個字元',
+            'password.min' => '密碼至少需要 6 個字元',
             'password.confirmed' => '密碼確認不一致',
         ]);
 
@@ -191,11 +214,8 @@ class UserController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'is_active' => $request->boolean('is_active', true),
-        ];
+        $data = $validator->validated();
+        unset($data['password']); // 先移除密碼欄位
 
         // 只在有提供新密碼時才更新
         if ($request->filled('password')) {

@@ -32,13 +32,19 @@ class PayablePaymentController extends Controller
         // 建立給付記錄
         $payable->payments()->create($validated);
         
-        // 更新應付帳款狀態
+        // 更新應付帳款狀態和已付金額
         $newTotalPaid = $totalPaid + $validated['amount'];
         
         if ($newTotalPaid >= $payable->amount) {
-            $payable->update(['status' => 'paid']);
+            $payable->update([
+                'status' => 'paid',
+                'paid_amount' => $newTotalPaid,
+            ]);
         } elseif ($newTotalPaid > 0) {
-            $payable->update(['status' => 'partial']);
+            $payable->update([
+                'status' => 'partial',
+                'paid_amount' => $newTotalPaid,
+            ]);
         }
         
         return redirect()->route('tenant.payables.quick-pay', $payable)
@@ -53,15 +59,24 @@ class PayablePaymentController extends Controller
         $payable = $payment->payable;
         $payment->delete();
         
-        // 重新計算狀態
+        // 重新計算狀態和已付金額
         $totalPaid = $payable->payments()->sum('amount');
         
         if ($totalPaid >= $payable->amount) {
-            $payable->update(['status' => 'paid']);
+            $payable->update([
+                'status' => 'paid',
+                'paid_amount' => $totalPaid,
+            ]);
         } elseif ($totalPaid > 0) {
-            $payable->update(['status' => 'partial']);
+            $payable->update([
+                'status' => 'partial',
+                'paid_amount' => $totalPaid,
+            ]);
         } else {
-            $payable->update(['status' => 'unpaid']);
+            $payable->update([
+                'status' => 'unpaid',
+                'paid_amount' => 0,
+            ]);
         }
         
         return redirect()->route('tenant.payables.quick-pay', $payable)
