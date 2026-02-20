@@ -89,10 +89,11 @@
                 <select name="role" id="role" required
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
                     <option value="">請選擇角色</option>
-                    <option value="Admin" {{ old('role', $currentRole ?? '') == 'Admin' ? 'selected' : '' }}>系統管理員</option>
-                    <option value="Manager" {{ old('role', $currentRole ?? '') == 'Manager' ? 'selected' : '' }}>總管理/主管</option>
-                    <option value="會計人員" {{ old('role', $currentRole ?? '') == '會計人員' ? 'selected' : '' }}>會計</option>
-                    <option value="Member" {{ old('role', $currentRole ?? '') == 'Member' ? 'selected' : '' }}>成員</option>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->name }}" {{ old('role', $currentRole ?? '') == $role->name ? 'selected' : '' }}>
+                            {{ $role->name }}
+                        </option>
+                    @endforeach
                 </select>
                 @error('role')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

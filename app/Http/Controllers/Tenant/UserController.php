@@ -56,8 +56,9 @@ class UserController extends Controller
     public function create()
     {
         $supervisors = User::where('is_active', true)->orderBy('name')->get();
+        $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
         
-        return view('tenant.users.create', compact('supervisors'));
+        return view('tenant.users.create', compact('supervisors', 'roles'));
     }
 
     /**
@@ -166,8 +167,9 @@ class UserController extends Controller
         $user->load('bankAccounts');
         $supervisors = User::where('is_active', true)->where('id', '!=', $user->id)->orderBy('name')->get();
         $currentRole = $user->roles->first()?->name ?? '';
+        $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
         
-        return view('tenant.users.edit', compact('user', 'supervisors', 'currentRole'));
+        return view('tenant.users.edit', compact('user', 'supervisors', 'currentRole', 'roles'));
     }
 
     /**
