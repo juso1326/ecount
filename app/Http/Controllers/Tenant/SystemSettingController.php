@@ -54,8 +54,8 @@ class SystemSettingController extends Controller
             'locale' => 'required|in:zh_TW,en,zh_CN',
             'timezone' => 'required|string',
             'currency' => 'required|string|max:3',
-            'date_format' => 'required|in:Y-m-d,Y/m/d,d/m/Y,m/d/Y',
-            'time_format' => 'required|in:H:i,h:i A',
+            'date_format' => 'required|in:Y-m-d,Y/m/d,Y.m.d,m/d/Y,d/m/Y,Ymd',
+            'time_format' => 'required|in:H:i:s,H:i,h:i:s A,h:i A',
             'fiscal_year_start' => 'required|integer|min:1|max:12',
         ], [
             'locale.required' => '請選擇語言',

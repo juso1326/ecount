@@ -74,8 +74,8 @@ class SettingsController extends Controller
     public function updateSystem(Request $request)
     {
         $validated = $request->validate([
-            'date_format' => 'required|string',
-            'time_format' => 'required|string',
+            'date_format' => 'required|in:Y-m-d,Y/m/d,Y.m.d,m/d/Y,d/m/Y,Ymd',
+            'time_format' => 'required|in:H:i:s,H:i,h:i:s A,h:i A',
             'timezone' => 'required|string',
         ]);
         

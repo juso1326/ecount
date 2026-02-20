@@ -88,8 +88,11 @@ class CurrencyHelper
      */
     private static function getSystemCurrency(): string
     {
-        // 預設使用台幣，未來可從系統設定擴展
-        return 'TWD';
+        try {
+            return \App\Models\TenantSetting::get('currency', 'TWD') ?? 'TWD';
+        } catch (\Exception $e) {
+            return 'TWD';
+        }
     }
 
     /**
