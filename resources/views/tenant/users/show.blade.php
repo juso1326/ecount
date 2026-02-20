@@ -46,17 +46,17 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">最後登入時間</label>
-            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i:s') : '從未登入' }}</p>
+            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ format_datetime($user->last_login_at) ?: '從未登入' }}</p>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">建立時間</label>
-            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ $user->created_at->format('Y-m-d H:i:s') }}</p>
+            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ format_datetime($user->created_at) }}</p>
         </div>
 
         <div>
             <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">更新時間</label>
-            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ $user->updated_at->format('Y-m-d H:i:s') }}</p>
+            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ format_datetime($user->updated_at) }}</p>
         </div>
     </div>
 </div>
@@ -99,7 +99,7 @@
                         </div>
                         @if($project->pivot)
                             <p class="text-sm text-gray-600 dark:text-gray-400">角色：{{ $project->pivot->role ?? '成員' }}</p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">加入時間：{{ $project->pivot->joined_at->format('Y-m-d') }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">加入時間：{{ format_date($project->pivot->joined_at) }}</p>
                         @endif
                     </div>
                 @endforeach

@@ -115,7 +115,7 @@
 
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400">結束日期</label>
-                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->end_date?->format('Y-m-d') ?? '-' }}</p>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ format_date($project->end_date) }}</p>
                 </div>
 
                 <div>
@@ -184,9 +184,9 @@
                                     @endif
                                 </div>
                                 <div class="text-gray-500 dark:text-gray-400.5">
-                                    {{ $receivable->receipt_date?->format('Y-m-d') }} 
+                                    {{ format_date($receivable->receipt_date) }} 
                                     @if($receivable->due_date)
-                                        <span class="text-gray-400">| 發票日: {{ $receivable->due_date->format('Y-m-d') }}</span>
+                                        <span class="text-gray-400">| 發票日: {{ format_date($receivable->due_date) }}</span>
                                     @endif
                                 </div>
                                 @if($receivable->content)
@@ -278,9 +278,9 @@
                                     @endif
                                 </div>
                                 <div class="text-gray-500 dark:text-gray-400.5">
-                                    {{ $payable->payment_date?->format('Y-m-d') }}
+                                    {{ format_date($payable->payment_date) }}
                                     @if($payable->due_date)
-                                        <span class="text-gray-400">| 到期: {{ $payable->due_date->format('Y-m-d') }}</span>
+                                        <span class="text-gray-400">| 到期: {{ format_date($payable->due_date) }}</span>
                                     @endif
                                 </div>
                                 @if($payable->content)
@@ -428,8 +428,8 @@
 <!-- 系統資訊 -->
 <div class="mt-4 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-3">
     <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
-        <div>建立時間：{{ $project->created_at->format('Y-m-d H:i:s') }}</div>
-        <div>最後更新：{{ $project->updated_at->format('Y-m-d H:i:s') }}</div>
+        <div>建立時間：{{ format_datetime($project->created_at) }}</div>
+        <div>最後更新：{{ format_datetime($project->updated_at) }}</div>
     </div>
 </div>
 

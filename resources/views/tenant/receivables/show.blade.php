@@ -47,7 +47,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
         <div><span class="text-gray-600 dark:text-gray-400">收款單號：</span><span class="font-medium">{{ $receivable->receipt_no }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">收款日期：</span><span class="font-medium">@date($receivable->receipt_date)</span></div>
-        <div><span class="text-gray-600 dark:text-gray-400">到期日：</span><span class="font-medium">{{ $receivable->due_date ? $receivable->due_date->format('Y/m/d') : '-' }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">到期日：</span><span class="font-medium">{{ format_date($receivable->due_date) }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">專案：</span><span class="font-medium">{{ $receivable->project->code ?? '-' }} - {{ $receivable->project->name ?? '-' }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">客戶：</span><span class="font-medium">{{ $receivable->company->name ?? '-' }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">負責人：</span><span class="font-medium">{{ $receivable->responsibleUser->name ?? '-' }}</span></div>
@@ -215,7 +215,7 @@
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                 <div><span class="text-gray-600 dark:text-gray-400">付款方式：</span><span class="font-medium">{{ $receivable->payment_method ?? '-' }}</span></div>
-                <div><span class="text-gray-600 dark:text-gray-400">實際收款日：</span><span class="font-medium">{{ $receivable->paid_date ? $receivable->paid_date->format('Y/m/d') : '-' }}</span></div>
+                <div><span class="text-gray-600 dark:text-gray-400">實際收款日：</span><span class="font-medium">{{ format_date($receivable->paid_date) }}</span></div>
                 <div><span class="text-gray-600 dark:text-gray-400">發票號碼：</span><span class="font-medium">{{ $receivable->invoice_no ?? '-' }}</span></div>
                 <div><span class="text-gray-600 dark:text-gray-400">報價單號：</span><span class="font-medium">{{ $receivable->quote_no ?? '-' }}</span></div>
             </div>
@@ -229,8 +229,8 @@
             <div class="space-y-2 text-sm">
                 <div><span class="text-gray-600 dark:text-gray-400">備註：</span><span class="font-medium">{{ $receivable->note ?? '-' }}</span></div>
                 <div class="grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 dark:border-gray-700">
-                    <div><span class="text-gray-600 dark:text-gray-400">建立時間：</span><span class="text-xs">{{ $receivable->created_at->format('Y/m/d H:i') }}</span></div>
-                    <div><span class="text-gray-600 dark:text-gray-400">最後更新：</span><span class="text-xs">{{ $receivable->updated_at->format('Y/m/d H:i') }}</span></div>
+                    <div><span class="text-gray-600 dark:text-gray-400">建立時間：</span><span class="text-xs">{{ format_datetime($receivable->created_at) }}</span></div>
+                    <div><span class="text-gray-600 dark:text-gray-400">最後更新：</span><span class="text-xs">{{ format_datetime($receivable->updated_at) }}</span></div>
                 </div>
             </div>
         </div>

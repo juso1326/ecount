@@ -65,6 +65,16 @@ class TagController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Tag $tag)
+    {
+        $tag->load(['projects', 'companies', 'users']);
+        $types = Tag::getTypes();
+        return view('tenant.tags.show', compact('tag', 'types'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Tag $tag)

@@ -24,12 +24,11 @@ class ProjectController extends Controller
             $query->smartSearch($request->smart_search);
         }
 
-        // 日期範圍篩選（預設最近一年）
-        $dateStart = $request->input('date_start', now()->subYear()->format('Y-m-d'));
-        $dateEnd = $request->input('date_end', now()->format('Y-m-d'));
-        
-        if (!$request->filled('smart_search')) {
-            // 只在沒有使用智能搜尋時才套用預設日期範圍
+        // 日期範圍篩選（僅在明確指定時套用）
+        $dateStart = $request->input('date_start', '');
+        $dateEnd = $request->input('date_end', '');
+
+        if ($request->filled('date_start') && $request->filled('date_end')) {
             $query->dateRange($dateStart, $dateEnd);
         }
 

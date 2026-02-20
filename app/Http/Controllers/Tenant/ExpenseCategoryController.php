@@ -60,10 +60,18 @@ class ExpenseCategoryController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(ExpenseCategory $expenseCategory)
+    {
+        $expenseCategory->load(['parent', 'children']);
+        return view('tenant.expense-categories.show', compact('expenseCategory'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ExpenseCategory $expenseCategory)
-    {
+    public function edit(ExpenseCategory $expenseCategory)    {
         $parentCategories = ExpenseCategory::topLevel()
             ->active()
             ->where('id', '!=', $expenseCategory->id)

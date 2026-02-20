@@ -26,7 +26,7 @@
             </select>
         </form>
         <div class="text-sm text-gray-500 dark:text-gray-400">
-            {{ now()->format('Y-m-d H:i') }}
+            {{ format_datetime(now()) }}
         </div>
     </div>
 </div>
@@ -55,7 +55,7 @@
         <div class="text-gray-700 dark:text-gray-300">{!! nl2br(e($announcement->content)) !!}</div>
         @if($announcement->updated_at)
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
-            最後更新：{{ $announcement->updated_at->format('Y-m-d H:i') }}
+            最後更新：{{ format_datetime($announcement->updated_at) }}
             @if($announcement->updater)
                 by {{ $announcement->updater->name }}
             @endif
@@ -401,7 +401,7 @@
                         @if($project->company)
                         <span>{{ $project->company->name }}</span>
                         @endif
-                        <span>{{ $project->start_date?->format('Y-m-d') }}</span>
+                        <span>{{ format_date($project->start_date) }}</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">

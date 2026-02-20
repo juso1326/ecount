@@ -85,6 +85,7 @@
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">參與專案</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">角色</th>
+                <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">帳號開啟日</th>
                 <th class="px-6 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
             </tr>
         </thead>
@@ -164,6 +165,9 @@
                         <span class="text-gray-400 dark:text-gray-500">未設定</span>
                     @endif
                 </td>
+                <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    @date($user->created_at)
+                </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm">
                     @if($user->is_active)
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
@@ -178,7 +182,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何使用者資料
                 </td>
             </tr>

@@ -164,7 +164,7 @@
                             {{ $salary->payeeUser->name ?? '-' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {{ $salary->payment_date?->format('Y-m-d') }}
+                            {{ format_date($salary->payment_date) }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                             {{ $salary->content ?: $salary->type }}
@@ -230,7 +230,7 @@
                             {{ $payable->payeeCompany->name ?? '-' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {{ $payable->payment_date?->format('Y-m-d') }}
+                            {{ format_date($payable->payment_date) }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                             <div>{{ $payable->type }}</div>
@@ -299,7 +299,7 @@
                             {{ $payable->payeeCompany->name ?? $payable->company->name ?? '-' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {{ $payable->payment_date?->format('Y-m-d') }}
+                            {{ format_date($payable->payment_date) }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                             <div>{{ $payable->type }}</div>

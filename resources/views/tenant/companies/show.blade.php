@@ -162,12 +162,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <label class="text-sm font-medium text-gray-500 dark:text-gray-400">建立時間</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $company->created_at->format('Y-m-d H:i:s') }}</p>
+                    <p class="mt-1 text-gray-900 dark:text-white">{{ format_datetime($company->created_at) }}</p>
                 </div>
 
                 <div>
                     <label class="text-sm font-medium text-gray-500 dark:text-gray-400">最後更新</label>
-                    <p class="mt-1 text-gray-900 dark:text-white">{{ $company->updated_at->format('Y-m-d H:i:s') }}</p>
+                    <p class="mt-1 text-gray-900 dark:text-white">{{ format_datetime($company->updated_at) }}</p>
                 </div>
             </div>
         </div>

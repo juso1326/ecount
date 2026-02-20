@@ -116,7 +116,7 @@
                     @foreach($data['items'] as $payment)
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {{ $payment->payment_date->format('Y-m-d') }}
+                            {{ format_date($payment->payment_date) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             {{ $payment->project->name ?? '-' }}
@@ -141,7 +141,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
                             @if($payment->is_salary_paid)
                                 <span class="text-gray-400 text-xs">
-                                    {{ $payment->salary_paid_at->format('Y-m-d') }}
+                                    {{ format_date($payment->salary_paid_at) }}
                                 </span>
                             @else
                                 <button class="text-primary hover:text-primary-dark">

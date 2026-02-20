@@ -62,6 +62,14 @@ class TaxSettingController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(TaxSetting $taxSetting)
+    {
+        return view('tenant.tax-settings.show', compact('taxSetting'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(TaxSetting $taxSetting)

@@ -234,11 +234,11 @@
                         {{ $receivable->project->name ?? '-' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {{ $receivable->invoice_date?->format('Y-m-d') }}
+                        {{ format_date($receivable->invoice_date) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm {{ $isOverdue ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">
                         @if($receivable->due_date)
-                            {{ $receivable->due_date->format('Y-m-d') }}
+                            {{ format_date($receivable->due_date) }}
                             @if($daysDiff !== null)
                                 <div class="text-xs {{ $isOverdue ? 'text-red-500' : 'text-gray-400' }}">
                                     {{ $isOverdue ? '逾期 ' . abs($daysDiff) . ' 天' : '還有 ' . $daysDiff . ' 天' }}

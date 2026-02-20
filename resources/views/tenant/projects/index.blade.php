@@ -71,12 +71,12 @@
                 <!-- 開案日期範圍 -->
                 <div>
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">開案日（起）</label>
-                    <input type="date" name="date_start" value="{{ request('date_start', $dateStart) }}" 
+                    <input type="date" name="date_start" value="{{ request('date_start') }}" 
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">開案日（迄）</label>
-                    <input type="date" name="date_end" value="{{ request('date_end', $dateEnd) }}" 
+                    <input type="date" name="date_end" value="{{ request('date_end') }}" 
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                 </div>
                 
@@ -147,7 +147,7 @@
                 </td>
                 <!-- 開案日 -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {{ $project->start_date?->format('Y-m-d') }}
+                    {{ format_date($project->start_date) }}
                 </td>
                 <!-- 客戶 -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">

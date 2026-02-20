@@ -286,9 +286,9 @@
                         <div>
                             <div class="font-medium text-gray-900 dark:text-white">{{ $adj->title }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                {{ $adj->start_date->format('Y-m-d') }}
+                                {{ format_date($adj->start_date) }}
                                 @if($adj->end_date)
-                                ~ {{ $adj->end_date->format('Y-m-d') }}
+                                ~ {{ format_date($adj->end_date) }}
                                 @endif
                                 @if($adj->remark)
                                 <span class="ml-2">• {{ $adj->remark }}</span>
