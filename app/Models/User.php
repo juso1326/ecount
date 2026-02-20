@@ -42,12 +42,12 @@ class User extends Authenticatable
         'bank_branch',
         'bank_account',
         // 緊急聯絡人
-        'emergency_contact',
+        'emergency_contact_name',
         'emergency_contact_phone',
         // 任職資訊
         'hire_date',
         'resign_date',
-        'suspended_at',
+        'suspend_date',
         // 備註
         'note',
     ];
@@ -77,7 +77,7 @@ class User extends Authenticatable
             'birth_date' => 'date',
             'hire_date' => 'date',
             'resign_date' => 'date',
-            'suspended_at' => 'datetime',
+            'suspend_date' => 'date',
         ];
     }
 
