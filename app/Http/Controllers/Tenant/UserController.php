@@ -118,6 +118,14 @@ class UserController extends Controller
         $userData['password'] = Hash::make($request->password);
         $userData['is_active'] = $request->boolean('is_active', true);
 
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['birth_date', 'hire_date', 'resign_date', 'suspend_date'];
+        foreach ($dateFields as $field) {
+            if (isset($userData[$field]) && $userData[$field] === '') {
+                $userData[$field] = null;
+            }
+        }
+
         $user = User::create($userData);
 
         // 分配角色
@@ -216,6 +224,14 @@ class UserController extends Controller
 
         $data = $validator->validated();
         unset($data['password']); // 先移除密碼欄位
+
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['birth_date', 'hire_date', 'resign_date', 'suspend_date'];
+        foreach ($dateFields as $field) {
+            if (isset($data[$field]) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
 
         // 只在有提供新密碼時才更新
         if ($request->filled('password')) {
