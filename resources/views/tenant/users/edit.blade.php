@@ -266,7 +266,7 @@ async function setDefaultBank(id) {
 // 根據角色顯示/隱藏上層主管欄位
 document.getElementById('role').addEventListener('change', function() {
     const supervisorField = document.getElementById('supervisor_field');
-    if (this.value && this.value !== 'admin') {
+    if (this.value && this.value !== 'Admin') {
         supervisorField.style.display = 'block';
     } else {
         supervisorField.style.display = 'none';
