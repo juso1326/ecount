@@ -33,6 +33,10 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         // 方案管理
         Route::resource('plans', PlanController::class);
         Route::post('plans/{plan}/toggle-active', [PlanController::class, 'toggleActive'])->name('plans.toggle-active');
+
+        // Error Log
+        Route::get('error-log', [\App\Http\Controllers\SuperAdmin\ErrorLogController::class, 'index'])->name('error-log.index');
+        Route::post('error-log/clear', [\App\Http\Controllers\SuperAdmin\ErrorLogController::class, 'clear'])->name('error-log.clear');
     });
 });
 
