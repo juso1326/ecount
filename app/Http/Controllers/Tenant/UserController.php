@@ -179,6 +179,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
+            'role' => 'required|string|exists:roles,name',
             'is_active' => 'boolean',
             // 員工資訊
             'employee_no' => 'nullable|string|max:50',
@@ -210,6 +211,8 @@ class UserController extends Controller
             'email.unique' => 'Email 已被使用',
             'password.min' => '密碼至少需要 6 個字元',
             'password.confirmed' => '密碼確認不一致',
+            'role.required' => '角色層級為必填',
+            'role.in' => '角色層級不正確',
         ]);
 
         if ($validator->fails()) {
@@ -224,6 +227,7 @@ class UserController extends Controller
 
         $data = $validator->validated();
         unset($data['password']); // 先移除密碼欄位
+        unset($data['role']); // 角色需要另外處理
 
         // 將空字串的日期欄位轉為 null
         $dateFields = ['birth_date', 'hire_date', 'resign_date', 'suspend_date'];
@@ -239,6 +243,11 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        // 更新角色
+        if ($request->filled('role')) {
+            $user->syncRoles([$request->role]);
+        }
 
         if ($request->wantsJson()) {
             return response()->json([

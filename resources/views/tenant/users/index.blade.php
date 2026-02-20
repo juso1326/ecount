@@ -106,7 +106,7 @@
                     @endcan
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {{ $user->employee_id }}
+                    {{ $user->employee_no ?? '-' }}
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $user->name }}
@@ -135,18 +135,33 @@
                     @endif
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    @if($user->hasRole('admin'))
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                            系統管理員
-                        </span>
-                    @elseif($user->hasRole('manager'))
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            總管理/主管
-                        </span>
+                    @php
+                        $userRole = $user->roles->first();
+                    @endphp
+                    @if($userRole)
+                        @if($userRole->name === 'Admin')
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                系統管理員
+                            </span>
+                        @elseif($userRole->name === 'Manager')
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                總管理/主管
+                            </span>
+                        @elseif($userRole->name === '會計人員')
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                會計
+                            </span>
+                        @elseif($userRole->name === 'Member')
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                成員
+                            </span>
+                        @else
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                {{ $userRole->name }}
+                            </span>
+                        @endif
                     @else
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                            一般使用者
-                        </span>
+                        <span class="text-gray-400 dark:text-gray-500">未設定</span>
                     @endif
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm">
