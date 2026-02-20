@@ -24,7 +24,25 @@ class SystemSettingController extends Controller
             'EUR' => '歐元 (EUR)',
         ]);
 
-        return view('tenant.settings.system', compact('settings', 'timezones', 'currencies'));
+        // 展開設定供視圖使用
+        $dateFormat = $settings['date_format'] ?? 'Y-m-d';
+        $timeFormat = $settings['time_format'] ?? 'H:i';
+        $timezone = $settings['timezone'] ?? 'Asia/Taipei';
+        $locale = $settings['locale'] ?? 'zh_TW';
+        $currency = $settings['currency'] ?? 'TWD';
+        $fiscalYearStart = $settings['fiscal_year_start'] ?? 1;
+
+        return view('tenant.settings.system', compact(
+            'settings', 
+            'timezones', 
+            'currencies',
+            'dateFormat',
+            'timeFormat',
+            'timezone',
+            'locale',
+            'currency',
+            'fiscalYearStart'
+        ));
     }
 
     /**
