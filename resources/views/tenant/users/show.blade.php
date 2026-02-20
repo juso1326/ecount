@@ -46,7 +46,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-600 dark:text-gray-400">最後登入時間</label>
-            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ format_datetime($user->last_login_at) ?: '從未登入' }}</p>
+            <p class="mt-1 text-lg text-gray-900 dark:text-white">{{ $user->last_login_at ? format_datetime($user->last_login_at) : '從未登入' }}</p>
         </div>
 
         <div>
