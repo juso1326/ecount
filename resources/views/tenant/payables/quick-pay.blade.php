@@ -76,7 +76,7 @@
                     @foreach($payable->payments as $payment)
                         <tr>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                {{ $payment->payment_date->format('Y/m/d') }}
+                                @date($payment->payment_date)
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                                 NT$ {{ number_format($payment->amount, 0) }}

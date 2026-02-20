@@ -46,7 +46,7 @@
     </div>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
         <div><span class="text-gray-600 dark:text-gray-400">收款單號：</span><span class="font-medium">{{ $receivable->receipt_no }}</span></div>
-        <div><span class="text-gray-600 dark:text-gray-400">收款日期：</span><span class="font-medium">{{ $receivable->receipt_date->format('Y/m/d') }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">收款日期：</span><span class="font-medium">@date($receivable->receipt_date)</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">到期日：</span><span class="font-medium">{{ $receivable->due_date ? $receivable->due_date->format('Y/m/d') : '-' }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">專案：</span><span class="font-medium">{{ $receivable->project->code ?? '-' }} - {{ $receivable->project->name ?? '-' }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">客戶：</span><span class="font-medium">{{ $receivable->company->name ?? '-' }}</span></div>
@@ -83,7 +83,7 @@
                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                         <div class="flex-1">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $payment->payment_date->format('Y/m/d') }}
+                                @date($payment->payment_date)
                                 <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ $payment->payment_method ?? '未指定方式' }}</span>
                             </div>
                             @if($payment->note)

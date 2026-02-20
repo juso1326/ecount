@@ -37,5 +37,15 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('currencyJs', function () {
             return "<?php echo CurrencyHelper::jsFormatter(); ?>";
         });
+
+        // 註冊日期格式化 Blade directive
+        Blade::directive('date', function ($expression) {
+            return "<?php echo format_date($expression); ?>";
+        });
+
+        // 註冊日期時間格式化 Blade directive
+        Blade::directive('datetime', function ($expression) {
+            return "<?php echo format_datetime($expression); ?>";
+        });
     }
 }

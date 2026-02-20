@@ -91,7 +91,7 @@
             @forelse($salary['items'] as $item)
             <tr>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {{ $item->payment_date->format('Y/m/d') }}
+                    @date($item->payment_date)
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                     {{ $item->project->name ?? '-' }}
