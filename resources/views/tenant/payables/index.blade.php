@@ -46,22 +46,22 @@
         <div class="flex items-center gap-4 flex-wrap text-sm">
             <span class="font-semibold text-red-800 dark:text-red-300">付款提醒：</span>
             @if($overduePayables > 0)
-            <div class="flex items-center gap-1.5">
+            <a href="{{ route('tenant.payables.index', ['status' => 'overdue']) }}" class="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-600 text-white">逾期</span>
-                <span class="text-red-700 dark:text-red-300">有 <strong>{{ $overduePayables }}</strong> 筆已逾期</span>
-            </div>
+                <span class="text-red-700 dark:text-red-300">有 <strong>{{ $overduePayables }}</strong> 筆已逾期 →</span>
+            </a>
             @endif
             @if($dueSoon7Days > 0)
-            <div class="flex items-center gap-1.5">
+            <a href="{{ route('tenant.payables.index', ['due_filter' => '7']) }}" class="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-500 text-white">7天內</span>
-                <span class="text-orange-700 dark:text-orange-300">有 <strong>{{ $dueSoon7Days }}</strong> 筆即將到期</span>
-            </div>
+                <span class="text-orange-700 dark:text-orange-300">有 <strong>{{ $dueSoon7Days }}</strong> 筆即將到期 →</span>
+            </a>
             @endif
             @if($dueSoon30Days > 0)
-            <div class="flex items-center gap-1.5">
+            <a href="{{ route('tenant.payables.index', ['due_filter' => '30']) }}" class="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-white">30天內</span>
-                <span class="text-yellow-700 dark:text-yellow-300">有 <strong>{{ $dueSoon30Days }}</strong> 筆將到期</span>
-            </div>
+                <span class="text-yellow-700 dark:text-yellow-300">有 <strong>{{ $dueSoon30Days }}</strong> 筆將到期 →</span>
+            </a>
             @endif
         </div>
     </div>

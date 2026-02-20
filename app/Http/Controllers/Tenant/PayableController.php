@@ -61,7 +61,21 @@ class PayableController extends Controller
 
         // 付款狀態篩選
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'overdue') {
+                // 逾期篩選
+                $query->where('due_date', '<', now())
+                      ->whereIn('status', ['pending', 'partial']);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // 到期日快速篩選
+        if ($request->filled('due_filter')) {
+            $days = (int) $request->due_filter;
+            $today = now();
+            $query->whereBetween('due_date', [$today, $today->copy()->addDays($days)])
+                  ->whereIn('status', ['pending', 'partial']);
         }
 
         // 排序

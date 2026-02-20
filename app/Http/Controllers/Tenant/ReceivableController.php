@@ -62,7 +62,21 @@ class ReceivableController extends Controller
 
         // 狀態篩選
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'overdue') {
+                // 逾期篩選
+                $query->where('due_date', '<', now())
+                      ->whereIn('status', ['unpaid', 'partial']);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // 到期日快速篩選
+        if ($request->filled('due_filter')) {
+            $days = (int) $request->due_filter;
+            $today = now();
+            $query->whereBetween('due_date', [$today, $today->copy()->addDays($days)])
+                  ->whereIn('status', ['unpaid', 'partial']);
         }
 
         // 排除已結案專案（與舊系統一致）
