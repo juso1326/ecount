@@ -139,7 +139,10 @@ new Chart(monthlyCtx, {
                 beginAtZero: true,
                 ticks: {
                     callback: function(value) {
-                        return 'NT$ ' + value.toLocaleString();
+                        return 'NT$ ' + value.toLocaleString('zh-TW', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        });
                     }
                 }
             }
