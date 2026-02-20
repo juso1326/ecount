@@ -229,8 +229,7 @@
 
 <!-- 操作按鈕 -->
 <div class="mt-6 flex justify-between items-center">
-    <form action="{{ route('tenant.companies.destroy', $company) }}" method="POST" 
-          onsubmit="return confirm('確定要刪除此客戶/廠商嗎？此操作無法復原。');">
+    <form action="{{ route('tenant.companies.destroy', $company) }}" method="POST">
         @csrf
         @method('DELETE')
         <button type="submit" 

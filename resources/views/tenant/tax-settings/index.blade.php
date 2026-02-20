@@ -70,8 +70,7 @@
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <td class="px-4 py-2 whitespace-nowrap text-center text-xs font-medium space-x-2">
                         <a href="{{ route('tenant.tax-settings.edit', $tax) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
-                        <form action="{{ route('tenant.tax-settings.destroy', $tax) }}" method="POST" class="inline" 
-                              onsubmit="return confirm('確定要刪除此稅率設定嗎？');">
+                        <form action="{{ route('tenant.tax-settings.destroy', $tax) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">刪除</button>

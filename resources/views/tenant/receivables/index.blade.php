@@ -188,8 +188,7 @@
                         
                         <form action="{{ route('tenant.receivables.destroy', $receivable) }}" 
                               method="POST" 
-                              class="inline"
-                              onsubmit="return confirm('確定要刪除此應收帳款嗎？');">
+                              class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 

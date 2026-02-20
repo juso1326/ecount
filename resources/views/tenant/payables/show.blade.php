@@ -35,8 +35,7 @@
             應付資訊
         </h2>
         @if(isset($payable->payments) && $payable->payments->count() > 0)
-            <form action="{{ route('tenant.payables.reset-payments', $payable) }}" method="POST" 
-                  onsubmit="return confirm('確定要重設給付資料嗎？這將清除所有給付記錄，此操作無法復原。');">
+            <form action="{{ route('tenant.payables.reset-payments', $payable) }}" method="POST">
                 @csrf
                 <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-3 rounded">
                     重設給付資料
@@ -95,8 +94,7 @@
                                 <div class="text-sm font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payment->amount, 0) }}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ round($payment->amount / $payable->amount * 100, 1) }}%</div>
                             </div>
-                            <form action="{{ route('tenant.payable-payments.destroy', $payment) }}" method="POST" 
-                                  onsubmit="return confirm('確定要刪除此給付記錄嗎？');">
+                            <form action="{{ route('tenant.payable-payments.destroy', $payment) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">

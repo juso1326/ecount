@@ -93,8 +93,7 @@
                            class="text-primary hover:text-primary-dark font-medium">
                             編輯
                         </a>
-                        <form action="{{ route('tenant.tags.destroy', $tag) }}" method="POST" class="inline"
-                              onsubmit="return confirm('確定要刪除此標籤嗎？');">
+                        <form action="{{ route('tenant.tags.destroy', $tag) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 font-medium">

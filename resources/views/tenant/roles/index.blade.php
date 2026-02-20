@@ -129,8 +129,7 @@
                             @else
                             <form action="{{ route('tenant.roles.destroy', $role) }}" 
                                   method="POST" 
-                                  class="inline"
-                                  onsubmit="return confirm('確定要刪除「{{ $role->name }}」角色嗎？');">
+                                  class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 

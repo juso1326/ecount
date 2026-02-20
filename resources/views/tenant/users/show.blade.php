@@ -137,7 +137,7 @@
 
 @if($user->id !== auth()->id())
 <div class="mt-6 flex justify-end">
-    <form action="{{ route('tenant.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('確定要刪除此使用者嗎？');">
+    <form action="{{ route('tenant.users.destroy', $user) }}" method="POST" class="inline">
         @csrf
         @method('DELETE')
         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">

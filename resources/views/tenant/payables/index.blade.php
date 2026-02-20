@@ -230,8 +230,7 @@
                         @endif
                         
                         <form action="{{ route('tenant.payables.destroy', $payable) }}" 
-                              method="POST" class="inline"
-                              onsubmit="return confirm('確定要刪除此應付帳款嗎？');">
+                              method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">刪除</button>
