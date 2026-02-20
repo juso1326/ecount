@@ -370,7 +370,13 @@ document.getElementById('payment_date').addEventListener('change', function() {
     }
 });
 
-document.addEventListener('DOMContentLoaded', calculateTax);
+// 編輯模式：不重新計算稅額（保留原有金額）
+// 新增模式：執行計算
+document.addEventListener('DOMContentLoaded', function() {
+    @if(!isset($payable))
+    calculateTax();
+    @endif
+});
 
 // 給付對象類型切換
 document.getElementById('payee_type').addEventListener('change', function() {

@@ -296,7 +296,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const taxId = selectedOption.getAttribute('data-tax-id') || '-';
         document.getElementById('taxIdDisplay').textContent = taxId;
     }
+    
+    // 編輯模式：不重新計算稅額（保留原有金額）
+    // 新增模式：執行計算
+    @if(!isset($receivable))
     calculateTax();
+    @endif
 });
 
 // 初始化 Select2
