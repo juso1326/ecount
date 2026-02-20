@@ -21,6 +21,11 @@ class PayablePaymentController extends Controller
             'note' => 'nullable|string',
         ]);
         
+        // 將空字串的日期欄位轉為 null
+        if (isset($validated['payment_date']) && $validated['payment_date'] === '') {
+            $validated['payment_date'] = null;
+        }
+        
         // 檢查金額是否超過剩餘應付
         $totalPaid = $payable->payments()->sum('amount');
         $remainingAmount = $payable->amount - $totalPaid;

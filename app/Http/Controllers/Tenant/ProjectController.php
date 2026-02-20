@@ -140,6 +140,14 @@ class ProjectController extends Controller
             'note' => 'nullable|string',
         ]);
 
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['start_date', 'end_date'];
+        foreach ($dateFields as $field) {
+            if (isset($validated[$field]) && $validated[$field] === '') {
+                $validated[$field] = null;
+            }
+        }
+
         // 如果沒有提供代碼，自動生成
         if (empty($validated['code'])) {
             $validated['code'] = $this->generateProjectCode();
@@ -222,6 +230,14 @@ class ProjectController extends Controller
             'content' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
+        
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['start_date', 'end_date'];
+        foreach ($dateFields as $field) {
+            if (isset($validated[$field]) && $validated[$field] === '') {
+                $validated[$field] = null;
+            }
+        }
         
         $project->update($validated);
 

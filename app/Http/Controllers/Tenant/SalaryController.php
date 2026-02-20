@@ -138,6 +138,11 @@ class SalaryController extends Controller
             'remark' => 'nullable|string',
         ]);
 
+        // 將空字串的日期欄位轉為 null
+        if (isset($validated['end_date']) && $validated['end_date'] === '') {
+            $validated['end_date'] = null;
+        }
+
         $validated['user_id'] = $user->id;
 
         SalaryAdjustment::create($validated);

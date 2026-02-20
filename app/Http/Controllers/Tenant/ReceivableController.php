@@ -151,6 +151,11 @@ class ReceivableController extends Controller
             'status' => 'nullable|string',
         ]);
 
+        // 將空字串的日期欄位轉為 null
+        if (isset($validated['receipt_date']) && $validated['receipt_date'] === '') {
+            $validated['receipt_date'] = null;
+        }
+
         // 自動生成單號
         $validated['receipt_no'] = $this->generateReceiptCode();
         
@@ -243,6 +248,14 @@ class ReceivableController extends Controller
             'content' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
+
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['receipt_date', 'due_date', 'paid_date'];
+        foreach ($dateFields as $field) {
+            if (isset($validated[$field]) && $validated[$field] === '') {
+                $validated[$field] = null;
+            }
+        }
 
         $receivable->update($validated);
 

@@ -21,6 +21,11 @@ class ReceivablePaymentController extends Controller
             'note' => 'nullable|string',
         ]);
         
+        // 將空字串的日期欄位轉為 null
+        if (isset($validated['payment_date']) && $validated['payment_date'] === '') {
+            $validated['payment_date'] = null;
+        }
+        
         // 檢查金額是否超過剩餘應收
         $totalReceived = $receivable->payments()->sum('amount');
         $remainingAmount = $receivable->amount - $totalReceived;

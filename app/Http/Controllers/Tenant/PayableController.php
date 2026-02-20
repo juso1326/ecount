@@ -171,6 +171,14 @@ class PayableController extends Controller
             'note' => 'nullable|string',
         ]);
 
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['payment_date', 'invoice_date', 'due_date', 'paid_date'];
+        foreach ($dateFields as $field) {
+            if (isset($validated[$field]) && $validated[$field] === '') {
+                $validated[$field] = null;
+            }
+        }
+
         // 如果沒有提供單號，自動生成
         if (empty($validated['payment_no'])) {
             $validated['payment_no'] = $this->generatePaymentCode();
@@ -254,6 +262,14 @@ class PayableController extends Controller
             'content' => 'nullable|string',
             'note' => 'nullable|string',
         ]);
+
+        // 將空字串的日期欄位轉為 null
+        $dateFields = ['payment_date', 'invoice_date', 'due_date', 'paid_date'];
+        foreach ($dateFields as $field) {
+            if (isset($validated[$field]) && $validated[$field] === '') {
+                $validated[$field] = null;
+            }
+        }
 
         $payable->update($validated);
 
