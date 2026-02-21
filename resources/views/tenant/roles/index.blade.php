@@ -8,10 +8,8 @@
 <!-- 分頁資訊與操作按鈕 -->
 <div class="mb-2 flex justify-between items-center">
     <div class="text-sm text-gray-600 dark:text-gray-400">
-        @if($roles->total() > 0)
-            顯示第 <span class="font-medium">{{ $roles->firstItem() }}</span> 
-            到 <span class="font-medium">{{ $roles->lastItem() }}</span> 筆，
-            共 <span class="font-medium">{{ number_format($roles->total()) }}</span> 筆
+        @if($roles->count() > 0)
+            共 <span class="font-medium">{{ $roles->count() }}</span> 筆
         @else
             <span>無資料</span>
         @endif

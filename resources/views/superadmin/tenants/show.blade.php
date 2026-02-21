@@ -200,14 +200,10 @@
 <!-- 資料統計 -->
 <div class="bg-white shadow-md rounded-lg p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">資料統計</h2>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="text-center">
             <p class="text-3xl font-bold text-indigo-600">{{ $stats['companies'] }}</p>
             <p class="text-sm text-gray-500 mt-1">公司數量</p>
-        </div>
-        <div class="text-center">
-            <p class="text-3xl font-bold text-green-600">{{ $stats['departments'] }}</p>
-            <p class="text-sm text-gray-500 mt-1">部門數量</p>
         </div>
         <div class="text-center">
             <p class="text-3xl font-bold text-blue-600">{{ $stats['projects'] }}</p>

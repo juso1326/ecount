@@ -120,18 +120,22 @@
                 <th class="px-3 py-1 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
             @if($receivables->count() > 0)
+            @php
+                $pageTotal = $receivables->sum('amount');
+                $pageReceived = $receivables->sum('received_amount');
+            @endphp
             <tr class="bg-blue-50 dark:bg-blue-900/30">
                 <td colspan="4" class="px-6 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（本頁）：
                 </td>
                 <td class="px-6 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
-                    NT$ {{ number_format($totalAmount, 0) }}
+                    NT$ {{ number_format($pageTotal, 0) }}
                 </td>
                 <td class="px-6 py-2 text-right text-sm font-bold text-green-600 dark:text-green-400">
-                    NT$ {{ number_format($totalReceived, 0) }}
+                    NT$ {{ number_format($pageReceived, 0) }}
                 </td>
                 <td class="px-6 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount - $totalReceived, 0) }}
+                    NT$ {{ number_format($pageTotal - $pageReceived, 0) }}
                 </td>
                 <td colspan="2"></td>
             </tr>

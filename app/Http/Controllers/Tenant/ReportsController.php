@@ -317,16 +317,6 @@ class ReportsController extends Controller
                 'net_pay' => $netPay > 0 ? $netPay : $baseSalary,
             ];
         }
-        
-        // 部門成本分析（從員工薪資統計）
-        $departmentCosts = User::select('department_id', DB::raw('COUNT(*) as employee_count'))
-            ->whereNotNull('department_id')
-            ->where('is_active', true)
-            ->groupBy('department_id')
-            ->get()
-            ->map(function($item) use ($salaryPayables) {
-                // 計算該部門員工的薪資總和
-                $userIds = User::where('department_id', $item->department_id)->where('is_active', true)->pluck('id');
                 $totalCost = (float)$salaryPayables->whereIn('payee_user_id', $userIds)->sum('paid_amount');
                 
                 // 取得部門名稱
@@ -380,6 +370,6 @@ class ReportsController extends Controller
             'avg_annual_salary' => $avgAnnualSalary,
         ];
         
-        return view('tenant.reports.payroll-labor', compact('summary', 'monthlyDetails', 'departmentCosts', 'topEarners', 'year'));
+        return view('tenant.reports.payroll-labor', compact('summary', 'monthlyDetails', 'topEarners', 'year'));
     }
 }

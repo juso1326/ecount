@@ -104,11 +104,6 @@
                 </div>
 
                 <div>
-                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400">負責部門</label>
-                    <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->department?->name ?? '-' }}</p>
-                </div>
-
-                <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400">專案經理</label>
                     <p class="mt-0.5 text-gray-900 dark:text-white">{{ $project->manager?->name ?? '-' }}</p>
                 </div>

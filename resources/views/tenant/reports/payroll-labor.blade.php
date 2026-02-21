@@ -49,20 +49,11 @@
 </div>
 
 <!-- 圖表區 -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <!-- 月度薪資趨勢 -->
+<div class="mb-6">
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">月度薪資趨勢</h2>
         <div style="position: relative; height: 300px;">
             <canvas id="monthlyTrendsChart"></canvas>
-        </div>
-    </div>
-    
-    <!-- 部門成本分析 -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">部門成本分析</h2>
-        <div style="position: relative; height: 300px;">
-            <canvas id="departmentCostChart"></canvas>
         </div>
     </div>
 </div>
@@ -121,7 +112,6 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">排名</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">員工</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">部門</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">基本月薪</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">年度總薪</th>
                 </tr>
@@ -131,7 +121,6 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $index + 1 }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $employee->name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $employee->department }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                         NT$ {{ number_format($employee->monthly_salary, 0) }}
                     </td>
@@ -168,27 +157,5 @@ new Chart(monthlyCtx, {
     }
 });
 
-// 部門成本圖
-const deptCtx = document.getElementById('departmentCostChart').getContext('2d');
-new Chart(deptCtx, {
-    type: 'doughnut',
-    data: {
-        labels: @json($departmentCosts->pluck('department')),
-        datasets: [{
-            data: @json($departmentCosts->pluck('total_cost')),
-            backgroundColor: [
-                'rgb(59, 130, 246)', 'rgb(34, 197, 94)', 'rgb(251, 191, 36)',
-                'rgb(239, 68, 68)', 'rgb(168, 85, 247)', 'rgb(236, 72, 153)'
-            ]
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'right' }
-        }
-    }
-});
 </script>
 @endsection

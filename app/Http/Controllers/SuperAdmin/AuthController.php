@@ -37,8 +37,7 @@ class AuthController extends Controller
         $throttleKey = 'login_superadmin:' . $request->ip();
         if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
             $seconds = RateLimiter::availableIn($throttleKey);
-            $captchaSvg = CaptchaHelper::generate('captcha_superadmin');
-            return back()->withErrors(['email' => "登入失敗次數過多，請 {$seconds} 秒後再試"])->with('captchaSvg', $captchaSvg);
+            return back()->withErrors(['email' => "登入失敗次數過多，請 {$seconds} 秒後再試"]);
         }
 
         $request->validate([
@@ -50,8 +49,7 @@ class AuthController extends Controller
         // 驗證碼檢查
         if (!CaptchaHelper::verify($request->captcha, 'captcha_superadmin')) {
             RateLimiter::hit($throttleKey, 900);
-            $captchaSvg = CaptchaHelper::generate('captcha_superadmin');
-            return back()->withErrors(['captcha' => '驗證碼錯誤'])->with('captchaSvg', $captchaSvg);
+            return back()->withErrors(['captcha' => '驗證碼錯誤']);
         }
 
         // 查找超級管理員
@@ -60,16 +58,14 @@ class AuthController extends Controller
         // 驗證帳號密碼
         if (!$admin || !Hash::check($request->password, $admin->password)) {
             RateLimiter::hit($throttleKey, 900);
-            $remaining = 3 - RateLimiter::attempts($throttleKey);
-            $captchaSvg = CaptchaHelper::generate('captcha_superadmin');
+            $remaining = max(0, 3 - RateLimiter::attempts($throttleKey));
             $msg = $remaining > 0 ? "帳號或密碼錯誤（還可嘗試 {$remaining} 次）" : '帳號或密碼錯誤';
-            return back()->withErrors(['email' => $msg])->with('captchaSvg', $captchaSvg);
+            return back()->withErrors(['email' => $msg]);
         }
 
         // 檢查是否啟用
         if (!$admin->isActive()) {
-            $captchaSvg = CaptchaHelper::generate('captcha_superadmin');
-            return back()->withErrors(['email' => '此帳號已被停用'])->with('captchaSvg', $captchaSvg);
+            return back()->withErrors(['email' => '此帳號已被停用']);
         }
 
         // 更新最後登入資訊

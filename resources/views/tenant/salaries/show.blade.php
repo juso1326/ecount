@@ -243,21 +243,21 @@
                             💡 點擊月份可切換該月是否發放此加扣項（已排除月份會顯示為灰色）
                         </div>
                         <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2">
-                            @foreach($effectiveMonths as $month)
+                            @foreach($effectiveMonths as $effMonth)
                             <form method="POST" 
-                                  action="{{ $month['excluded'] 
+                                  action="{{ $effMonth['excluded'] 
                                       ? route('tenant.salaries.restore-adjustment', ['user' => $user->id, 'adjustment' => $adj->id])
                                       : route('tenant.salaries.exclude-adjustment', ['user' => $user->id, 'adjustment' => $adj->id]) }}" 
                                   class="inline">
                                 @csrf
-                                <input type="hidden" name="year" value="{{ $month['year'] }}">
-                                <input type="hidden" name="month" value="{{ $month['month'] }}">
+                                <input type="hidden" name="year" value="{{ $effMonth['year'] }}">
+                                <input type="hidden" name="month" value="{{ $effMonth['month'] }}">
                                 <button type="submit" 
-                                        class="w-full text-xs px-2 py-1 rounded {{ $month['excluded'] 
+                                        class="w-full text-xs px-2 py-1 rounded {{ $effMonth['excluded'] 
                                             ? 'bg-gray-300 text-gray-500 line-through' 
                                             : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-500 border border-gray-300 dark:border-gray-500' }}"
-                                        title="{{ $month['excluded'] ? '點擊恢復' : '點擊排除' }}">
-                                    {{ $month['label'] }}
+                                        title="{{ $effMonth['excluded'] ? '點擊恢復' : '點擊排除' }}">
+                                    {{ $effMonth['label'] }}
                                 </button>
                             </form>
                             @endforeach

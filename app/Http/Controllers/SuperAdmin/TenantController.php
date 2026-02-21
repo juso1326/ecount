@@ -148,7 +148,6 @@ class TenantController extends Controller
         $stats = $tenant->run(function () {
             return [
                 'companies' => \App\Models\Company::count(),
-                'departments' => \App\Models\Department::count(),
                 'projects' => \App\Models\Project::count(),
                 'users' => \App\Models\User::count(),
             ];

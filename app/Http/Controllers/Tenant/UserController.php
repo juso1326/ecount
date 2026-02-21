@@ -156,6 +156,8 @@ class UserController extends Controller
             ]);
         }
 
+        $user->load(['projects.company']);
+
         return view('tenant.users.show', compact('user'));
     }
 

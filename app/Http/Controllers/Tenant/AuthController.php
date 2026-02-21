@@ -37,9 +37,9 @@ class AuthController extends Controller
         $throttleKey = 'login_tenant:' . $request->ip();
         if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
             $seconds = RateLimiter::availableIn($throttleKey);
-            $captchaSvg = CaptchaHelper::generate('captcha_tenant');
-            return back()->withErrors(['email' => "登入失敗次數過多，請 {$seconds} 秒後再試"])->with('captchaSvg', $captchaSvg)->withInput();
+            return back()->withErrors(['email' => "登入失敗次數過多，請 {$seconds} 秒後再試"])->withInput();
         }
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -52,15 +52,13 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $captchaSvg = CaptchaHelper::generate('captcha_tenant');
-            return back()->withErrors($validator)->with('captchaSvg', $captchaSvg)->withInput();
+            return back()->withErrors($validator)->withInput();
         }
 
-        // 驗證碼檢查
+        // 驗證碼檢查（verify 會清除 session，showLogin redirect 後重新產生）
         if (!CaptchaHelper::verify($request->captcha, 'captcha_tenant')) {
             RateLimiter::hit($throttleKey, 900);
-            $captchaSvg = CaptchaHelper::generate('captcha_tenant');
-            return back()->withErrors(['captcha' => '驗證碼錯誤'])->with('captchaSvg', $captchaSvg)->withInput();
+            return back()->withErrors(['captcha' => '驗證碼錯誤'])->withInput();
         }
 
         $credentials = $request->only('email', 'password');
@@ -69,20 +67,16 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
             RateLimiter::clear($throttleKey);
-
-            // 更新最後登入時間
             Auth::user()->update(['last_login_at' => now()]);
-
             return redirect()->intended(route('tenant.dashboard'));
         }
 
         RateLimiter::hit($throttleKey, 900);
-        $remaining = 3 - RateLimiter::attempts($throttleKey);
-        $captchaSvg = CaptchaHelper::generate('captcha_tenant');
+        $remaining = max(0, 3 - RateLimiter::attempts($throttleKey));
         $msg = $remaining > 0
             ? "Email 或密碼錯誤（還可嘗試 {$remaining} 次）"
             : 'Email 或密碼錯誤';
-        return back()->withErrors(['email' => $msg])->with('captchaSvg', $captchaSvg)->withInput();
+        return back()->withErrors(['email' => $msg])->withInput();
     }
 
     /**

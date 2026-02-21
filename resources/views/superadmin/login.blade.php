@@ -66,14 +66,23 @@
                     <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                         密碼
                     </label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('password') border-red-500 @enderror"
-                        placeholder="••••••••"
-                    >
+                    <div class="relative">
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            required
+                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('password') border-red-500 @enderror"
+                            placeholder="••••••••"
+                        >
+                        <button type="button" onclick="togglePassword('password', this)"
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
                     @error('password')
                         <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                     @enderror
@@ -82,9 +91,21 @@
                 <!-- Captcha -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">驗證碼</label>
-                    <div class="flex items-center gap-3 mb-2">
+                    <input
+                        type="text"
+                        name="captcha"
+                        id="captcha"
+                        autocomplete="off"
+                        maxlength="3"
+                        placeholder="輸入驗證碼（不區分大小寫）"
+                        class="w-full px-4 py-3 border @error('captcha') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 tracking-widest font-mono mb-2"
+                    >
+                    @error('captcha')
+                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                    @enderror
+                    <div class="flex items-center gap-3">
                         <div id="captcha-img" class="border border-gray-200 rounded select-none">
-                            {!! session('captchaSvg', $captchaSvg) !!}
+                            {!! $captchaSvg !!}
                         </div>
                         <button type="button" onclick="refreshCaptcha()"
                                 class="text-sm text-indigo-600 hover:underline flex items-center gap-1">
@@ -94,18 +115,6 @@
                             重整
                         </button>
                     </div>
-                    <input
-                        type="text"
-                        name="captcha"
-                        id="captcha"
-                        autocomplete="off"
-                        maxlength="3"
-                        placeholder="輸入驗證碼（不區分大小寫）"
-                        class="w-full px-4 py-3 border @error('captcha') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 tracking-widest font-mono"
-                    >
-                    @error('captcha')
-                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                    @enderror
                 </div>
 
                 <!-- Remember Me -->
@@ -154,6 +163,26 @@
                 document.getElementById('captcha').value = '';
                 document.getElementById('captcha').focus();
             });
+    }
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        const paths = btn.querySelectorAll('path');
+        if (isHidden) {
+            paths[0].setAttribute('d', 'M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21');
+            paths[1] && paths[1].remove();
+        } else {
+            paths[0].setAttribute('d', 'M15 12a3 3 0 11-6 0 3 3 0 016 0z');
+            if (!paths[1]) {
+                const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+                p.setAttribute('stroke-linecap','round');
+                p.setAttribute('stroke-linejoin','round');
+                p.setAttribute('stroke-width','2');
+                p.setAttribute('d','M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z');
+                btn.querySelector('svg').appendChild(p);
+            }
+        }
     }
     </script>
 </body>

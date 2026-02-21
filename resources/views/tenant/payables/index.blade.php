@@ -161,15 +161,19 @@
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">操作</th>
             </tr>
             @if($payables->count() > 0)
+            @php
+                $pageTotal = $payables->sum('amount');
+                $pageUnpaid = $payables->sum(fn($p) => $p->amount - $p->paid_amount);
+            @endphp
             <tr class="bg-blue-50 dark:bg-blue-900/30">
                 <td colspan="5" class="px-6 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（本頁）：
                 </td>
                 <td class="px-6 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount, 0) }}
+                    NT$ {{ number_format($pageTotal, 0) }}
                 </td>
                 <td class="px-6 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
-                    NT$ {{ number_format($totalAmount - $totalPaid, 0) }}
+                    NT$ {{ number_format($pageUnpaid, 0) }}
                 </td>
                 <td colspan="2"></td>
             </tr>

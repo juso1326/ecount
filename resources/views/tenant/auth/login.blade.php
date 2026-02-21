@@ -79,13 +79,20 @@
                         <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             密碼
                         </label>
-                        <div class="mt-1">
+                        <div class="mt-1 relative">
                             <input id="password" 
                                    name="password" 
                                    type="password" 
                                    autocomplete="current-password" 
                                    required
-                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                   class="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                            <button type="button" onclick="togglePassword('password', this)"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                <svg id="eye-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
 
@@ -106,7 +113,7 @@
                         @enderror
                         <div class="flex items-center gap-3 mt-2">
                             <div id="captcha-img" class="border border-gray-200 dark:border-gray-600 rounded select-none">
-                                {!! session('captchaSvg', $captchaSvg) !!}
+                                {!! $captchaSvg !!}
                             </div>
                             <button type="button" onclick="refreshCaptcha()"
                                     class="text-sm text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1">
@@ -154,6 +161,12 @@
         </div>
     </div>
     <script>
+    function togglePassword(id, btn) {
+        const input = document.getElementById(id);
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.querySelector('svg').style.opacity = isText ? '1' : '0.5';
+    }
     function refreshCaptcha() {
         fetch('{{ route('tenant.captcha.refresh') }}')
             .then(r => r.text())

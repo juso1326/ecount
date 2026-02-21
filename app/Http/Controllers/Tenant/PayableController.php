@@ -22,9 +22,11 @@ class PayableController extends Controller
     {
         $query = Payable::with(['project', 'company', 'responsibleUser']);
 
-        // 帳務年度篩選
+        // 帳務年度篩選（逾期/到期快篩時不限年度）
         $fiscalYear = $request->input('fiscal_year', date('Y'));
-        if ($fiscalYear) {
+        $bypassYearFilter = ($request->filled('status') && $request->status === 'overdue')
+                         || $request->filled('due_filter');
+        if ($fiscalYear && !$bypassYearFilter) {
             $query->where('fiscal_year', $fiscalYear);
         }
 
