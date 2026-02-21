@@ -8,10 +8,8 @@
 <!-- 分頁資訊與操作按鈕 -->
 <div class="mb-2 flex justify-between items-center">
     <div class="text-sm text-gray-600 dark:text-gray-400">
-        @if($categories->total() > 0)
-            顯示第 <span class="font-medium">{{ $categories->firstItem() }}</span> 
-            到 <span class="font-medium">{{ $categories->lastItem() }}</span> 筆，
-            共 <span class="font-medium">{{ number_format($categories->total()) }}</span> 筆
+        @if($categories->count() > 0)
+            共 <span class="font-medium">{{ $categories->count() }}</span> 筆
         @else
             <span>無資料</span>
         @endif
