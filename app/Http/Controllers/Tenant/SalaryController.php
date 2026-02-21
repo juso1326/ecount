@@ -46,8 +46,12 @@ class SalaryController extends Controller
         $data = $this->salaryService->getMonthlySalaries($year, $month);
 
         // 動態產生年份選單：從租戶建立年份到明年
-        $tenant = auth()->user()->tenant ?? tenancy()->tenant;
-        $tenantCreatedYear = $tenant && $tenant->created_at ? $tenant->created_at->year : 2014;
+        try {
+            $tenant = tenancy()->tenant;
+            $tenantCreatedYear = $tenant?->created_at?->year ?? 2020;
+        } catch (\Throwable $e) {
+            $tenantCreatedYear = 2020;
+        }
         $startYear = $tenantCreatedYear;
         $endYear = date('Y') + 1;
 
