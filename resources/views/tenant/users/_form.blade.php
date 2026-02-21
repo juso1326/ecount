@@ -11,6 +11,7 @@
                     姓名 <span class="text-red-500">*</span>
                 </label>
                 <input type="text" name="name" id="name" value="{{ old('name', $user->name ?? '') }}" required
+                    data-rules="required|min:2|max:50" data-label="姓名"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
                 @error('name')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -29,6 +30,7 @@
                     登入帳號 (Email) <span class="text-red-500">*</span>
                 </label>
                 <input type="email" name="email" id="email" value="{{ old('email', $user->email ?? '') }}" required
+                    data-rules="required|email" data-label="登入帳號 (Email)"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
                 @error('email')
                     <p class="mt-1 text-sm text-red-500">{{ $message }}</p>

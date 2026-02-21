@@ -88,7 +88,9 @@
                                    name="email" 
                                    type="email" 
                                    autocomplete="email" 
-                                   required 
+                                   required
+                                   data-rules="required|email"
+                                   data-label="Email"
                                    value="{{ old('email') }}"
                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                         </div>
@@ -105,6 +107,8 @@
                                    type="password" 
                                    autocomplete="current-password" 
                                    required
+                                   data-rules="required|min:6"
+                                   data-label="密碼"
                                    class="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                             <button type="button" onclick="togglePassword('password', this)"
                                     class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -126,6 +130,9 @@
                                type="text"
                                autocomplete="off"
                                maxlength="3"
+                               required
+                               data-rules="required|min:3|max:3"
+                               data-label="驗證碼"
                                placeholder="輸入驗證碼（不區分大小寫）"
                                class="appearance-none block w-full px-3 py-2 border @error('captcha') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm tracking-widest font-mono">
                         @error('captcha')

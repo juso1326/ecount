@@ -71,7 +71,9 @@
                         name="email" 
                         id="email" 
                         value="{{ old('email') }}"
-                        required 
+                        required
+                        data-rules="required|email"
+                        data-label="Email"
                         autofocus
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('email') border-red-500 @enderror"
                         placeholder="admin@ecount.com"
@@ -92,6 +94,8 @@
                             name="password"
                             id="password"
                             required
+                            data-rules="required|min:6"
+                            data-label="密碼"
                             class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('password') border-red-500 @enderror"
                             placeholder="••••••••"
                         >
@@ -117,6 +121,9 @@
                         id="captcha"
                         autocomplete="off"
                         maxlength="3"
+                        required
+                        data-rules="required|min:3|max:3"
+                        data-label="驗證碼"
                         placeholder="輸入驗證碼（不區分大小寫）"
                         class="w-full px-4 py-3 border @error('captcha') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 tracking-widest font-mono mb-2"
                     >
