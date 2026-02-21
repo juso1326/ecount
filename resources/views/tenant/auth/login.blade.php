@@ -94,7 +94,17 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             驗證碼
                         </label>
-                        <div class="flex items-center gap-3 mb-2">
+                        <input id="captcha"
+                               name="captcha"
+                               type="text"
+                               autocomplete="off"
+                               maxlength="3"
+                               placeholder="輸入驗證碼（不區分大小寫）"
+                               class="appearance-none block w-full px-3 py-2 border @error('captcha') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm tracking-widest font-mono">
+                        @error('captcha')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                        <div class="flex items-center gap-3 mt-2">
                             <div id="captcha-img" class="border border-gray-200 dark:border-gray-600 rounded select-none">
                                 {!! session('captchaSvg', $captchaSvg) !!}
                             </div>
@@ -106,16 +116,6 @@
                                 重整
                             </button>
                         </div>
-                        <input id="captcha"
-                               name="captcha"
-                               type="text"
-                               autocomplete="off"
-                               maxlength="6"
-                               placeholder="輸入驗證碼（不區分大小寫）"
-                               class="appearance-none block w-full px-3 py-2 border @error('captcha') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm tracking-widest font-mono">
-                        @error('captcha')
-                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                        @enderror
                     </div>
 
                     <!-- Remember Me & Forgot Password -->

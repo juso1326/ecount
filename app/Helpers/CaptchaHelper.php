@@ -14,7 +14,7 @@ class CaptchaHelper
     public static function generate(string $sessionKey = 'captcha'): string
     {
         $code = '';
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $code .= self::CHARS[random_int(0, strlen(self::CHARS) - 1)];
         }
         Session::put($sessionKey, strtoupper($code));
@@ -37,7 +37,7 @@ class CaptchaHelper
      */
     private static function renderSvg(string $code): string
     {
-        $width = 160;
+        $width = 100;
         $height = 50;
         $bgR = random_int(235, 255);
         $bgG = random_int(235, 255);
@@ -70,7 +70,7 @@ class CaptchaHelper
         // 每個字元
         $colors = ['#1e3a5f', '#6b21a8', '#065f46', '#7c2d12', '#1e40af'];
         for ($i = 0; $i < strlen($code); $i++) {
-            $x = 14 + $i * 28 + random_int(-2, 2);
+            $x = 16 + $i * 30 + random_int(-2, 2);
             $y = 36 + random_int(-6, 6);
             $rot = random_int(-20, 20);
             $color = $colors[$i % count($colors)];

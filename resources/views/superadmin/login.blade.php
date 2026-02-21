@@ -99,7 +99,7 @@
                         name="captcha"
                         id="captcha"
                         autocomplete="off"
-                        maxlength="6"
+                        maxlength="3"
                         placeholder="輸入驗證碼（不區分大小寫）"
                         class="w-full px-4 py-3 border @error('captcha') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 tracking-widest font-mono"
                     >
