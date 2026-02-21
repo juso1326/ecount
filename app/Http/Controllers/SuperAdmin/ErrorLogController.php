@@ -3,58 +3,85 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class ErrorLogController extends Controller
 {
-    private string $logPath;
+    private string $centralLogPath;
 
     public function __construct()
     {
-        $this->logPath = storage_path('logs/laravel.log');
+        $this->centralLogPath = storage_path('logs/laravel.log');
     }
 
     public function index(Request $request)
     {
-        $level  = $request->input('level', '');
-        $search = $request->input('search', '');
-        $perPage = 50;
+        $level    = $request->input('level', '');
+        $search   = $request->input('search', '');
+        $tenantId = $request->input('tenant', '');  // '' = 中央 log
+        $perPage  = 50;
 
-        $entries = $this->parseLog($level, $search, $perPage);
+        // 取得所有租戶清單（含 log 檔是否存在）
+        $tenants = Tenant::orderBy('id')->get()->map(function ($t) {
+            $path = storage_path("logs/tenant_{$t->id}.log");
+            return [
+                'id'       => $t->id,
+                'name'     => $t->name,
+                'has_log'  => File::exists($path),
+                'log_size' => File::exists($path) ? $this->formatSize(File::size($path)) : '0 B',
+            ];
+        });
 
-        $levels = ['ERROR', 'WARNING', 'INFO', 'DEBUG', 'CRITICAL', 'ALERT', 'EMERGENCY', 'NOTICE'];
+        // 決定讀哪個 log
+        if ($tenantId) {
+            $logPath = storage_path("logs/tenant_{$tenantId}.log");
+            $logLabel = "租戶：{$tenantId}";
+        } else {
+            $logPath  = $this->centralLogPath;
+            $logLabel = '中央系統';
+        }
 
-        $logSize = File::exists($this->logPath)
-            ? $this->formatSize(File::size($this->logPath))
+        $entries = $this->parseLog($logPath, $level, $search, $perPage);
+        $levels  = ['ERROR', 'WARNING', 'INFO', 'DEBUG', 'CRITICAL', 'ALERT', 'EMERGENCY', 'NOTICE'];
+        $logSize = File::exists($logPath)
+            ? $this->formatSize(File::size($logPath))
             : '0 B';
 
-        return view('superadmin.error-log.index', compact('entries', 'levels', 'logSize', 'level', 'search'));
+        return view('superadmin.error-log.index', compact(
+            'entries', 'levels', 'logSize', 'level', 'search',
+            'tenants', 'tenantId', 'logLabel'
+        ));
     }
 
-    public function clear()
+    public function clear(Request $request)
     {
-        if (File::exists($this->logPath)) {
-            File::put($this->logPath, '');
+        $tenantId = $request->input('tenant', '');
+        $logPath  = $tenantId
+            ? storage_path("logs/tenant_{$tenantId}.log")
+            : $this->centralLogPath;
+
+        if (File::exists($logPath)) {
+            File::put($logPath, '');
         }
 
         return back()->with('success', '日誌已清空');
     }
 
-    private function parseLog(string $level = '', string $search = '', int $limit = 50): array
+    private function parseLog(string $logPath, string $level = '', string $search = '', int $limit = 50): array
     {
-        if (!File::exists($this->logPath)) {
+        if (!File::exists($logPath)) {
             return [];
         }
 
-        $content = File::get($this->logPath);
+        $content = File::get($logPath);
         $lines   = explode("\n", $content);
 
         $entries = [];
         $current = null;
 
         foreach ($lines as $line) {
-            // New log entry: [2026-01-01 12:00:00] env.LEVEL: message
             if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] \w+\.(\w+): (.+)$/', $line, $m)) {
                 if ($current) {
                     $entries[] = $current;
@@ -69,15 +96,12 @@ class ErrorLogController extends Controller
                 $current['detail'] .= $line . "\n";
             }
         }
-
         if ($current) {
             $entries[] = $current;
         }
 
-        // Most recent first
         $entries = array_reverse($entries);
 
-        // Filter
         if ($level) {
             $entries = array_filter($entries, fn($e) => $e['level'] === strtoupper($level));
         }

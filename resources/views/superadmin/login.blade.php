@@ -38,7 +38,27 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('superadmin.login') }}">
+            {{-- 鎖定提示 --}}
+            @if($isLocked)
+            <div class="mb-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                <div>
+                    <p class="font-semibold text-sm">帳號已暫時鎖定</p>
+                    <p class="text-xs mt-0.5">請 <span id="lockCountdown" class="font-mono font-bold">{{ $lockSeconds }}</span> 秒後再試</p>
+                </div>
+            </div>
+            @elseif($attempts > 0)
+            <div class="mb-4 bg-orange-50 border border-orange-300 text-orange-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+                還可嘗試 <strong>{{ $remaining }}</strong> 次，超過將鎖定 15 分鐘
+            </div>
+            @endif
+
+            <form method="POST" action="{{ route('superadmin.login') }}" {{ $isLocked ? 'onsubmit=return false' : '' }}>
                 @csrf
 
                 <!-- Email -->
@@ -139,11 +159,28 @@
                 </button>
             </form>
 
-            <!-- Info -->
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500">
-                    預設帳號：admin@ecount.com
-                </p>
+            <!-- 安全資訊 -->
+            <div class="mt-5 pt-4 border-t border-gray-100">
+                <div class="flex flex-col gap-1.5">
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                        圖形驗證碼保護
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        登入失敗 3 次後鎖定 15 分鐘
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                        </svg>
+                        CSRF Token 防護
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -184,6 +221,18 @@
             }
         }
     }
+    @if($isLocked)
+    (function() {
+        let sec = {{ $lockSeconds }};
+        const el = document.getElementById('lockCountdown');
+        if (!el) return;
+        const t = setInterval(() => {
+            sec--;
+            if (sec <= 0) { clearInterval(t); location.reload(); return; }
+            el.textContent = sec;
+        }, 1000);
+    })();
+    @endif
     </script>
 </body>
 </html>

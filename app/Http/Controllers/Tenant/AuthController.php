@@ -16,10 +16,15 @@ class AuthController extends Controller
     /**
      * Show login form
      */
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        $captchaSvg = CaptchaHelper::generate('captcha_tenant');
-        return view('tenant.auth.login', compact('captchaSvg'));
+        $captchaSvg  = CaptchaHelper::generate('captcha_tenant');
+        $throttleKey = 'login_tenant:' . $request->ip();
+        $isLocked    = RateLimiter::tooManyAttempts($throttleKey, 3);
+        $lockSeconds = $isLocked ? RateLimiter::availableIn($throttleKey) : 0;
+        $attempts    = RateLimiter::attempts($throttleKey);
+        $remaining   = max(0, 3 - $attempts);
+        return view('tenant.auth.login', compact('captchaSvg', 'isLocked', 'lockSeconds', 'attempts', 'remaining'));
     }
 
     public function refreshCaptcha()
