@@ -20,6 +20,7 @@ return [
         '127.0.0.1',
         'localhost',
         'ecount.test', // 本地開發域名
+        'ecount.duckdns.org', // 測試環境域名
         env('CENTRAL_DOMAIN', 'ecount.com'), // 生產環境域名
     ],
 
