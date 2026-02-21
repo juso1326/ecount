@@ -63,6 +63,20 @@ return [
             ]) : [],
         ],
 
+        // 管理員連線：用於建立租戶資料庫（需有 CREATE DATABASE 權限）
+        'admin' => [
+            'driver'    => 'mysql',
+            'host'      => env('DB_HOST', '127.0.0.1'),
+            'port'      => env('DB_PORT', '3306'),
+            'database'  => env('DB_DATABASE', 'ecount_central'),
+            'username'  => env('DB_ADMIN_USER', env('DB_USERNAME', 'root')),
+            'password'  => env('DB_ADMIN_PASS', env('DB_PASSWORD', '')),
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix'    => '',
+            'strict'    => false,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
