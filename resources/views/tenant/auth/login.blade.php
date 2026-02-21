@@ -89,6 +89,35 @@
                         </div>
                     </div>
 
+                    <!-- Captcha -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            驗證碼
+                        </label>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div id="captcha-img" class="border border-gray-200 dark:border-gray-600 rounded select-none">
+                                {!! session('captchaSvg', $captchaSvg) !!}
+                            </div>
+                            <button type="button" onclick="refreshCaptcha()"
+                                    class="text-sm text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                重整
+                            </button>
+                        </div>
+                        <input id="captcha"
+                               name="captcha"
+                               type="text"
+                               autocomplete="off"
+                               maxlength="6"
+                               placeholder="輸入驗證碼（不區分大小寫）"
+                               class="appearance-none block w-full px-3 py-2 border @error('captcha') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm tracking-widest font-mono">
+                        @error('captcha')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Remember Me & Forgot Password -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
@@ -124,5 +153,16 @@
             </p>
         </div>
     </div>
+    <script>
+    function refreshCaptcha() {
+        fetch('{{ route('tenant.captcha.refresh') }}')
+            .then(r => r.text())
+            .then(svg => {
+                document.getElementById('captcha-img').innerHTML = svg;
+                document.getElementById('captcha').value = '';
+                document.getElementById('captcha').focus();
+            });
+    }
+    </script>
 </body>
 </html>

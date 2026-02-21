@@ -35,6 +35,7 @@ Route::middleware([
     Route::middleware('guest')->group(function () {
         Route::get('login', [\App\Http\Controllers\Tenant\AuthController::class, 'showLogin'])->name('tenant.login');
         Route::post('login', [\App\Http\Controllers\Tenant\AuthController::class, 'login'])->name('tenant.login.submit');
+        Route::get('captcha/refresh', [\App\Http\Controllers\Tenant\AuthController::class, 'refreshCaptcha'])->name('tenant.captcha.refresh');
         Route::get('register', [\App\Http\Controllers\Tenant\AuthController::class, 'showRegister'])->name('tenant.register');
         Route::post('register', [\App\Http\Controllers\Tenant\AuthController::class, 'register'])->name('tenant.register.submit');
     });

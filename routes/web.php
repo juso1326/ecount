@@ -16,6 +16,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::middleware('guest:superadmin')->group(function () {
         Route::get('login', [AuthController::class, 'showLogin'])->name('login');
         Route::post('login', [AuthController::class, 'login']);
+        Route::get('captcha/refresh', [AuthController::class, 'refreshCaptcha'])->name('captcha.refresh');
     });
 
     // 需要認證的路由

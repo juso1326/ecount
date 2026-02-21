@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Helpers\CaptchaHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -16,7 +18,14 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        return view('tenant.auth.login');
+        $captchaSvg = CaptchaHelper::generate('captcha_tenant');
+        return view('tenant.auth.login', compact('captchaSvg'));
+    }
+
+    public function refreshCaptcha()
+    {
+        $svg = CaptchaHelper::generate('captcha_tenant');
+        return response($svg)->header('Content-Type', 'image/svg+xml');
     }
 
     /**
@@ -24,17 +33,34 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        // 鎖定檢查
+        $throttleKey = 'login_tenant:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 3)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $captchaSvg = CaptchaHelper::generate('captcha_tenant');
+            return back()->withErrors(['email' => "登入失敗次數過多，請 {$seconds} 秒後再試"])->with('captchaSvg', $captchaSvg)->withInput();
+        }
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
+            'captcha' => 'required',
         ], [
             'email.required' => 'Email 為必填',
             'email.email' => 'Email 格式不正確',
             'password.required' => '密碼為必填',
+            'captcha.required' => '請輸入驗證碼',
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            $captchaSvg = CaptchaHelper::generate('captcha_tenant');
+            return back()->withErrors($validator)->with('captchaSvg', $captchaSvg)->withInput();
+        }
+
+        // 驗證碼檢查
+        if (!CaptchaHelper::verify($request->captcha, 'captcha_tenant')) {
+            RateLimiter::hit($throttleKey, 900);
+            $captchaSvg = CaptchaHelper::generate('captcha_tenant');
+            return back()->withErrors(['captcha' => '驗證碼錯誤'])->with('captchaSvg', $captchaSvg)->withInput();
         }
 
         $credentials = $request->only('email', 'password');
@@ -42,16 +68,21 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            
+            RateLimiter::clear($throttleKey);
+
             // 更新最後登入時間
             Auth::user()->update(['last_login_at' => now()]);
 
             return redirect()->intended(route('tenant.dashboard'));
         }
 
-        return back()->withErrors([
-            'email' => 'Email 或密碼錯誤',
-        ])->withInput();
+        RateLimiter::hit($throttleKey, 900);
+        $remaining = 3 - RateLimiter::attempts($throttleKey);
+        $captchaSvg = CaptchaHelper::generate('captcha_tenant');
+        $msg = $remaining > 0
+            ? "Email 或密碼錯誤（還可嘗試 {$remaining} 次）"
+            : 'Email 或密碼錯誤';
+        return back()->withErrors(['email' => $msg])->with('captchaSvg', $captchaSvg)->withInput();
     }
 
     /**
