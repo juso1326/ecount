@@ -317,23 +317,6 @@ class ReportsController extends Controller
                 'net_pay' => $netPay > 0 ? $netPay : $baseSalary,
             ];
         }
-                $totalCost = (float)$salaryPayables->whereIn('payee_user_id', $userIds)->sum('paid_amount');
-                
-                // 取得部門名稱
-                $departmentName = '部門 ' . $item->department_id;
-                if (\Schema::hasTable('departments')) {
-                    $dept = \DB::table('departments')->find($item->department_id);
-                    if ($dept && isset($dept->name)) {
-                        $departmentName = $dept->name;
-                    }
-                }
-                
-                return (object)[
-                    'department' => $departmentName,
-                    'employee_count' => $item->employee_count,
-                    'total_cost' => $totalCost,
-                ];
-            });
         
         // 員工薪資排名 TOP 10
         $topEarners = $salaryPayables->groupBy('payee_user_id')
