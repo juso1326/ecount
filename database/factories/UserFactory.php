@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use function fake;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
