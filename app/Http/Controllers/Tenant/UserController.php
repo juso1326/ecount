@@ -24,7 +24,7 @@ class UserController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('employee_id', 'like', "%{$search}%");
+                  ->orWhere('employee_no', 'like', "%{$search}%");
             });
         }
 
@@ -420,7 +420,7 @@ class UserController extends Controller
      */
     public function export(Request $request)
     {
-        $query = User::with(['projects', 'role']);
+        $query = User::with(['projects']);
 
         // 套用與 index 相同的篩選條件
         if ($request->filled('search')) {
@@ -428,7 +428,7 @@ class UserController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('employee_id', 'like', "%{$search}%");
+                  ->orWhere('employee_no', 'like', "%{$search}%");
             });
         }
 
@@ -455,10 +455,10 @@ class UserController extends Controller
             // 資料列
             foreach ($users as $user) {
                 fputcsv($file, [
-                    $user->employee_id,
+                    $user->employee_no,
                     $user->name,
                     $user->email,
-                    $user->role?->name,
+                    $user->getRoleNames()->first(),
                     $user->phone,
                     $user->extension,
                     $user->is_active ? '啟用' : '停用',
