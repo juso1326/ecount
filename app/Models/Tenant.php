@@ -12,6 +12,24 @@ class Tenant extends BaseTenant implements TenantWithDatabase
     use HasDatabase, HasDomains;
 
     /**
+     * 告知 VirtualColumn 哪些是真實 DB 欄位（非 JSON data 欄位）
+     */
+    public static function getCustomColumns(): array
+    {
+        return [
+            'id',
+            'name',
+            'email',
+            'plan',
+            'plan_started_at',
+            'plan_ends_at',
+            'auto_renew',
+            'status',
+            'settings',
+        ];
+    }
+
+    /**
      * 可批量賦值的屬性
      */
     protected $fillable = [
