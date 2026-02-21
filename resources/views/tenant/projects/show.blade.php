@@ -438,7 +438,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         選擇成員 <span class="text-red-500">*</span>
                     </label>
-                    <select name="user_id" required
+                    <select name="user_id" id="memberUserSelect" required
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                         <option value="">請選擇</option>
                         @foreach($availableUsers as $user)
@@ -847,6 +847,14 @@ $(document).ready(function() {
         width: '100%',
         closeOnSelect: false,
         theme: 'default'
+    });
+
+    // 新增成員選擇
+    $('#memberUserSelect').select2({
+        placeholder: '搜尋姓名或 Email',
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('#addMemberModal')
     });
 });
 </script>

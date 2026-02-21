@@ -208,3 +208,32 @@
         </div>
     </div>
 </div>
+
+<!-- 銀行資訊 -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">銀行資訊</h3>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行名稱</label>
+                <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $user->bank_name ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                    placeholder="例：台灣銀行">
+            </div>
+            <div>
+                <label for="bank_branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300">分行名稱</label>
+                <input type="text" name="bank_branch" id="bank_branch" value="{{ old('bank_branch', $user->bank_branch ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                    placeholder="例：信義分行">
+            </div>
+            <div>
+                <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">帳號</label>
+                <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account', $user->bank_account ?? '') }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
+                    placeholder="請輸入銀行帳號">
+            </div>
+        </div>
+    </div>
+</div>

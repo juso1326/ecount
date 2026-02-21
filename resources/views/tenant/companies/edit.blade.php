@@ -13,6 +13,15 @@
         @method('PUT')
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- 公司代碼 (唯讀，建立後不可修改) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">公司代碼</label>
+                <input type="text" value="{{ $company->code }}" disabled
+                    class="mt-1 block w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700/50 dark:text-gray-400 rounded-md shadow-sm py-2 px-3 bg-gray-50 text-gray-500 cursor-not-allowed">
+                <input type="hidden" name="code" value="{{ old('code', $company->code) }}">
+                <p class="mt-1 text-xs text-gray-400">公司代碼建立後不可修改</p>
+            </div>
+
             <!-- 類型 -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -96,9 +105,6 @@
                 <input type="text" name="address" id="address" value="{{ old('address', $company->address) }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
-
-            <!-- 公司代碼 (隱藏，自動生成或保留) -->
-            <input type="hidden" name="code" value="{{ old('code', $company->code) }}">
 
             <!-- 傳真 -->
             <div>

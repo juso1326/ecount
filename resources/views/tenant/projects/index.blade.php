@@ -126,16 +126,24 @@
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">累計</th>
                 <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
             </tr>
+            <!-- 本頁總計 -->
+            <tr class="bg-gray-100 dark:bg-gray-600 border-t border-gray-200 dark:border-gray-500 font-semibold">
+                <th colspan="8" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">本頁總計</th>
+                <th class="px-3 py-1 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
+                <th class="px-3 py-1 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">${{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
+                <th class="px-3 py-1 text-right text-xs whitespace-nowrap {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">${{ number_format($totals['accumulated_income'] ?? 0, 0) }}</th>
+                <th></th>
+            </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($projects as $index => $project)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <!-- 序號 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-white">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-900 dark:text-white">
                     {{ ($projects->currentPage() - 1) * $projects->perPage() + $index + 1 }}
                 </td>
                 <!-- 操作 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-center space-x-2">
                     <a href="{{ route('tenant.projects.show', $project) }}" 
                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
                         詳細
@@ -146,22 +154,22 @@
                     </a>
                 </td>
                 <!-- 開案日 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {{ format_date($project->start_date) }}
                 </td>
                 <!-- 客戶 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-900 dark:text-white">
                     {{ $project->company?->name ?? '-' }}
                 </td>
                 <!-- 專案名 -->
-                <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-xs text-gray-900 dark:text-white">
                     <div class="max-w-xs truncate" title="{{ $project->name }}">
                         {{ $project->name }}
                     </div>
                     <div class="text-xs text-gray-500">{{ $project->code }}</div>
                 </td>
                 <!-- 標籤 -->
-                <td class="px-3 py-2 text-sm">
+                <td class="px-3 py-2 text-xs">
                     @if($project->tags && $project->tags->count() > 0)
                         <div class="flex flex-wrap gap-1">
                             @foreach($project->tags->take(2) as $tag)
@@ -181,11 +189,11 @@
                     @endif
                 </td>
                 <!-- 專案負責 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
                     {{ $project->manager?->name ?? '-' }}
                 </td>
                 <!-- 成員 -->
-                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-1">
                         @if($project->members && $project->members->count() > 0)
                             <div class="flex -space-x-2">
@@ -205,20 +213,20 @@
                     </div>
                 </td>
                 <!-- 總額 (應收總額) -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white font-medium">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-gray-900 dark:text-white font-medium">
                     ${{ number_format($project->total_receivable ?? 0, 0) }}
                 </td>
                 <!-- 專案支出 (應付總額) -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-red-600 dark:text-red-400">
                     ${{ number_format($project->total_payable ?? 0, 0) }}
                 </td>
                 <!-- 累計 (已收 - 已付) -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-right font-medium 
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-right font-medium 
                     {{ ($project->accumulated_income ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                     ${{ number_format($project->accumulated_income ?? 0, 0) }}
                 </td>
                 <!-- 狀態 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center">
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-center">
                     @if($project->status === 'in_progress')
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                             進行中
@@ -250,28 +258,7 @@
             </tr>
             @endforelse
         </tbody>
-        <!-- 總計行 -->
-        <tfoot class="bg-gray-100 dark:bg-gray-700 font-semibold">
-            <tr>
-                <td colspan="9" class="px-3 py-1 text-right text-sm text-gray-900 dark:text-white">
-                    總計
-                </td>
-                <td class="px-3 py-1 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                    ${{ number_format($totals['total_receivable'] ?? 0, 0) }}
-                </td>
-                <td class="px-3 py-1 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
-                    ${{ number_format($totals['withholding_tax'] ?? 0, 0) }}
-                </td>
-                <td class="px-3 py-1 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                    ${{ number_format($totals['total_payable'] ?? 0, 0) }}
-                </td>
-                <td class="px-3 py-1 whitespace-nowrap text-sm text-right 
-                    {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                    ${{ number_format($totals['accumulated_income'] ?? 0, 0) }}
-                </td>
-                <td></td>
-            </tr>
-        </tfoot>
+        <!-- 總計行已移至 thead 第二列 -->
     </table>
 </div>
 
