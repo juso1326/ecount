@@ -3,6 +3,8 @@ set -e
 
 cd "$(dirname "$0")"
 
+export GIT_SSH_COMMAND="ssh -i /var/www/.ssh/deploy_key -o StrictHostKeyChecking=no"
+
 git -c safe.directory=/var/www/html pull origin main
 
 composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
