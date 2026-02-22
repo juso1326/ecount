@@ -126,40 +126,25 @@
             {{-- Captcha --}}
             <div style="margin-bottom:1.25rem;">
                 <label style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">驗證碼</label>
-                <div style="display:flex; gap:.625rem; align-items:center;">
-                    {{-- 左：分格輸入框 --}}
-                    <div style="flex:1; display:flex; gap:.4rem;">
-                        @for($i = 1; $i <= 3; $i++)
-                        <div id="captcha-box-{{ $i }}" onclick="document.getElementById('captcha-hidden').focus()"
-                            style="flex:1; height:2.75rem; border:1.5px solid {{ $errors->has('captcha') ? '#ef4444' : '#d1d5db' }};
-                                   border-radius:.5rem; display:flex; align-items:center; justify-content:center;
-                                   font-family:monospace; font-size:1.25rem; font-weight:700; letter-spacing:0;
-                                   color:#111827; background:#f9fafb; cursor:text; transition:border-color .15s;"
-                            id="captcha-box-{{ $i }}">
-                        </div>
-                        @endfor
+                <div style="display:flex; gap:.625rem; align-items:center; margin-bottom:.5rem;">
+                    <div id="captcha-img" style="border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; line-height:0; background:#f9fafb;">
+                        {!! $captchaSvg !!}
                     </div>
-                    {{-- 隱藏的真實 input（novalidate 由 JS 接管） --}}
-                    <input type="text" name="captcha" id="captcha-hidden"
-                        autocomplete="off" maxlength="3"
-                        style="position:absolute; opacity:0; pointer-events:none; width:1px; height:1px; tabindex='-1'">
-                    {{-- 右：驗證碼圖 + 換一張 --}}
-                    <div style="display:flex; flex-direction:column; align-items:center; gap:.25rem; flex-shrink:0;">
-                        <div id="captcha-img" style="border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; line-height:0; background:#f9fafb;">
-                            {!! $captchaSvg !!}
-                        </div>
-                        <button type="button" onclick="refreshCaptcha()"
-                            style="display:inline-flex; align-items:center; gap:.25rem; background:none; border:none; cursor:pointer; font-size:.75rem; color:#4f46e5; font-weight:500; padding:.125rem .25rem; border-radius:.375rem;"
-                            onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='none'">
-                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            換一張
-                        </button>
-                    </div>
+                    <button type="button" onclick="refreshCaptcha()"
+                        style="display:inline-flex; align-items:center; gap:.25rem; background:none; border:none; cursor:pointer; font-size:.8125rem; color:#4f46e5; font-weight:500; padding:.25rem .375rem; border-radius:.375rem;"
+                        onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='none'">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        換一張
+                    </button>
                 </div>
+                <input type="text" name="captcha" id="captcha"
+                    autocomplete="off" maxlength="3" required
+                    class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
+                    style="letter-spacing:.2em; font-family:monospace; font-size:.9375rem;"
+                    placeholder="輸入右方驗證碼">
                 @error('captcha')
                 <p style="margin:.375rem 0 0; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
                 @enderror
-                <p id="captcha-custom-error" style="display:none; margin:.375rem 0 0; font-size:.75rem; color:#dc2626;"></p>
             </div>
 
             {{-- Remember --}}
@@ -169,7 +154,7 @@
                 <label for="remember" style="font-size:.8125rem; color:#6b7280; cursor:pointer;">記住此裝置</label>
             </div>
 
-            <button type="submit" class="btn-primary" id="submit-btn" {{ $isLocked ? 'disabled' : '' }}>
+            <button type="submit" class="btn-primary" {{ $isLocked ? 'disabled' : '' }}>
                 登入後台
             </button>
         </form>
@@ -189,61 +174,6 @@
 </div>
 
 <script>
-// ── 驗證碼分格輸入框 ──
-(function () {
-    const hidden  = document.getElementById('captcha-hidden');
-    const boxes   = [1, 2, 3].map(i => document.getElementById('captcha-box-' + i));
-    const errorEl = document.getElementById('captcha-custom-error');
-
-    if (!hidden || !boxes[0]) return;
-
-    function renderBoxes(val) {
-        boxes.forEach((box, i) => {
-            const ch = val[i] || '';
-            box.textContent = ch.toUpperCase();
-            // 焦點框：下一個空格 or 最後一格
-            const focusIdx = Math.min(val.length, 2);
-            box.style.borderColor = (i === focusIdx && document.activeElement === hidden)
-                ? '#4f46e5'
-                : (val.length === 3 ? '#4f46e5' : '#d1d5db');
-            box.style.background = ch ? '#fff' : '#f9fafb';
-        });
-    }
-
-    // 點擊任一格 → 隱藏 input focus
-    boxes.forEach(box => box.addEventListener('click', () => hidden.focus()));
-
-    hidden.addEventListener('focus',  () => renderBoxes(hidden.value));
-    hidden.addEventListener('blur',   () => renderBoxes(hidden.value));
-    hidden.addEventListener('input',  () => {
-        hidden.value = hidden.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 3);
-        renderBoxes(hidden.value);
-        if (errorEl) errorEl.style.display = 'none';
-    });
-    hidden.addEventListener('keydown', e => {
-        if (e.key === 'Backspace' && hidden.value.length === 0) return;
-    });
-
-    // 初始渲染（含舊值 / 錯誤回填）
-    renderBoxes(hidden.value);
-
-    // 表單提交前驗證
-    const form = document.querySelector('form[action*="login"]');
-    if (form) {
-        form.addEventListener('submit', function (e) {
-            if (hidden.value.length < 3) {
-                e.preventDefault();
-                if (errorEl) {
-                    errorEl.textContent = '請輸入 3 位驗證碼';
-                    errorEl.style.display = 'block';
-                }
-                boxes.forEach(b => b.style.borderColor = '#ef4444');
-                hidden.focus();
-            }
-        });
-    }
-})();
-
 function refreshCaptcha() {
     const btn = event.currentTarget;
     btn.style.opacity = '.5';
@@ -251,10 +181,8 @@ function refreshCaptcha() {
         .then(r => r.text())
         .then(svg => {
             document.getElementById('captcha-img').innerHTML = svg;
-            const hidden = document.getElementById('captcha-hidden');
-            hidden.value = '';
-            hidden.dispatchEvent(new Event('input'));
-            hidden.focus();
+            document.getElementById('captcha').value = '';
+            document.getElementById('captcha').focus();
         })
         .finally(() => { btn.style.opacity = '1'; });
 }
