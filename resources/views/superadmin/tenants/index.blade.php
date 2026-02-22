@@ -19,27 +19,42 @@
 
     <!-- 篩選 -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <form method="GET" action="{{ route('superadmin.tenants.index') }}">
+        <form id="tenant-filter-form" method="GET" action="{{ route('superadmin.tenants.index') }}">
             <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-                <input type="text" name="search" value="{{ request('search') }}"
-                       placeholder="ID、名稱、Email..."
-                       class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                <div class="relative">
+                    <input type="text" id="search-input" name="search" value="{{ request('search') }}"
+                           placeholder="ID、名稱、Email、網域..."
+                           autocomplete="off"
+                           class="w-full pl-8 pr-8 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <svg class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+                    </svg>
+                    <button type="button" id="search-clear" onclick="clearSearch()"
+                        class="{{ request('search') ? '' : 'hidden' }} absolute right-2 top-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
 
-                <select name="status" class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary">
+                <select name="status" onchange="document.getElementById('tenant-filter-form').submit()"
+                    class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary">
                     <option value="">全部狀態</option>
                     <option value="active"    {{ request('status') === 'active'    ? 'selected' : '' }}>啟用中</option>
                     <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>已暫停</option>
                     <option value="inactive"  {{ request('status') === 'inactive'  ? 'selected' : '' }}>未啟用</option>
                 </select>
 
-                <select name="plan" class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary">
+                <select name="plan" onchange="document.getElementById('tenant-filter-form').submit()"
+                    class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary">
                     <option value="">全部方案</option>
                     <option value="basic"        {{ request('plan') === 'basic'        ? 'selected' : '' }}>基礎</option>
                     <option value="professional" {{ request('plan') === 'professional' ? 'selected' : '' }}>專業</option>
                     <option value="enterprise"   {{ request('plan') === 'enterprise'   ? 'selected' : '' }}>企業</option>
                 </select>
 
-                <select name="expiry" class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary">
+                <select name="expiry" onchange="document.getElementById('tenant-filter-form').submit()"
+                    class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary">
                     <option value="">全部到期狀態</option>
                     <option value="expiring" {{ request('expiry') === 'expiring' ? 'selected' : '' }}>7天內到期</option>
                     <option value="expired"  {{ request('expiry') === 'expired'  ? 'selected' : '' }}>已到期</option>
@@ -53,6 +68,12 @@
                     @endif
                 </div>
             </div>
+            @if(request()->filled('search'))
+            <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+                搜尋「<span class="text-gray-600 dark:text-gray-300 font-medium">{{ request('search') }}</span>」&nbsp;·&nbsp;
+                可搜尋：租戶 ID、公司名稱、Email、網域
+            </p>
+            @endif
         </form>
     </div>
 
@@ -106,7 +127,13 @@
                     <td class="px-3 py-2 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $tenant->name }}</div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $tenant->email }}</div>
-                        <div class="text-xs text-gray-400 dark:text-gray-500 font-mono">{{ $tenant->id }}</div>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-xs text-gray-400 dark:text-gray-500 font-mono">{{ $tenant->id }}</span>
+                            @if($tenant->domains->isNotEmpty())
+                                <span class="text-gray-300 dark:text-gray-600">·</span>
+                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $tenant->domains->first()->domain }}</span>
+                            @endif
+                        </div>
                     </td>
 
                     <!-- 方案 -->
@@ -210,3 +237,29 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    const input = document.getElementById('search-input');
+    const clearBtn = document.getElementById('search-clear');
+    const form = document.getElementById('tenant-filter-form');
+    let debounceTimer;
+
+    if (!input || !form) return;
+
+    input.addEventListener('input', function () {
+        clearBtn.classList.toggle('hidden', this.value === '');
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => form.submit(), 500);
+    });
+
+    function clearSearch() {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+        form.submit();
+    }
+    window.clearSearch = clearSearch;
+})();
+</script>
+@endpush

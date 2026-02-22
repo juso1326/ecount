@@ -22,15 +22,16 @@ class TenantController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Tenant::query();
+        $query = Tenant::with('domains');
 
-        // 搜尋
+        // 聰明搜尋：id / 名稱 / email / domain
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('id', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                $q->where('id',    'like', "%{$search}%")
+                  ->orWhere('name',  'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('domains', fn($d) => $d->where('domain', 'like', "%{$search}%"));
             });
         }
 
@@ -44,7 +45,19 @@ class TenantController extends Controller
             $query->where('plan', $request->plan);
         }
 
-        $tenants = $query->orderBy('created_at', 'desc')->paginate(15);
+        // 到期狀態篩選
+        if ($request->filled('expiry')) {
+            $now = now();
+            if ($request->expiry === 'expired') {
+                $query->whereNotNull('plan_ends_at')->where('plan_ends_at', '<', $now);
+            } elseif ($request->expiry === 'expiring') {
+                $query->whereNotNull('plan_ends_at')
+                      ->where('plan_ends_at', '>=', $now)
+                      ->where('plan_ends_at', '<=', $now->copy()->addDays(7));
+            }
+        }
+
+        $tenants = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         if ($request->wantsJson()) {
             return response()->json([
