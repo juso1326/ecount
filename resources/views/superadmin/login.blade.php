@@ -126,25 +126,31 @@
             {{-- Captcha --}}
             <div style="margin-bottom:1.25rem;">
                 <label style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">驗證碼</label>
-                <div style="display:flex; gap:.625rem; align-items:center; margin-bottom:.5rem;">
-                    <div id="captcha-img" style="border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; line-height:0; background:#f9fafb;">
-                        {!! $captchaSvg !!}
+                <div style="display:flex; gap:.625rem; align-items:center;">
+                    {{-- 左：驗證碼圖 + 換一張 --}}
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:.25rem; flex-shrink:0;">
+                        <div id="captcha-img" style="border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; line-height:0; background:#f9fafb;">
+                            {!! $captchaSvg !!}
+                        </div>
+                        <button type="button" onclick="refreshCaptcha()"
+                            style="display:inline-flex; align-items:center; gap:.25rem; background:none; border:none; cursor:pointer; font-size:.75rem; color:#4f46e5; font-weight:500; padding:.125rem .25rem; border-radius:.375rem;"
+                            onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='none'">
+                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            換一張
+                        </button>
                     </div>
-                    <button type="button" onclick="refreshCaptcha()"
-                        style="display:inline-flex; align-items:center; gap:.25rem; background:none; border:none; cursor:pointer; font-size:.8125rem; color:#4f46e5; font-weight:500; padding:.25rem .375rem; border-radius:.375rem;"
-                        onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='none'">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        換一張
-                    </button>
+                    {{-- 右：輸入框 --}}
+                    <div style="flex:1;">
+                        <input type="text" name="captcha" id="captcha"
+                            autocomplete="off" maxlength="3" required
+                            class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
+                            style="letter-spacing:.25em; font-family:monospace; font-size:1.125rem; text-align:center;"
+                            placeholder="輸入驗證碼">
+                        @error('captcha')
+                        <p style="margin:.375rem 0 0; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
-                <input type="text" name="captcha" id="captcha"
-                    autocomplete="off" maxlength="3" required
-                    class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
-                    style="letter-spacing:.2em; font-family:monospace; font-size:.9375rem;"
-                    placeholder="輸入右方驗證碼">
-                @error('captcha')
-                <p style="margin:.375rem 0 0; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
-                @enderror
             </div>
 
             {{-- Remember --}}
