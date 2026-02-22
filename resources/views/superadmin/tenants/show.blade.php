@@ -32,6 +32,22 @@
 </div>
 @endif
 
+@if(session('init_password'))
+<div class="bg-green-50 border border-green-400 rounded-lg p-4 mb-6">
+    <p class="text-green-800 font-semibold text-lg">✅ 租戶建立成功</p>
+    <p class="text-green-700 mt-2">管理員帳號資訊（請立即記錄，離開後無法再查看）：</p>
+    <div class="mt-3 bg-white rounded border border-green-300 p-3 font-mono text-sm space-y-1">
+        <div><span class="text-gray-500">Email：</span><span class="font-semibold">{{ $tenant->email }}</span></div>
+        <div class="flex items-center gap-2">
+            <span class="text-gray-500">密碼：</span>
+            <span class="font-semibold text-green-700" id="init-pwd">{{ session('init_password') }}</span>
+            <button onclick="navigator.clipboard.writeText('{{ session('init_password') }}'); this.textContent='已複製✓'; setTimeout(()=>this.textContent='複製',1500)"
+                    class="text-xs border border-green-400 text-green-700 rounded px-2 py-0.5 hover:bg-green-100">複製</button>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- 基本資訊 -->
 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">基本資訊</h2>

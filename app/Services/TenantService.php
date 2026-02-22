@@ -83,7 +83,10 @@ class TenantService
 
         $job->handle();
 
-        return Tenant::find($tenantId);
+        $tenant = Tenant::find($tenantId);
+        // 暫存密碼到 tenant 物件，供 controller 顯示
+        $tenant->_plainPassword = $password;
+        return $tenant;
     }
     
     /**

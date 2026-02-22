@@ -141,8 +141,9 @@ class TenantController extends Controller
                 ], 201);
             }
 
-            return redirect()->route('superadmin.tenants.index')
-                ->with('success', "租戶 {$tenant->name} 建立成功！");
+            return redirect()->route('superadmin.tenants.show', $tenant)
+                ->with('success', "租戶 {$tenant->name} 建立成功！")
+                ->with('init_password', $tenant->_plainPassword);
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
                 return response()->json([
