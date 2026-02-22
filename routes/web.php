@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DeployController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\AuthController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
@@ -10,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Deploy webhook
+Route::post('/deploy', [DeployController::class, 'handle']);
 
 // 超級管理員路由
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
