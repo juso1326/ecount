@@ -141,7 +141,7 @@
                             <form method="POST" action="{{ route('superadmin.tenants.fix-domain', $tenant) }}">
                                 @csrf
                                 <button type="submit" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded px-3 py-1">
-                                    更新域名
+                                    套用預設
                                 </button>
                             </form>
                         @endif
@@ -149,19 +149,44 @@
                                 class="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-2 py-1">
                             複製
                         </button>
+                        <button onclick="document.getElementById('edit-domain-form').classList.toggle('hidden')"
+                                class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 rounded px-2 py-1">
+                            編輯
+                        </button>
                         <a href="{{ $fullUrl }}" target="_blank"
                            class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded px-3 py-1">
                             訪問 →
                         </a>
                     </div>
                 </div>
+                {{-- 可展開的編輯表單 --}}
+                <div id="edit-domain-form" class="hidden mt-3 pt-3 border-t border-gray-200">
+                    <form method="POST" action="{{ route('superadmin.tenants.fix-domain', $tenant) }}" class="flex items-center gap-2">
+                        @csrf
+                        <input type="text" name="domain" value="{{ $raw }}"
+                               placeholder="例：abc123.ecount.duckdns.org"
+                               class="flex-1 text-sm border border-gray-300 rounded px-3 py-1.5 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded px-3 py-1.5">
+                            儲存
+                        </button>
+                        <button type="button" onclick="document.getElementById('edit-domain-form').classList.add('hidden')"
+                                class="text-sm text-gray-500 hover:text-gray-700 px-2 py-1.5">
+                            取消
+                        </button>
+                    </form>
+                </div>
             </div>
         @empty
-            <div class="bg-yellow-50 border border-yellow-400 rounded-lg px-4 py-3 flex items-center justify-between">
-                <p class="text-yellow-700 text-sm">尚無域名記錄</p>
-                <form method="POST" action="{{ route('superadmin.tenants.fix-domain', $tenant) }}">
+            <div class="bg-yellow-50 border border-yellow-400 rounded-lg px-4 py-3">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-yellow-700 text-sm">尚無域名記錄</p>
+                </div>
+                <form method="POST" action="{{ route('superadmin.tenants.fix-domain', $tenant) }}" class="flex items-center gap-2">
                     @csrf
-                    <button type="submit" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded px-3 py-1">
+                    <input type="text" name="domain" value="{{ $expectedDomain }}"
+                           placeholder="例：abc123.ecount.duckdns.org"
+                           class="flex-1 text-sm border border-yellow-300 rounded px-3 py-1.5 font-mono focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded px-3 py-1.5">
                         建立域名
                     </button>
                 </form>

@@ -328,18 +328,21 @@ class TenantController extends Controller
     }
 
     /**
-     * 更新域名為目前設定的完整 subdomain
+     * 更新域名（可自訂，或自動套用 APP_DOMAIN）
      */
-    public function fixDomain(Tenant $tenant)
+    public function fixDomain(Request $request, Tenant $tenant)
     {
-        $baseDomain = config('app.domain', 'localhost');
-        $fullDomain = $tenant->id . '.' . $baseDomain;
+        if ($request->filled('domain')) {
+            $domain = strtolower(trim($request->input('domain')));
+        } else {
+            $domain = $tenant->id . '.' . config('app.domain', 'localhost');
+        }
 
         $tenant->domains()->delete();
-        $tenant->domains()->create(['domain' => $fullDomain]);
+        $tenant->domains()->create(['domain' => $domain]);
 
         return redirect()->route('superadmin.tenants.show', $tenant)
-            ->with('success', "域名已更新為：{$fullDomain}");
+            ->with('success', "域名已更新為：{$domain}");
     }
 
     /**
