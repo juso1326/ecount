@@ -7,7 +7,6 @@
 <div class="space-y-4">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">租戶列表</h2>
         <a href="{{ route('superadmin.tenants.create') }}"
            class="inline-flex items-center px-3 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
