@@ -327,14 +327,13 @@ class TenantController extends Controller
     }
 
     /**
-     * 修復域名：將短 ID 格式更新為完整 subdomain
+     * 更新域名為目前設定的完整 subdomain
      */
     public function fixDomain(Tenant $tenant)
     {
         $baseDomain = config('app.domain', 'localhost');
         $fullDomain = $tenant->id . '.' . $baseDomain;
 
-        // 刪除舊的短格式 domain，寫入完整格式
         $tenant->domains()->delete();
         $tenant->domains()->create(['domain' => $fullDomain]);
 
