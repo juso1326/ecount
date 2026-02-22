@@ -9,6 +9,8 @@ class Plan extends Model
 {
     use SoftDeletes;
 
+    protected $connection = 'central';
+
     protected $fillable = [
         'name',
         'slug',
