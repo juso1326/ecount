@@ -346,6 +346,23 @@ class TenantController extends Controller
     }
 
     /**
+     * 重設租戶管理員密碼
+     */
+    public function resetPassword(Tenant $tenant)
+    {
+        $newPassword = \Illuminate\Support\Str::random(12);
+
+        $tenant->run(function () use ($tenant, $newPassword) {
+            \App\Models\User::where('email', $tenant->email)
+                ->update(['password' => \Illuminate\Support\Facades\Hash::make($newPassword)]);
+        });
+
+        return redirect()->route('superadmin.tenants.show', $tenant)
+            ->with('success', "管理員密碼已重設")
+            ->with('init_password', $newPassword);
+    }
+
+    /**
      * 重建租戶資料庫（重新執行 migration + 建立管理員帳號）
      */
     public function rebuild(Tenant $tenant)

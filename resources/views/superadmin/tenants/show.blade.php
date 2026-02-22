@@ -6,6 +6,13 @@
 <div class="mb-6 flex justify-between items-center">
     <h1 class="text-2xl font-semibold text-gray-900">租戶詳情</h1>
     <div class="space-x-2">
+        <form method="POST" action="{{ route('superadmin.tenants.reset-password', $tenant) }}" class="inline"
+              onsubmit="return confirm('確定要重設管理員密碼嗎？')">
+            @csrf
+            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
+                重設密碼
+            </button>
+        </form>
         <a href="{{ route('superadmin.tenants.edit', $tenant) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
             編輯
         </a>
