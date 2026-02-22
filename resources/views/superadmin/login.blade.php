@@ -126,7 +126,15 @@
             {{-- Captcha --}}
             <div style="margin-bottom:1.25rem;">
                 <label style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">驗證碼</label>
-                <div style="display:flex; gap:.625rem; align-items:center; margin-bottom:.5rem;">
+                <input type="text" name="captcha" id="captcha"
+                    autocomplete="off" maxlength="3" required
+                    class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
+                    style="letter-spacing:.2em; font-family:monospace; font-size:.9375rem; margin-bottom:.5rem;"
+                    placeholder="輸入下方驗證碼">
+                @error('captcha')
+                <p style="margin:.375rem 0 .375rem; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
+                @enderror
+                <div style="display:flex; gap:.625rem; align-items:center;">
                     <div id="captcha-img" style="border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; line-height:0; background:#f9fafb;">
                         {!! $captchaSvg !!}
                     </div>
@@ -137,14 +145,6 @@
                         換一張
                     </button>
                 </div>
-                <input type="text" name="captcha" id="captcha"
-                    autocomplete="off" maxlength="3" required
-                    class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
-                    style="letter-spacing:.2em; font-family:monospace; font-size:.9375rem;"
-                    placeholder="輸入右方驗證碼">
-                @error('captcha')
-                <p style="margin:.375rem 0 0; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
-                @enderror
             </div>
 
             {{-- Remember --}}
