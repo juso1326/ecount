@@ -16,7 +16,7 @@ class AdminMySQLDatabaseManager implements TenantDatabaseManager
     {
         $dbName = $tenant->database()->getName();
 
-        DB::connection('admin')->statement(
+        DB::connection('mysql')->statement(
             "CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
         );
 
@@ -27,7 +27,7 @@ class AdminMySQLDatabaseManager implements TenantDatabaseManager
     {
         $dbName = $tenant->database()->getName();
 
-        DB::connection('admin')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
+        DB::connection('mysql')->statement("DROP DATABASE IF EXISTS `{$dbName}`");
 
         return true;
     }
