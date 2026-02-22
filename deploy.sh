@@ -3,6 +3,8 @@ set -e
 
 cd "$(dirname "$0")"
 
+git config --global --add safe.directory /var/www/html
+
 git pull origin main
 
 composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
