@@ -166,13 +166,19 @@ class TenantController extends Controller
             $query->latest('created_at');
         }]);
 
-        $stats = $tenant->run(function () {
-            return [
-                'companies' => \App\Models\Company::count(),
-                'projects'  => \App\Models\Project::count(),
-                'users'     => \App\Models\User::count(),
-            ];
-        });
+        $dbBroken = false;
+        try {
+            $stats = $tenant->run(function () {
+                return [
+                    'companies' => \App\Models\Company::count(),
+                    'projects'  => \App\Models\Project::count(),
+                    'users'     => \App\Models\User::count(),
+                ];
+            });
+        } catch (\Throwable $e) {
+            $dbBroken = true;
+            $stats = ['companies' => 0, 'projects' => 0, 'users' => 0];
+        }
 
         $plans = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
 
@@ -185,7 +191,7 @@ class TenantController extends Controller
             ]);
         }
 
-        return view('superadmin.tenants.show', compact('tenant', 'stats', 'plans'));
+        return view('superadmin.tenants.show', compact('tenant', 'stats', 'plans', 'dbBroken'));
     }
 
     /**
@@ -318,6 +324,58 @@ class TenantController extends Controller
 
         return redirect()->route('superadmin.tenants.index')
             ->with('success', "租戶 {$tenant->name} 已啟用");
+    }
+
+    /**
+     * 重建租戶資料庫（重新執行 migration + 建立管理員帳號）
+     */
+    public function rebuild(Tenant $tenant)
+    {
+        try {
+            $dbName = 'tenant_' . $tenant->id . '_db';
+
+            // Drop 並重建資料庫
+            \Illuminate\Support\Facades\DB::statement("DROP DATABASE IF EXISTS `{$dbName}`");
+            \Illuminate\Support\Facades\DB::statement("CREATE DATABASE `{$dbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+
+            // 重新執行 tenant migrations
+            \Illuminate\Support\Facades\Artisan::call('tenants:migrate', [
+                '--tenants' => [$tenant->id],
+                '--force'   => true,
+            ]);
+
+            // 在租戶 DB 重新建立 admin 帳號 + 角色
+            $adminEmail    = $tenant->email;
+            $adminPassword = \Illuminate\Support\Str::random(12);
+
+            $tenant->run(function () use ($adminEmail, $adminPassword, $tenant) {
+                $userId = \Illuminate\Support\Facades\DB::table('users')->insertGetId([
+                    'name'              => 'Admin',
+                    'email'             => $adminEmail,
+                    'password'          => \Illuminate\Support\Facades\Hash::make($adminPassword),
+                    'email_verified_at' => now(),
+                    'is_active'         => true,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ]);
+
+                $job = new \App\Jobs\CreateTenantJob(
+                    $tenant->id, $tenant->name, '', $adminEmail, $adminPassword
+                );
+                $job->runSeedOnly();
+
+                $adminUser = \App\Models\User::find($userId);
+                if ($adminUser) {
+                    $adminUser->assignRole('admin');
+                }
+            });
+
+            return redirect()->route('superadmin.tenants.show', $tenant)
+                ->with('success', "資料庫已重建，管理員密碼已重設：{$adminPassword}（請立即記錄）");
+
+        } catch (\Throwable $e) {
+            return back()->with('error', '重建失敗：' . $e->getMessage());
+        }
     }
 
     /**

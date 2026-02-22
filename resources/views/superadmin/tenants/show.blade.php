@@ -15,6 +15,23 @@
     </div>
 </div>
 
+@if($dbBroken)
+<div class="bg-red-50 border border-red-400 rounded-lg p-4 mb-6 flex items-start justify-between">
+    <div>
+        <p class="text-red-800 font-semibold">⚠️ 資料庫不完整</p>
+        <p class="text-red-700 text-sm mt-1">租戶資料庫存在但缺少資料表，可能是建立時 Migration 未完成。請點擊「重建資料庫」修復。</p>
+        <p class="text-red-600 text-xs mt-1">⚠️ 重建會清除該租戶所有資料並重置管理員密碼。</p>
+    </div>
+    <form method="POST" action="{{ route('superadmin.tenants.rebuild', $tenant) }}"
+          onsubmit="return confirm('確定要重建資料庫嗎？此操作將清除該租戶所有資料！')">
+        @csrf
+        <button type="submit" class="ml-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded whitespace-nowrap">
+            重建資料庫
+        </button>
+    </form>
+</div>
+@endif
+
 <!-- 基本資訊 -->
 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">基本資訊</h2>
