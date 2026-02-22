@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class CreateTenantJob implements ShouldQueue
 {
@@ -76,16 +78,74 @@ class CreateTenantJob implements ShouldQueue
             'domain' => $this->domain,
         ]);
 
-        // 3. 在租戶資料庫中建立管理員帳號
+        // 3. 在租戶資料庫中建立管理員帳號 + 角色
         $tenant->run(function () {
-            DB::table('users')->insert([
-                'name' => 'Admin',
-                'email' => $this->adminEmail,
-                'password' => Hash::make($this->adminPassword),
-                'email_verified_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
+            // 建立 admin 使用者
+            $userId = DB::table('users')->insertGetId([
+                'name'               => 'Admin',
+                'email'              => $this->adminEmail,
+                'password'           => Hash::make($this->adminPassword),
+                'email_verified_at'  => now(),
+                'is_active'          => true,
+                'created_at'         => now(),
+                'updated_at'         => now(),
             ]);
+
+            // 初始化權限與角色
+            $this->seedRolesAndPermissions();
+
+            // 指派 admin 角色
+            $adminUser = \App\Models\User::find($userId);
+            if ($adminUser) {
+                $adminUser->assignRole('admin');
+            }
         });
+    }
+
+    private function seedRolesAndPermissions(): void
+    {
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        $modules = [
+            'users'         => ['view', 'create', 'edit', 'delete'],
+            'companies'     => ['view', 'create', 'edit', 'delete'],
+            'projects'      => ['view', 'create', 'edit', 'delete'],
+            'receivables'   => ['view', 'create', 'edit', 'delete', 'receive'],
+            'payables'      => ['view', 'create', 'edit', 'delete', 'pay'],
+            'salaries'      => ['view', 'create', 'edit', 'delete', 'pay'],
+            'reports'       => ['view', 'financial', 'ar-ap', 'project', 'payroll'],
+            'roles'         => ['view', 'create', 'edit', 'delete'],
+            'settings'      => ['view', 'edit'],
+            'tags'          => ['view', 'create', 'edit', 'delete'],
+            'announcements' => ['view', 'edit'],
+        ];
+
+        foreach ($modules as $module => $actions) {
+            foreach ($actions as $action) {
+                Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => 'web']);
+            }
+        }
+
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $adminRole->givePermissionTo(Permission::all());
+
+        $managerRole = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
+        $managerRole->givePermissionTo([
+            'users.view', 'companies.view', 'projects.view', 'projects.create', 'projects.edit',
+            'receivables.view', 'receivables.create', 'receivables.edit',
+            'payables.view', 'payables.create', 'payables.edit',
+            'salaries.view', 'reports.view', 'reports.financial', 'reports.ar-ap', 'reports.project', 'reports.payroll',
+        ]);
+
+        $accountantRole = Role::firstOrCreate(['name' => 'accountant', 'guard_name' => 'web']);
+        $accountantRole->givePermissionTo([
+            'companies.view', 'projects.view',
+            'receivables.view', 'receivables.create', 'receivables.edit', 'receivables.receive',
+            'payables.view', 'payables.create', 'payables.edit', 'payables.pay',
+            'salaries.view', 'reports.view', 'reports.financial', 'reports.ar-ap', 'reports.payroll',
+        ]);
+
+        $employeeRole = Role::firstOrCreate(['name' => 'employee', 'guard_name' => 'web']);
+        $employeeRole->givePermissionTo(['companies.view', 'projects.view', 'receivables.view', 'payables.view', 'reports.view']);
     }
 }

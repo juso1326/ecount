@@ -451,10 +451,10 @@ php artisan serve
 
 **租戶測試（abc123）**:
 - URL: https://abc123.ecount.test/login
-- 系統管理員: admin@abc123.com / password123（22 權限）
-- 經理: manager@abc123.com / password123（17 權限）
-- 會計: accountant@abc123.com / password123（5 權限）
-- 員工: employee@abc123.com / password123（4 權限）
+- 系統管理員: admin@abc123.com / password123
+- 經理: manager@abc123.com / password123
+- 會計: accountant@abc123.com / password123
+- 員工: employee@abc123.com / password123
 
 
 **下一個任務**: 開始 Phase 4.1 - 建立租戶側認證系統
