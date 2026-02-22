@@ -79,8 +79,6 @@
                     </svg>
                     <span class="font-medium">方案管理</span>
                 </a>
-                    <span class="font-medium">租戶管理</span>
-                </a>
 
                 <!-- Settings -->
                 <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
