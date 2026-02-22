@@ -3,218 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入 - Ecount 專案管理系統</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>登入 — ECount</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                        }
-                    }
-                }
-            }
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .input-field {
+            width: 100%; padding: 0.625rem 0.875rem;
+            border: 1px solid #d1d5db; border-radius: 0.5rem;
+            font-size: 0.875rem; color: #111827;
+            transition: border-color .15s, box-shadow .15s;
+            outline: none; background: #fff;
         }
-    </script>
+        .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+        .input-field.error { border-color: #ef4444; }
+        .input-field::placeholder { color: #9ca3af; }
+        .btn-primary {
+            width: 100%; padding: .7rem 1rem;
+            background: #2563eb; color: #fff;
+            font-weight: 600; font-size: .9rem;
+            border-radius: .5rem; border: none; cursor: pointer;
+            transition: background .15s, transform .1s;
+            letter-spacing: .01em;
+        }
+        .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+        .btn-primary:active:not(:disabled) { transform: scale(.98); }
+        .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+    </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900">
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <!-- Logo -->
-            <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-                    Ecount 專案管理系統
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-                    登入您的帳號
-                </p>
-            </div>
+<body style="background:#f1f5f9; min-height:100vh; display:flex; align-items:center; justify-content:center;">
 
-            <!-- Login Form -->
-            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-                {{-- 鎖定提示 --}}
-                @if($isLocked)
-                <div class="mb-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg flex items-start gap-2">
-                    <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    <div>
-                        <p class="font-semibold text-sm">帳號已暫時鎖定</p>
-                        <p class="text-xs mt-0.5">請 <span id="lockCountdown" class="font-mono font-bold">{{ $lockSeconds }}</span> 秒後再試</p>
-                    </div>
-                </div>
-                @elseif($attempts > 0)
-                <div class="mb-4 bg-orange-50 border border-orange-300 text-orange-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                    </svg>
-                    還可嘗試 <strong>{{ $remaining }}</strong> 次，超過將鎖定 15 分鐘
-                </div>
-                @endif
+<div style="width:100%; max-width:400px; padding:1rem;">
 
-                <form class="space-y-6" action="{{ route('tenant.login.submit') }}" method="POST" {{ $isLocked ? 'onsubmit=return false' : '' }}>
-                    @csrf
-
-                    <!-- Error Messages -->
-                    @if ($errors->any())
-                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-400 px-4 py-3 rounded relative" role="alert">
-                            <ul class="list-disc list-inside text-sm">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email
-                        </label>
-                        <div class="mt-1">
-                            <input id="email" 
-                                   name="email" 
-                                   type="email" 
-                                   autocomplete="email" 
-                                   required
-                                   data-rules="required|email"
-                                   data-label="Email"
-                                   value="{{ old('email') }}"
-                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                        </div>
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            密碼
-                        </label>
-                        <div class="mt-1 relative">
-                            <input id="password" 
-                                   name="password" 
-                                   type="password" 
-                                   autocomplete="current-password" 
-                                   required
-                                   data-rules="required|min:6"
-                                   data-label="密碼"
-                                   class="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                            <button type="button" onclick="togglePassword('password', this)"
-                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                                <svg id="eye-password" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Captcha -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            驗證碼
-                        </label>
-                        <input id="captcha"
-                               name="captcha"
-                               type="text"
-                               autocomplete="off"
-                               maxlength="3"
-                               required
-                               data-rules="required|min:3|max:3"
-                               data-label="驗證碼"
-                               placeholder="輸入驗證碼（不區分大小寫）"
-                               class="appearance-none block w-full px-3 py-2 border @error('captcha') border-red-500 @else border-gray-300 dark:border-gray-600 @enderror rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm tracking-widest font-mono">
-                        @error('captcha')
-                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                        @enderror
-                        <div class="flex items-center gap-3 mt-2">
-                            <div id="captcha-img" class="border border-gray-200 dark:border-gray-600 rounded select-none">
-                                {!! $captchaSvg !!}
-                            </div>
-                            <button type="button" onclick="refreshCaptcha()"
-                                    class="text-sm text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                                重整
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Remember Me & Forgot Password -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <input id="remember" 
-                                   name="remember" 
-                                   type="checkbox"
-                                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                            <label for="remember" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-                                記住我
-                            </label>
-                        </div>
-
-                        <div class="text-sm">
-                            <a href="#" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
-                                忘記密碼？
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div>
-                        <button type="submit"
-                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800">
-                            登入
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Footer -->
-            <p class="text-center text-xs text-gray-500 dark:text-gray-400">
-                © 2026 Ecount. All rights reserved.
-            </p>
+    {{-- Brand --}}
+    <div style="text-align:center; margin-bottom:2rem;">
+        <div style="display:inline-flex; align-items:center; justify-content:center;
+                    width:52px; height:52px; border-radius:14px;
+                    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                    box-shadow:0 4px 14px rgba(37,99,235,.35); margin-bottom:.875rem;">
+            <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
         </div>
+        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">ECount 企業管理系統</h1>
+        <p style="font-size:.8125rem; color:#64748b; margin:0;">請登入您的帳號</p>
     </div>
-    <script>
-    function togglePassword(id, btn) {
-        const input = document.getElementById(id);
-        const isText = input.type === 'text';
-        input.type = isText ? 'password' : 'text';
-        btn.querySelector('svg').style.opacity = isText ? '1' : '0.5';
-    }
-    function refreshCaptcha() {
-        fetch('{{ route('tenant.captcha.refresh') }}')
-            .then(r => r.text())
-            .then(svg => {
-                document.getElementById('captcha-img').innerHTML = svg;
-                document.getElementById('captcha').value = '';
-                document.getElementById('captcha').focus();
-            });
-    }
-    @if($isLocked)
-    (function() {
-        let sec = {{ $lockSeconds }};
-        const el = document.getElementById('lockCountdown');
-        if (!el) return;
-        const t = setInterval(() => {
-            sec--;
-            if (sec <= 0) { clearInterval(t); location.reload(); return; }
-            el.textContent = sec;
-        }, 1000);
-    })();
-    @endif
-    </script>
+
+    {{-- Card --}}
+    <div style="background:#fff; border-radius:14px; box-shadow:0 1px 3px rgba(0,0,0,.08), 0 8px 32px rgba(0,0,0,.07); padding:2rem;">
+
+        {{-- Alerts --}}
+        @if($errors->any())
+        <div style="margin-bottom:1rem; padding:.75rem 1rem; background:#fef2f2; border:1px solid #fecaca; border-radius:.5rem; font-size:.8125rem; color:#b91c1c;">
+            @foreach($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+        @endif
+
+        @if($isLocked)
+        <div style="margin-bottom:1rem; padding:.75rem 1rem; background:#fef2f2; border:1px solid #fca5a5; border-radius:.5rem; font-size:.8125rem; color:#dc2626; display:flex; gap:.625rem; align-items:flex-start;">
+            <svg style="flex-shrink:0;margin-top:1px" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <div>
+                <div style="font-weight:600;">帳號暫時鎖定</div>
+                <div style="margin-top:.125rem;">請 <span id="lockCountdown" style="font-family:monospace; font-weight:700;">{{ $lockSeconds }}</span> 秒後再試</div>
+            </div>
+        </div>
+        @elseif($attempts > 0)
+        <div style="margin-bottom:1rem; padding:.625rem .875rem; background:#fffbeb; border:1px solid #fcd34d; border-radius:.5rem; font-size:.8125rem; color:#92400e; display:flex; gap:.5rem; align-items:center;">
+            <svg style="flex-shrink:0" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            還可嘗試 <strong>{{ $remaining }}</strong> 次，超過將鎖定 15 分鐘
+        </div>
+        @endif
+
+        <form method="POST" action="{{ route('tenant.login.submit') }}" {{ $isLocked ? 'onsubmit="return false"' : '' }}>
+            @csrf
+
+            {{-- Email --}}
+            <div style="margin-bottom:1rem;">
+                <label for="email" style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">電子郵件</label>
+                <input type="email" name="email" id="email"
+                    value="{{ old('email') }}"
+                    class="input-field {{ $errors->has('email') ? 'error' : '' }}"
+                    placeholder="user@company.com"
+                    autofocus required>
+                @error('email')
+                <p style="margin:.375rem 0 0; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Password --}}
+            <div style="margin-bottom:1rem;">
+                <label for="password" style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">密碼</label>
+                <div style="position:relative;">
+                    <input type="password" name="password" id="password"
+                        class="input-field {{ $errors->has('password') ? 'error' : '' }}"
+                        style="padding-right:2.75rem;"
+                        placeholder="••••••••"
+                        required>
+                    <button type="button" onclick="togglePassword('password', this)"
+                        style="position:absolute; right:.625rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; padding:.25rem; display:flex;" title="顯示/隱藏密碼">
+                        <svg class="eye-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                @error('password')
+                <p style="margin:.375rem 0 0; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Captcha --}}
+            <div style="margin-bottom:1.25rem;">
+                <label style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">驗證碼</label>
+                <input type="text" name="captcha" id="captcha"
+                    autocomplete="off" maxlength="3" required
+                    class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
+                    style="letter-spacing:.2em; font-family:monospace; font-size:.9375rem; margin-bottom:.5rem;"
+                    placeholder="輸入下方驗證碼">
+                @error('captcha')
+                <p style="margin:.375rem 0 .375rem; font-size:.75rem; color:#dc2626;">{{ $message }}</p>
+                @enderror
+                <div style="display:flex; gap:.625rem; align-items:center;">
+                    <div id="captcha-img" style="border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; line-height:0; background:#f9fafb;">
+                        {!! $captchaSvg !!}
+                    </div>
+                    <button type="button" onclick="refreshCaptcha()"
+                        style="display:inline-flex; align-items:center; gap:.25rem; background:none; border:none; cursor:pointer; font-size:.8125rem; color:#2563eb; font-weight:500; padding:.25rem .375rem; border-radius:.375rem;"
+                        onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='none'">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        換一張
+                    </button>
+                </div>
+            </div>
+
+            {{-- Remember --}}
+            <div style="margin-bottom:1.5rem; display:flex; align-items:center; gap:.5rem;">
+                <input type="checkbox" name="remember" id="remember"
+                    style="width:1rem; height:1rem; accent-color:#2563eb; cursor:pointer;">
+                <label for="remember" style="font-size:.8125rem; color:#6b7280; cursor:pointer;">記住此裝置</label>
+            </div>
+
+            <button type="submit" class="btn-primary" {{ $isLocked ? 'disabled' : '' }}>
+                登入
+            </button>
+        </form>
+    </div>
+
+    <p style="text-align:center; margin-top:1.25rem; font-size:.6875rem; color:#94a3b8;">© {{ date('Y') }} ECount. All rights reserved.</p>
+</div>
+
+<script>
+function refreshCaptcha() {
+    const btn = event.currentTarget;
+    btn.style.opacity = '.5';
+    fetch('{{ route('tenant.captcha.refresh') }}')
+        .then(r => r.text())
+        .then(svg => {
+            document.getElementById('captcha-img').innerHTML = svg;
+            document.getElementById('captcha').value = '';
+            document.getElementById('captcha').focus();
+        })
+        .finally(() => { btn.style.opacity = '1'; });
+}
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    btn.style.color = isHidden ? '#2563eb' : '#9ca3af';
+    const svg = btn.querySelector('svg');
+    svg.innerHTML = isHidden
+        ? '<path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>'
+        : '<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+}
+@if($isLocked)
+(function() {
+    let sec = {{ $lockSeconds }};
+    const el = document.getElementById('lockCountdown');
+    if (!el) return;
+    const t = setInterval(() => {
+        sec--;
+        if (sec <= 0) { clearInterval(t); location.reload(); return; }
+        el.textContent = sec;
+    }, 1000);
+})();
+@endif
+</script>
 </body>
 </html>
