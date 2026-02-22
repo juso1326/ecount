@@ -49,9 +49,13 @@ class ErrorLogController extends Controller
             ? $this->formatSize(File::size($logPath))
             : '0 B';
 
+        // 各 level 計數（不篩選時的全量統計）
+        $allEntries  = $this->parseLog($logPath, '', '', 5000);
+        $levelCounts = array_count_values(array_column($allEntries, 'level'));
+
         return view('superadmin.error-log.index', compact(
             'entries', 'levels', 'logSize', 'level', 'search',
-            'tenants', 'tenantId', 'logLabel'
+            'tenants', 'tenantId', 'logLabel', 'levelCounts'
         ));
     }
 
