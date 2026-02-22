@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\AuthController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\PlanController;
@@ -35,6 +36,11 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         // 方案管理
         Route::resource('plans', PlanController::class);
         Route::post('plans/{plan}/toggle-active', [PlanController::class, 'toggleActive'])->name('plans.toggle-active');
+
+        // 帳號管理
+        Route::resource('admins', AdminController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+        Route::post('admins/{admin}/suspend', [AdminController::class, 'suspend'])->name('admins.suspend');
+        Route::post('admins/{id}/restore', [AdminController::class, 'restore'])->name('admins.restore');
 
         // Error Log
         Route::get('error-log', [\App\Http\Controllers\SuperAdmin\ErrorLogController::class, 'index'])->name('error-log.index');
