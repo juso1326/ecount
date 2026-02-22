@@ -66,7 +66,7 @@
                 @endphp
                 <label class="relative cursor-pointer">
                     <input type="radio" name="plan" value="{{ $plan->slug }}"
-                        class="sr-only peer" {{ $selected ? 'checked' : '' }} required>
+                        class="sr-only peer plan-radio" {{ $selected ? 'checked' : '' }} required>
                     <div class="border-2 rounded-lg p-4 transition-all
                         peer-checked:border-indigo-600 peer-checked:bg-indigo-50
                         hover:border-gray-400
@@ -105,6 +105,60 @@
             </div>
         </div>
 
+        <!-- 計費設定（選完方案後顯示） -->
+        <div id="billing-section" class="mt-6 p-5 bg-gray-50 border border-gray-200 rounded-lg {{ old('plan') ? '' : 'hidden' }}">
+            <h3 class="text-sm font-semibold text-gray-700 mb-4">計費設定</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- 計費週期 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">計費週期 <span class="text-red-500">*</span></label>
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="billing_cycle" value="monthly"
+                                {{ old('billing_cycle', 'monthly') === 'monthly' ? 'checked' : '' }}
+                                class="text-indigo-600 billing-cycle-radio">
+                            <span class="text-sm text-gray-700">月繳</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="billing_cycle" value="annual"
+                                {{ old('billing_cycle') === 'annual' ? 'checked' : '' }}
+                                class="text-indigo-600 billing-cycle-radio">
+                            <span class="text-sm text-gray-700">年繳 <span class="text-green-600 text-xs" id="annual-discount-label"></span></span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="billing_cycle" value="unlimited"
+                                {{ old('billing_cycle') === 'unlimited' ? 'checked' : '' }}
+                                class="text-indigo-600 billing-cycle-radio">
+                            <span class="text-sm text-gray-700">無限期（不設到期日）</span>
+                        </label>
+                    </div>
+                    @error('billing_cycle')<p class="mt-1 text-sm text-red-500">{{ $message }}</p>@enderror
+                </div>
+
+                <!-- 開始日期 -->
+                <div>
+                    <label for="plan_started_at" class="block text-sm font-medium text-gray-700 mb-2">開通日期</label>
+                    <input type="date" name="plan_started_at" id="plan_started_at"
+                        value="{{ old('plan_started_at', date('Y-m-d')) }}"
+                        class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <p id="expiry-preview" class="mt-1 text-xs text-indigo-600"></p>
+                </div>
+
+                <!-- 自動續費 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">自動續費</label>
+                    <label class="flex items-center gap-2 cursor-pointer mt-2">
+                        <input type="checkbox" name="auto_renew" value="1"
+                            {{ old('auto_renew', '1') ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-indigo-600">
+                        <span class="text-sm text-gray-700">到期自動續約</span>
+                    </label>
+                    <p class="mt-1 text-xs text-gray-500">勾選後系統將在到期前提醒並自動續費</p>
+                </div>
+            </div>
+        </div>
+
         <!-- 警告提示 -->
         <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
             <p class="text-sm text-yellow-800 font-medium">注意事項</p>
@@ -127,3 +181,57 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// 方案資料（由 PHP 傳入）
+const planData = @json($plans->keyBy('slug')->map(fn($p) => ['price' => $p->price, 'annual_price' => $p->annual_price]));
+
+const billingSection = document.getElementById('billing-section');
+const expiryPreview  = document.getElementById('expiry-preview');
+const annualLabel    = document.getElementById('annual-discount-label');
+const startDateInput = document.getElementById('plan_started_at');
+
+function updateExpiryPreview() {
+    const cycle = document.querySelector('input[name="billing_cycle"]:checked')?.value;
+    const start = startDateInput?.value;
+    if (!start) { expiryPreview.textContent = ''; return; }
+
+    const d = new Date(start);
+    if (cycle === 'monthly') {
+        d.setMonth(d.getMonth() + 1);
+        expiryPreview.textContent = `到期日：${d.toLocaleDateString('zh-TW')}`;
+    } else if (cycle === 'annual') {
+        d.setFullYear(d.getFullYear() + 1);
+        expiryPreview.textContent = `到期日：${d.toLocaleDateString('zh-TW')}`;
+    } else {
+        expiryPreview.textContent = '永久有效，不設到期日';
+    }
+}
+
+function updateAnnualLabel(slug) {
+    const plan = planData[slug];
+    if (!plan || !plan.annual_price) { annualLabel.textContent = ''; return; }
+    const saving = Math.round((1 - plan.annual_price / (plan.price * 12)) * 100);
+    annualLabel.textContent = `省 ${saving}%`;
+}
+
+// 選方案後展開計費區
+document.querySelectorAll('.plan-radio').forEach(radio => {
+    radio.addEventListener('change', function () {
+        billingSection.classList.remove('hidden');
+        updateAnnualLabel(this.value);
+        updateExpiryPreview();
+    });
+});
+
+document.querySelectorAll('.billing-cycle-radio').forEach(r => r.addEventListener('change', updateExpiryPreview));
+startDateInput?.addEventListener('change', updateExpiryPreview);
+
+// 初始化（驗證失敗回填時）
+document.addEventListener('DOMContentLoaded', () => {
+    const checked = document.querySelector('.plan-radio:checked');
+    if (checked) { updateAnnualLabel(checked.value); updateExpiryPreview(); }
+});
+</script>
+@endpush

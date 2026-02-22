@@ -23,10 +23,12 @@ class CreateTenantJob implements ShouldQueue
         public string $domain,
         public string $adminEmail,
         public string $adminPassword,
-        public string $plan = 'basic'
-    ) {
-        //
-    }
+        public string $plan = 'basic',
+        public string $billingCycle = 'monthly', // monthly | annual | unlimited
+        public ?string $planStartedAt = null,
+        public ?string $planEndsAt = null,
+        public bool $autoRenew = true,
+    ) {}
 
     /**
      * Execute the job.
@@ -34,12 +36,25 @@ class CreateTenantJob implements ShouldQueue
     public function handle(): void
     {
         // 1. 建立租戶記錄（會自動觸發 TenantCreated 事件 → CreateDatabase + MigrateDatabase）
+        $startedAt = $this->planStartedAt ? \Carbon\Carbon::parse($this->planStartedAt) : now();
+
+        $endsAt = null;
+        if ($this->billingCycle === 'monthly') {
+            $endsAt = $startedAt->copy()->addMonth();
+        } elseif ($this->billingCycle === 'annual') {
+            $endsAt = $startedAt->copy()->addYear();
+        }
+        // unlimited → endsAt stays null
+
         $tenant = Tenant::create([
-            'id' => $this->tenantId,
-            'name' => $this->tenantName,
-            'email' => $this->adminEmail,
-            'plan' => $this->plan,
-            'status' => 'active',
+            'id'             => $this->tenantId,
+            'name'           => $this->tenantName,
+            'email'          => $this->adminEmail,
+            'plan'           => $this->plan,
+            'plan_started_at'=> $startedAt,
+            'plan_ends_at'   => $endsAt,
+            'auto_renew'     => $this->autoRenew,
+            'status'         => 'active',
         ]);
 
         // 2. 建立子域名

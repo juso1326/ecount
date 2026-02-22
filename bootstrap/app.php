@@ -36,5 +36,11 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (
+            \Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedOnDomainException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            $domain = $request->getHost();
+            return response()->view('errors.tenant-not-found', compact('domain'), 404);
+        });
     })->create();

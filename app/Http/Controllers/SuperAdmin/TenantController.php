@@ -76,21 +76,26 @@ class TenantController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|string|max:50|regex:/^[a-z0-9]+$/|unique:tenants,id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:tenants,email',
-            'plan' => 'required|in:basic,professional,enterprise',
-            'domain' => 'nullable|string|max:255',
+            'id'              => 'required|string|max:50|regex:/^[a-z0-9]+$/|unique:tenants,id',
+            'name'            => 'required|string|max:255',
+            'email'           => 'required|email|unique:tenants,email',
+            'plan'            => 'required|string|exists:plans,slug',
+            'billing_cycle'   => 'required|in:monthly,annual,unlimited',
+            'plan_started_at' => 'nullable|date',
+            'auto_renew'      => 'nullable|boolean',
+            'domain'          => 'nullable|string|max:255',
         ], [
-            'id.required' => '租戶 ID 為必填',
-            'id.regex' => '租戶 ID 只能包含小寫字母和數字',
-            'id.unique' => '租戶 ID 已存在',
+            'id.required'   => '租戶 ID 為必填',
+            'id.regex'      => '租戶 ID 只能包含小寫字母和數字',
+            'id.unique'     => '租戶 ID 已存在',
             'name.required' => '租戶名稱為必填',
-            'email.required' => 'Email 為必填',
-            'email.email' => 'Email 格式不正確',
-            'email.unique' => 'Email 已被使用',
+            'email.required'=> 'Email 為必填',
+            'email.email'   => 'Email 格式不正確',
+            'email.unique'  => 'Email 已被使用',
             'plan.required' => '方案為必填',
-            'plan.in' => '方案選擇不正確',
+            'plan.exists'   => '所選方案不存在',
+            'billing_cycle.required' => '請選擇計費週期',
+            'billing_cycle.in'       => '計費週期選擇不正確',
         ]);
 
         if ($validator->fails()) {
@@ -110,7 +115,10 @@ class TenantController extends Controller
                 $request->name,
                 $request->email,
                 $request->plan,
-                $request->domain
+                $request->domain,
+                $request->billing_cycle,
+                $request->plan_started_at,
+                (bool) $request->input('auto_renew', true),
             );
 
             if ($request->wantsJson()) {

@@ -52,32 +52,37 @@ class TenantService
      * 同步建立新租戶（用於測試或小量建立）
      */
     public function createTenantSync(
-        string $tenantId, 
-        string $name, 
-        string $email, 
-        string $plan = 'basic', 
-        ?string $domain = null
+        string $tenantId,
+        string $name,
+        string $email,
+        string $plan = 'basic',
+        ?string $domain = null,
+        string $billingCycle = 'monthly',
+        ?string $planStartedAt = null,
+        bool $autoRenew = true,
     ): Tenant
     {
         $domain = $domain ?? $tenantId . '.' . config('app.domain', 'localhost');
         $password = Str::random(12);
-        
+
         if (Tenant::find($tenantId)) {
             throw new \Exception("租戶 ID '{$tenantId}' 已存在");
         }
-        
-        // 直接執行 Job 的邏輯
+
         $job = new CreateTenantJob(
             tenantId: $tenantId,
             tenantName: $name,
             domain: $domain,
             adminEmail: $email,
             adminPassword: $password,
-            plan: $plan
+            plan: $plan,
+            billingCycle: $billingCycle,
+            planStartedAt: $planStartedAt,
+            autoRenew: $autoRenew,
         );
-        
+
         $job->handle();
-        
+
         return Tenant::find($tenantId);
     }
     
