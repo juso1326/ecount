@@ -37,6 +37,7 @@ Route::prefix('superadmin')->name('superadmin.')->group(function () {
         Route::post('tenants/{tenant}/activate', [TenantController::class, 'activate'])->name('tenants.activate');
         Route::post('tenants/{tenant}/renew', [TenantController::class, 'renew'])->name('tenants.renew');
         Route::post('tenants/{tenant}/rebuild', [TenantController::class, 'rebuild'])->name('tenants.rebuild');
+        Route::post('tenants/{tenant}/fix-domain', [TenantController::class, 'fixDomain'])->name('tenants.fix-domain');
         
         // 方案管理
         Route::resource('plans', PlanController::class);

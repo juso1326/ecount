@@ -107,24 +107,36 @@
         @forelse($tenant->domains as $domain)
             @php
                 $raw = $domain->domain;
-                // 若 domain 不含 "."，視為短 ID，補上 base domain
-                $fullDomain = str_contains($raw, '.') ? $raw : $raw . '.' . config('app.domain', 'localhost');
+                $needsFix = !str_contains($raw, '.');
+                $fullDomain = $needsFix ? $raw . '.' . config('app.domain', 'localhost') : $raw;
                 $fullUrl = 'http://' . $fullDomain;
             @endphp
-            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border">
+            <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border {{ $needsFix ? 'border-yellow-400' : '' }}">
                 <div>
                     <p class="text-xs text-gray-500 mb-1">子網域</p>
                     <span class="font-mono text-gray-900 text-sm">{{ $fullDomain }}</span>
+                    @if($needsFix)
+                        <span class="ml-2 text-xs text-yellow-600">⚠️ 域名格式需修復</span>
+                    @endif
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button onclick="navigator.clipboard.writeText('{{ $fullUrl }}'); this.textContent='已複製✓'; setTimeout(()=>this.textContent='複製',1500)"
-                            class="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-2 py-1">
-                        複製
-                    </button>
-                    <a href="{{ $fullUrl }}" target="_blank"
-                       class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded px-3 py-1 flex items-center gap-1">
-                        訪問 <span>→</span>
-                    </a>
+                    @if($needsFix)
+                        <form method="POST" action="{{ route('superadmin.tenants.fix-domain', $tenant) }}">
+                            @csrf
+                            <button type="submit" class="text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded px-2 py-1">
+                                修復域名
+                            </button>
+                        </form>
+                    @else
+                        <button onclick="navigator.clipboard.writeText('{{ $fullUrl }}'); this.textContent='已複製✓'; setTimeout(()=>this.textContent='複製',1500)"
+                                class="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 rounded px-2 py-1">
+                            複製
+                        </button>
+                        <a href="{{ $fullUrl }}" target="_blank"
+                           class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded px-3 py-1 flex items-center gap-1">
+                            訪問 <span>→</span>
+                        </a>
+                    @endif
                 </div>
             </div>
         @empty
