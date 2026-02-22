@@ -4,6 +4,7 @@ namespace App\TenantDatabaseManagers;
 
 use Illuminate\Support\Facades\DB;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
+use Stancl\Tenancy\DatabaseConfig;
 
 /**
  * 使用 admin 連線建立/刪除租戶資料庫，
@@ -50,22 +51,17 @@ class AdminMySQLDatabaseManager implements \Stancl\Tenancy\Contracts\ManagesData
         // no-op
     }
 
-    public function createUser(TenantWithDatabase $tenant): bool
+    public function createUser(DatabaseConfig $databaseConfig): bool
     {
         return true;
     }
 
-    public function deleteUser(TenantWithDatabase $tenant): bool
+    public function deleteUser(DatabaseConfig $databaseConfig): bool
     {
         return true;
     }
 
     public function userExists(string $username): bool
-    {
-        return true;
-    }
-
-    public function grantPrivileges(TenantWithDatabase $tenant): bool
     {
         return true;
     }
