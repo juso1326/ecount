@@ -15,10 +15,12 @@ class DashboardController extends Controller
     {
         // 租戶統計
         $stats = [
-            'total_tenants' => Tenant::count(),
-            'active_tenants' => Tenant::where('status', 'active')->count(),
+            'total_tenants'     => Tenant::count(),
+            'active_tenants'    => Tenant::where('status', 'active')->count(),
             'suspended_tenants' => Tenant::where('status', 'suspended')->count(),
-            'inactive_tenants' => Tenant::where('status', 'inactive')->count(),
+            'inactive_tenants'  => Tenant::where('status', 'inactive')->count(),
+            'expired_tenants'   => Tenant::whereNotNull('plan_ends_at')->where('plan_ends_at', '<', now())->count(),
+            'expiring_tenants'  => Tenant::whereNotNull('plan_ends_at')->whereBetween('plan_ends_at', [now(), now()->addDays(7)])->count(),
         ];
 
         // 方案統計

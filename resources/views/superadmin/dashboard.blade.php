@@ -5,66 +5,54 @@
 
 @section('content')
 <!-- Stats Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-    <!-- Total Tenants Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">總租戶數</p>
-                <h3 class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['total_tenants'] }}</h3>
-            </div>
-            <div class="p-3 bg-primary/10 rounded-lg">
-                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+    <!-- Total Tenants -->
+    <a href="{{ route('superadmin.tenants.index') }}"
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-primary/40 transition group">
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">總租戶數</p>
+        <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1 group-hover:text-primary transition">{{ $stats['total_tenants'] }}</p>
+        <div class="mt-2 w-8 h-0.5 bg-primary/30 rounded group-hover:w-full transition-all duration-300"></div>
+    </a>
 
-    <!-- Active Tenants Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">啟用中</p>
-                <h3 class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{{ $stats['active_tenants'] }}</h3>
-            </div>
-            <div class="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
+    <!-- Active -->
+    <a href="{{ route('superadmin.tenants.index', ['status' => 'active']) }}"
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-green-400/40 transition group">
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">啟用中</p>
+        <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{ $stats['active_tenants'] }}</p>
+        <div class="mt-2 w-8 h-0.5 bg-green-400/30 rounded group-hover:w-full transition-all duration-300"></div>
+    </a>
 
-    <!-- Suspended Tenants Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">已暫停</p>
-                <h3 class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">{{ $stats['suspended_tenants'] }}</h3>
-            </div>
-            <div class="p-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
-                <svg class="w-8 h-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
+    <!-- Suspended -->
+    <a href="{{ route('superadmin.tenants.index', ['status' => 'suspended']) }}"
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-yellow-400/40 transition group">
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">已暫停</p>
+        <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">{{ $stats['suspended_tenants'] }}</p>
+        <div class="mt-2 w-8 h-0.5 bg-yellow-400/30 rounded group-hover:w-full transition-all duration-300"></div>
+    </a>
 
-    <!-- Inactive Tenants Card -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">未啟用</p>
-                <h3 class="text-3xl font-bold text-gray-600 dark:text-gray-400 mt-2">{{ $stats['inactive_tenants'] }}</h3>
-            </div>
-            <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                <svg class="w-8 h-8 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
+    <!-- Inactive -->
+    <a href="{{ route('superadmin.tenants.index', ['status' => 'inactive']) }}"
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-gray-400/40 transition group">
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">未啟用</p>
+        <p class="text-2xl font-bold text-gray-600 dark:text-gray-400 mt-1">{{ $stats['inactive_tenants'] }}</p>
+        <div class="mt-2 w-8 h-0.5 bg-gray-400/30 rounded group-hover:w-full transition-all duration-300"></div>
+    </a>
+
+    <!-- Expired -->
+    <a href="{{ route('superadmin.tenants.index', ['expiry' => 'expired']) }}"
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border {{ $stats['expired_tenants'] > 0 ? 'border-red-300 dark:border-red-700 bg-red-50/40 dark:bg-red-900/10' : 'border-gray-200 dark:border-gray-700' }} p-4 hover:shadow-md hover:border-red-400/60 transition group">
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">已到期</p>
+        <p class="text-2xl font-bold {{ $stats['expired_tenants'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }} mt-1">{{ $stats['expired_tenants'] }}</p>
+        <div class="mt-2 w-8 h-0.5 bg-red-400/30 rounded group-hover:w-full transition-all duration-300"></div>
+    </a>
+
+    <!-- Expiring Soon -->
+    <a href="{{ route('superadmin.tenants.index', ['expiry' => 'expiring']) }}"
+       class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border {{ $stats['expiring_tenants'] > 0 ? 'border-orange-300 dark:border-orange-700 bg-orange-50/40 dark:bg-orange-900/10' : 'border-gray-200 dark:border-gray-700' }} p-4 hover:shadow-md hover:border-orange-400/60 transition group">
+        <p class="text-xs font-medium text-gray-500 dark:text-gray-400">7天內到期</p>
+        <p class="text-2xl font-bold {{ $stats['expiring_tenants'] > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-600 dark:text-gray-400' }} mt-1">{{ $stats['expiring_tenants'] }}</p>
+        <div class="mt-2 w-8 h-0.5 bg-orange-400/30 rounded group-hover:w-full transition-all duration-300"></div>
+    </a>
 </div>
 
 <!-- Charts & Tables Grid -->
