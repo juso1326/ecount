@@ -57,6 +57,20 @@ class CreateTenantJob implements ShouldQueue
             'status'         => 'active',
         ]);
 
+        // 建立初始方案訂閱記錄
+        $tenant->subscriptions()->create([
+            'plan'       => $this->plan,
+            'started_at' => $startedAt,
+            'ends_at'    => $endsAt,
+            'status'     => 'active',
+            'auto_renew' => $this->autoRenew,
+            'notes'      => '初始開通（' . match($this->billingCycle) {
+                'monthly'   => '月繳',
+                'annual'    => '年繳',
+                default     => '無限期',
+            } . '）',
+        ]);
+
         // 2. 建立子域名
         $tenant->domains()->create([
             'domain' => $this->domain,

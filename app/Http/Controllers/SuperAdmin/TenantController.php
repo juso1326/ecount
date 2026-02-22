@@ -268,6 +268,20 @@ class TenantController extends Controller
             'status'          => 'active',
         ]);
 
+        // 記錄訂閱歷程
+        $tenant->subscriptions()->create([
+            'plan'       => $request->plan,
+            'started_at' => $startedAt,
+            'ends_at'    => $endsAt,
+            'status'     => 'active',
+            'auto_renew' => (bool) $request->input('auto_renew', true),
+            'notes'      => '手動更換方案（' . match($request->billing_cycle) {
+                'monthly'   => '月繳',
+                'annual'    => '年繳',
+                default     => '無限期',
+            } . '）',
+        ]);
+
         return redirect()->route('superadmin.tenants.show', $tenant)
             ->with('success', '方案已更新：'. $request->plan .' / '. match($request->billing_cycle) {
                 'monthly'  => '月繳，到期 '.$endsAt->format('Y-m-d'),
