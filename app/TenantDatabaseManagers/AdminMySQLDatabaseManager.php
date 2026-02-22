@@ -34,10 +34,20 @@ class AdminMySQLDatabaseManager implements \Stancl\Tenancy\Contracts\ManagesData
 
     public function databaseExists(string $name): bool
     {
-        $result = DB::connection('admin')
-            ->select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$name]);
-
-        return count($result) > 0;
+        // Use root (mysql) connection for INFORMATION_SCHEMA; ecount_admin lacks global SELECT.
+        try {
+            $result = DB::connection('mysql')
+                ->select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$name]);
+            return count($result) > 0;
+        } catch (\Exception $e) {
+            // Fallback: try USE statement via admin connection
+            try {
+                DB::connection('admin')->statement("USE `{$name}`");
+                return true;
+            } catch (\Exception) {
+                return false;
+            }
+        }
     }
 
     public function makeConnectionConfig(array $baseConfig, string $databaseName): array
