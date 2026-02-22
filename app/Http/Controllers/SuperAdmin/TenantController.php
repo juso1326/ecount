@@ -66,7 +66,8 @@ class TenantController extends Controller
      */
     public function create()
     {
-        return view('superadmin.tenants.create');
+        $plans = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
+        return view('superadmin.tenants.create', compact('plans'));
     }
 
     /**
