@@ -152,15 +152,16 @@ class TenantController extends Controller
         $tenant->load(['domains', 'subscriptions' => function($query) {
             $query->latest('created_at');
         }]);
-        
-        // 取得租戶資料庫統計
+
         $stats = $tenant->run(function () {
             return [
                 'companies' => \App\Models\Company::count(),
-                'projects' => \App\Models\Project::count(),
-                'users' => \App\Models\User::count(),
+                'projects'  => \App\Models\Project::count(),
+                'users'     => \App\Models\User::count(),
             ];
         });
+
+        $plans = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
 
         if (request()->wantsJson()) {
             return response()->json([
@@ -171,7 +172,7 @@ class TenantController extends Controller
             ]);
         }
 
-        return view('superadmin.tenants.show', compact('tenant', 'stats'));
+        return view('superadmin.tenants.show', compact('tenant', 'stats', 'plans'));
     }
 
     /**
@@ -222,6 +223,44 @@ class TenantController extends Controller
 
         return redirect()->route('superadmin.tenants.index')
             ->with('success', '租戶更新成功');
+    }
+
+    /**
+     * Renew or change the tenant's plan.
+     */
+    public function renew(Request $request, Tenant $tenant)
+    {
+        $request->validate([
+            'plan'            => 'required|string|exists:plans,slug',
+            'billing_cycle'   => 'required|in:monthly,annual,unlimited',
+            'plan_started_at' => 'nullable|date',
+            'auto_renew'      => 'nullable|boolean',
+        ]);
+
+        $startedAt = $request->plan_started_at
+            ? \Carbon\Carbon::parse($request->plan_started_at)
+            : now();
+
+        $endsAt = match($request->billing_cycle) {
+            'monthly'   => $startedAt->copy()->addMonth(),
+            'annual'    => $startedAt->copy()->addYear(),
+            default     => null, // unlimited
+        };
+
+        $tenant->update([
+            'plan'            => $request->plan,
+            'plan_started_at' => $startedAt,
+            'plan_ends_at'    => $endsAt,
+            'auto_renew'      => (bool) $request->input('auto_renew', true),
+            'status'          => 'active',
+        ]);
+
+        return redirect()->route('superadmin.tenants.show', $tenant)
+            ->with('success', '方案已更新：'. $request->plan .' / '. match($request->billing_cycle) {
+                'monthly'  => '月繳，到期 '.$endsAt->format('Y-m-d'),
+                'annual'   => '年繳，到期 '.$endsAt->format('Y-m-d'),
+                default    => '無限期',
+            });
     }
 
     /**

@@ -103,41 +103,134 @@
 <!-- 方案資訊 -->
 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">方案資訊</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
         <div>
-            <label class="block text-sm font-medium text-gray-500">方案開始時間</label>
-            <p class="mt-1 text-lg text-gray-900">
-                {{ $tenant->plan_started_at ? $tenant->plan_started_at->format('Y-m-d H:i') : '未設定' }}
+            <label class="block text-sm font-medium text-gray-500">目前方案</label>
+            <p class="mt-1">
+                <span class="px-2 py-1 text-sm rounded-full
+                    @if($tenant->plan === 'basic') bg-blue-100 text-blue-800
+                    @elseif($tenant->plan === 'professional') bg-indigo-100 text-indigo-800
+                    @else bg-purple-100 text-purple-800
+                    @endif">
+                    {{ $tenant->plan_name ?? ucfirst($tenant->plan) }}
+                </span>
             </p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-500">方案到期時間</label>
-            <p class="mt-1 text-lg text-gray-900">
+            <label class="block text-sm font-medium text-gray-500">開始日期</label>
+            <p class="mt-1 text-gray-900">{{ $tenant->plan_started_at?->format('Y-m-d') ?? '未設定' }}</p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-500">到期日期</label>
+            <p class="mt-1">
                 @if($tenant->plan_ends_at)
-                    {{ $tenant->plan_ends_at->format('Y-m-d H:i') }}
+                    <span class="{{ $tenant->isPlanExpired() ? 'text-red-600 font-semibold' : ($tenant->isPlanExpiringSoon() ? 'text-orange-600 font-semibold' : 'text-gray-900') }}">
+                        {{ $tenant->plan_ends_at->format('Y-m-d') }}
+                    </span>
                     @if($tenant->isPlanExpired())
-                        <span class="ml-2 px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">已過期</span>
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded bg-red-100 text-red-700">已到期</span>
                     @elseif($tenant->isPlanExpiringSoon())
-                        <span class="ml-2 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">即將到期</span>
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded bg-orange-100 text-orange-700">{{ $tenant->planDaysRemaining() }}天後到期</span>
                     @endif
                 @else
-                    未設定
+                    <span class="text-gray-500">無限期</span>
                 @endif
             </p>
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-500">剩餘天數</label>
-            <p class="mt-1 text-lg font-bold {{ $tenant->planDaysRemaining() < 7 ? 'text-red-600' : 'text-green-600' }}">
-                {{ $tenant->planDaysRemaining() > 365 ? '∞' : $tenant->planDaysRemaining() }} 天
+            <label class="block text-sm font-medium text-gray-500">自動續約</label>
+            <p class="mt-1">
+                <span class="px-2 py-0.5 text-xs rounded {{ $tenant->auto_renew ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                    {{ $tenant->auto_renew ? '是' : '否' }}
+                </span>
             </p>
         </div>
     </div>
-    <div class="mt-4">
-        <label class="flex items-center">
-            <input type="checkbox" {{ $tenant->auto_renew ? 'checked' : '' }} disabled class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
-            <span class="ml-2 text-sm text-gray-700">自動續約</span>
-        </label>
+</div>
+
+<!-- 更換/續約方案 -->
+<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">更換 / 續約方案</h2>
+        <button type="button" onclick="document.getElementById('renew-form').classList.toggle('hidden')"
+            class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">展開 ▾</button>
     </div>
+
+    <form id="renew-form" class="hidden" method="POST"
+          action="{{ route('superadmin.tenants.renew', $tenant) }}">
+        @csrf
+
+        {{-- 方案卡片 --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+            @foreach($plans as $plan)
+            <label class="relative cursor-pointer">
+                <input type="radio" name="plan" value="{{ $plan->slug }}"
+                    class="sr-only peer" {{ $tenant->plan === $plan->slug ? 'checked' : '' }} required>
+                <div class="border-2 rounded-lg p-3 transition-all
+                    peer-checked:border-indigo-600 peer-checked:bg-indigo-50
+                    hover:border-gray-400
+                    {{ $plan->is_featured ? 'border-indigo-200' : 'border-gray-200' }}">
+                    @if($plan->is_featured)
+                        <span class="absolute -top-2 left-3 bg-indigo-600 text-white text-xs px-2 py-0.5 rounded-full">推薦</span>
+                    @endif
+                    <div class="font-semibold text-sm text-gray-900">{{ $plan->name }}</div>
+                    <div class="text-indigo-600 font-bold">NT${{ number_format($plan->price) }}<span class="text-xs font-normal text-gray-400">/月</span></div>
+                    @if($plan->annual_price)
+                    <div class="text-xs text-green-600">年繳 NT${{ number_format($plan->annual_price) }} 省{{ $plan->annual_discount_percentage }}%</div>
+                    @endif
+                    <div class="text-xs text-gray-500 mt-1">👥 {{ $plan->max_users ?: '不限' }} 人</div>
+                </div>
+            </label>
+            @endforeach
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {{-- 計費週期 --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">計費週期 <span class="text-red-500">*</span></label>
+                <div class="space-y-1.5">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="billing_cycle" value="monthly" checked class="text-indigo-600 renew-cycle">
+                        <span class="text-sm">月繳</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="billing_cycle" value="annual" class="text-indigo-600 renew-cycle">
+                        <span class="text-sm">年繳</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="billing_cycle" value="unlimited" class="text-indigo-600 renew-cycle">
+                        <span class="text-sm">無限期</span>
+                    </label>
+                </div>
+            </div>
+
+            {{-- 開始日期 --}}
+            <div>
+                <label for="renew_started_at" class="block text-sm font-medium text-gray-700 mb-2">開通日期</label>
+                <input type="date" name="plan_started_at" id="renew_started_at"
+                    value="{{ date('Y-m-d') }}"
+                    class="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <p id="renew-expiry-preview" class="mt-1 text-xs text-indigo-600"></p>
+            </div>
+
+            {{-- 自動續費 --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">自動續費</label>
+                <label class="flex items-center gap-2 cursor-pointer mt-2">
+                    <input type="checkbox" name="auto_renew" value="1" {{ $tenant->auto_renew ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-indigo-600">
+                    <span class="text-sm text-gray-700">到期自動續約</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+            <button type="submit"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition">
+                確認更新方案
+            </button>
+        </div>
+    </form>
 </div>
 
 <!-- 租用記錄 -->
@@ -243,3 +336,24 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function renewExpiryPreview() {
+    const cycle   = document.querySelector('input[name="billing_cycle"]:checked')?.value;
+    const startEl = document.getElementById('renew_started_at');
+    const preview = document.getElementById('renew-expiry-preview');
+    if (!cycle || !startEl || !preview) return;
+    const start = new Date(startEl.value);
+    if (isNaN(start)) { preview.textContent = ''; return; }
+    if (cycle === 'unlimited') { preview.textContent = '無限期'; return; }
+    const end = new Date(start);
+    if (cycle === 'monthly') end.setMonth(end.getMonth() + 1);
+    if (cycle === 'annual')  end.setFullYear(end.getFullYear() + 1);
+    preview.textContent = '到期：' + end.toISOString().slice(0, 10);
+}
+document.querySelectorAll('.renew-cycle').forEach(r => r.addEventListener('change', renewExpiryPreview));
+document.getElementById('renew_started_at')?.addEventListener('change', renewExpiryPreview);
+renewExpiryPreview();
+</script>
+@endpush
