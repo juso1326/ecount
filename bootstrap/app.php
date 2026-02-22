@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // 排除 API 路由的 CSRF 驗證
         $middleware->validateCsrfTokens(except: [
             'api/*',
+            'deploy',
         ]);
         
         // 註冊自訂的 guest 中介層別名
