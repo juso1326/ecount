@@ -258,13 +258,11 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
-        return redirect()->route('tenant.projects.show', $project)
+        return redirect(route('tenant.projects.show', $project) . '#basic-info')
             ->with('success', '專案更新成功');
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Project $project)
     {
         // 檢查是否有關聯資料

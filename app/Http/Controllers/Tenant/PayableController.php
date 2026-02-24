@@ -20,7 +20,7 @@ class PayableController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Payable::with(['project', 'company', 'responsibleUser']);
+        $query = Payable::with(['project', 'company', 'responsibleUser', 'payeeUser', 'payeeCompany']);
 
         // 帳務年度篩選（逾期/到期快篩時不限年度）
         $fiscalYear = $request->input('fiscal_year', date('Y'));
@@ -139,10 +139,12 @@ class PayableController extends Controller
         
         $stats = $statsQuery->selectRaw('
             SUM(amount) as total_amount,
+            SUM(deduction) as total_deduction,
             SUM(paid_amount) as total_paid
         ')->first();
         
         $totalAmount = $stats->total_amount ?? 0;
+        $totalDeduction = $stats->total_deduction ?? 0;
         $totalPaid = $stats->total_paid ?? 0;
 
         return view('tenant.payables.index', compact(
@@ -150,6 +152,7 @@ class PayableController extends Controller
             'dateStart', 
             'dateEnd', 
             'totalAmount', 
+            'totalDeduction',
             'totalPaid', 
             'availableYears', 
             'fiscalYear',

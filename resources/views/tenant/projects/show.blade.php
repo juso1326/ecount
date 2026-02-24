@@ -37,7 +37,7 @@
     <!-- 左側：專案資訊 (2/3寬度) -->
     <div class="lg:col-span-2 space-y-2">
         <!-- 基本資訊 -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div id="basic-info" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                 基本資訊
             </h2>

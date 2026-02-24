@@ -19,6 +19,7 @@ class Company extends Model
         'name',
         'short_name',
         'type',
+        'is_client',
         'is_outsource',
         'tax_id',
         'is_tax_entity',
@@ -50,6 +51,7 @@ class Company extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_client' => 'boolean',
         'is_outsource' => 'boolean',
         'is_tax_entity' => 'boolean',
     ];

@@ -141,8 +141,8 @@ class UserController extends Controller
             ], 201);
         }
 
-        return redirect()->route('tenant.users.index')
-            ->with('success', '使用者建立成功');
+        return redirect()->route('tenant.users.edit', $user)
+            ->with('success', '使用者建立成功，可在此頁面繼續設定銀行帳戶');
     }
 
     /**

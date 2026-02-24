@@ -187,9 +187,19 @@ class CompanyController extends Controller
             'type' => 'required|in:company,individual',
             'tax_id' => 'nullable|string|max:20',
             'phone' => 'nullable|string|max:20',
+            'mobile' => 'nullable|string|max:20',
             'fax' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:255',
+            'website' => 'nullable|string|max:255',
+            'contact_person' => 'nullable|string|max:100',
+            'representative' => 'nullable|string|max:100',
+            'invoice_title' => 'nullable|string|max:255',
+            'is_tax_entity' => 'boolean',
+            'bank_name' => 'nullable|string|max:100',
+            'bank_branch' => 'nullable|string|max:100',
+            'bank_account' => 'nullable|string|max:50',
+            'bank_account_name' => 'nullable|string|max:100',
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
         ], [
@@ -213,11 +223,15 @@ class CompanyController extends Controller
 
         $companyData = $request->only([
             'name', 'short_name', 'type', 'tax_id', 
-            'phone', 'fax', 'email', 'address'
+            'phone', 'mobile', 'fax', 'email', 'address', 'website',
+            'contact_person', 'representative',
+            'invoice_title', 'bank_name', 'bank_branch', 'bank_account', 'bank_account_name',
+            'note',
         ]);
         
         $companyData['is_client'] = $request->boolean('is_client');
         $companyData['is_outsource'] = $request->boolean('is_outsource');
+        $companyData['is_tax_entity'] = $request->boolean('is_tax_entity');
 
         $company->update($companyData);
 

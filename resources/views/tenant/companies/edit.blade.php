@@ -120,12 +120,89 @@
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- 備註 -->
-            <div class="md:col-span-2">
-                <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備註</label>
-                <textarea name="note" id="note" rows="3"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $company->note) }}</textarea>
+            <!-- 聯絡人 -->
+            <div>
+                <label for="contact_person" class="block text-sm font-medium text-gray-700 dark:text-gray-300">聯絡人</label>
+                <input type="text" name="contact_person" id="contact_person" value="{{ old('contact_person', $company->contact_person) }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
+
+            <!-- 代表人 -->
+            <div>
+                <label for="representative" class="block text-sm font-medium text-gray-700 dark:text-gray-300">代表人</label>
+                <input type="text" name="representative" id="representative" value="{{ old('representative', $company->representative) }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 手機 -->
+            <div>
+                <label for="mobile" class="block text-sm font-medium text-gray-700 dark:text-gray-300">手機</label>
+                <input type="text" name="mobile" id="mobile" value="{{ old('mobile', $company->mobile) }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- 網站 -->
+            <div>
+                <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300">網站</label>
+                <input type="text" name="website" id="website" value="{{ old('website', $company->website) }}"
+                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://...">
+            </div>
+        </div>
+
+        <!-- 發票資訊 -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">發票資訊</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="invoice_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">發票抬頭</label>
+                    <input type="text" name="invoice_title" id="invoice_title" value="{{ old('invoice_title', $company->invoice_title) }}"
+                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">開立發票</label>
+                    <div class="flex items-center mt-2">
+                        <input type="checkbox" name="is_tax_entity" id="is_tax_entity" value="1" {{ old('is_tax_entity', $company->is_tax_entity) ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <label for="is_tax_entity" class="ml-2 text-sm text-gray-600 dark:text-gray-400">需開立發票</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 銀行資訊 -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">銀行資訊</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                    <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行名稱</label>
+                    <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $company->bank_name) }}"
+                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="例：台灣銀行">
+                </div>
+                <div>
+                    <label for="bank_branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300">分行</label>
+                    <input type="text" name="bank_branch" id="bank_branch" value="{{ old('bank_branch', $company->bank_branch) }}"
+                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">帳號</label>
+                    <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account', $company->bank_account) }}"
+                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="bank_account_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">戶名</label>
+                    <input type="text" name="bank_account_name" id="bank_account_name" value="{{ old('bank_account_name', $company->bank_account_name) }}"
+                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- 備註 -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備註</label>
+            <textarea name="note" id="note" rows="3"
+                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $company->note) }}</textarea>
         </div>
 
         <div class="mt-6 flex justify-end space-x-3">

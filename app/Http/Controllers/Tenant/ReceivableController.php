@@ -137,13 +137,15 @@ class ReceivableController extends Controller
         
         $stats = $statsQuery->selectRaw('
             SUM(amount) as total_amount,
-            SUM(received_amount) as total_received
+            SUM(received_amount) as total_received,
+            SUM(withholding_tax) as total_withholding
         ')->first();
         
         $totalAmount = $stats->total_amount ?? 0;
         $totalReceived = $stats->total_received ?? 0;
+        $totalWithholding = $stats->total_withholding ?? 0;
 
-        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'availableYears', 'fiscalYear'));
+        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear'));
     }
 
     /**

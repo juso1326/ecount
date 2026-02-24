@@ -118,10 +118,11 @@
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案名</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">標籤</th>
+                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案負責</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">成員</th>
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總額</th>
+                <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣繳</th>
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案支出</th>
                 <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">累計</th>
                 <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
@@ -130,6 +131,7 @@
             <tr class="bg-gray-100 dark:bg-gray-600 border-t border-gray-200 dark:border-gray-500 font-semibold">
                 <th colspan="8" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">本頁總計</th>
                 <th class="px-3 py-1 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
+                <th class="px-3 py-1 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">${{ number_format($totals['withholding_tax'] ?? 0, 0) }}</th>
                 <th class="px-3 py-1 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">${{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
                 <th class="px-3 py-1 text-right text-xs whitespace-nowrap {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">${{ number_format($totals['accumulated_income'] ?? 0, 0) }}</th>
                 <th></th>
@@ -168,25 +170,9 @@
                     </div>
                     <div class="text-xs text-gray-500">{{ $project->code }}</div>
                 </td>
-                <!-- 標籤 -->
-                <td class="px-3 py-2 text-xs">
-                    @if($project->tags && $project->tags->count() > 0)
-                        <div class="flex flex-wrap gap-1">
-                            @foreach($project->tags->take(2) as $tag)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" 
-                                  style="background-color: {{ $tag->color }}20; color: {{ $tag->color }}; border: 1px solid {{ $tag->color }}40;">
-                                {{ $tag->name }}
-                            </span>
-                            @endforeach
-                            @if($project->tags->count() > 2)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-                                +{{ $project->tags->count() - 2 }}
-                            </span>
-                            @endif
-                        </div>
-                    @else
-                        <span class="text-xs text-gray-400">-</span>
-                    @endif
+                <!-- 類型 -->
+                <td class="px-3 py-2 text-xs text-gray-700 dark:text-gray-300">
+                    {{ $project->project_type ?? '-' }}
                 </td>
                 <!-- 專案負責 -->
                 <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
@@ -215,6 +201,10 @@
                 <!-- 總額 (應收總額) -->
                 <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-gray-900 dark:text-white font-medium">
                     ${{ number_format($project->total_receivable ?? 0, 0) }}
+                </td>
+                <!-- 扣繳 -->
+                <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-orange-600 dark:text-orange-400">
+                    ${{ number_format($project->withholding_tax ?? 0, 0) }}
                 </td>
                 <!-- 專案支出 (應付總額) -->
                 <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-red-600 dark:text-red-400">
@@ -252,7 +242,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="13" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="14" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     沒有找到任何專案資料
                 </td>
             </tr>
