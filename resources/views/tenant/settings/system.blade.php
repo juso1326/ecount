@@ -139,6 +139,7 @@
         <li>日期格式變更後，會套用至所有日期欄位的顯示</li>
         <li>時間格式變更後，會套用至所有時間欄位的顯示</li>
         <li>時區設定會影響系統記錄的時間戳記</li>
+        <li>專案狀態管理請至 <a href="{{ route('tenant.tags.index', ['type' => 'project_status']) }}" class="underline text-blue-600 hover:text-blue-800">標籤管理 → 專案狀態</a></li>
     </ul>
 </div>
 @endsection

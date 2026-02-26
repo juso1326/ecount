@@ -28,6 +28,8 @@ class Tag extends Model
     const TYPE_COMPANY = 'company';
     const TYPE_USER = 'user';
     const TYPE_PAYMENT_METHOD = 'payment_method';
+    const TYPE_PROJECT_STATUS = 'project_status';
+    const TYPE_PROJECT_ROLE = 'project_role';
 
     /**
      * 取得所有可用的標籤類型
@@ -39,6 +41,8 @@ class Tag extends Model
             self::TYPE_COMPANY => '客戶廠商標籤',
             self::TYPE_USER => '團隊成員標籤',
             self::TYPE_PAYMENT_METHOD => '付款方式',
+            self::TYPE_PROJECT_STATUS => '專案狀態',
+            self::TYPE_PROJECT_ROLE => '專案職務',
         ];
     }
 

@@ -183,7 +183,7 @@
                     </td>
                     <!-- 客戶 -->
                     <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-900 dark:text-gray-100">
-                        {{ $receivable->company?->name ?? '-' }}
+                        {{ $receivable->company?->short_name ?? $receivable->company?->name ?? '-' }}
                     </td>
                     <!-- 專案/內容 -->
                     <td class="px-3 py-2 text-xs text-gray-700 dark:text-gray-300 max-w-xs">

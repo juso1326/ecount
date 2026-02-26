@@ -91,6 +91,17 @@
                            class="text-primary hover:text-primary-dark font-medium">
                             編輯
                         </a>
+                        @if($type === 'project_status')
+                            <form action="{{ route('tenant.tags.set-default-status', $tag) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit"
+                                        class="font-medium {{ $defaultStatusId == $tag->id ? 'text-green-600 dark:text-green-400 cursor-default' : 'text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400' }}"
+                                        {{ $defaultStatusId == $tag->id ? 'disabled' : '' }}
+                                        title="{{ $defaultStatusId == $tag->id ? '目前預設' : '設為預設' }}">
+                                    {{ $defaultStatusId == $tag->id ? '★ 預設' : '☆ 設預設' }}
+                                </button>
+                            </form>
+                        @endif
                         <form action="{{ route('tenant.tags.destroy', $tag) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')

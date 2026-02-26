@@ -88,13 +88,14 @@
                 	<li><input class="red" type="button" value="Delete" onClick="EventClick('Del')"></li>
                     <li style="padding:0 10px;">
                     	第
-						<select>
-                        	<option value="1">1</option>
-                        	<option value="2">2</option>
-                        	<option value="3">3</option>                                                        
+						<select onChange="javascript:window.location='/pjadmin/Maintain/mug/mug02.php?page=' + this.value">
+                        <?php for($i = 1;$i <= $PageCount;$i++){?>
+                        	<option value="<?php echo $i;?>"<?php echo ($num_pages == $i?" selected":"")?>><?php echo $i;?></option>
+						<?php }?>
                         </select>
+                        <?php echo "/	" . $PageCount;?>
                         頁
-                    </li>                    
+                    </li>  
                 </ul>
                 <!--
             	<ul class="Src">

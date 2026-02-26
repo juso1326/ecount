@@ -116,6 +116,14 @@
                 </select>
             </div>
 
+<script>
+if (window.jQuery && typeof $.fn.select2 !== 'undefined') {
+    $(document).ready(function() {
+        $('#supervisor_id').select2({ placeholder: '請選擇上層主管', allowClear: true, width: '100%' });
+    });
+}
+</script>
+
             <!-- 是否在職 -->
             <div>
                 <label for="is_active" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -213,29 +221,96 @@
 
 <!-- 銀行資訊 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700">
+    <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
         <h3 class="text-base font-medium text-gray-800 dark:text-white/90">銀行資訊</h3>
+        <button type="button" id="addUserBankBtn"
+            class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            新增帳戶
+        </button>
     </div>
     <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行名稱</label>
-                <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $user->bank_name ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
-                    placeholder="例：台灣銀行">
+        <div id="userBankList" class="space-y-3">
+            @php
+                $userBankAccounts = old('bank_accounts', isset($user) ? $user->bankAccounts->map(fn($b) => array_merge($b->toArray(), ['is_default' => $b->is_default]))->toArray() : []);
+                if (empty($userBankAccounts)) $userBankAccounts = [['is_default' => true]];
+            @endphp
+            @foreach($userBankAccounts as $bi => $bank)
+            <div class="user-bank-row pt-3 border-t border-gray-100 dark:border-gray-700 first:border-t-0 first:pt-0 relative">
+                <button type="button" onclick="removeUserBankRow(this)"
+                    class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">銀行名稱</label>
+                        <input type="text" name="bank_accounts[{{ $bi }}][bank_name]"
+                            value="{{ $bank['bank_name'] ?? '' }}"
+                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary"
+                            placeholder="例：台灣銀行">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">分行</label>
+                        <input type="text" name="bank_accounts[{{ $bi }}][bank_branch]"
+                            value="{{ $bank['bank_branch'] ?? '' }}"
+                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary"
+                            placeholder="例：信義分行">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">帳號</label>
+                        <input type="text" name="bank_accounts[{{ $bi }}][bank_account]"
+                            value="{{ $bank['bank_account'] ?? '' }}"
+                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">戶名</label>
+                        <input type="text" name="bank_accounts[{{ $bi }}][account_name]"
+                            value="{{ $bank['account_name'] ?? '' }}"
+                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">備註</label>
+                        <input type="text" name="bank_accounts[{{ $bi }}][note]"
+                            value="{{ $bank['note'] ?? '' }}"
+                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary">
+                    </div>
+                </div>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="bank_default" value="{{ $bi }}" {{ !empty($bank['is_default']) ? 'checked' : '' }}
+                        class="text-primary focus:ring-primary">
+                    <span class="text-xs text-gray-600 dark:text-gray-400">設為預設</span>
+                </label>
             </div>
-            <div>
-                <label for="bank_branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300">分行名稱</label>
-                <input type="text" name="bank_branch" id="bank_branch" value="{{ old('bank_branch', $user->bank_branch ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
-                    placeholder="例：信義分行">
-            </div>
-            <div>
-                <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">帳號</label>
-                <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account', $user->bank_account ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary"
-                    placeholder="請輸入銀行帳號">
-            </div>
+            @endforeach
         </div>
     </div>
 </div>
+
+<script>
+let userBankIndex = {{ count($userBankAccounts) }};
+document.getElementById('addUserBankBtn').addEventListener('click', function() {
+    const tpl = `<div class="user-bank-row pt-3 border-t border-gray-100 dark:border-gray-700 relative">
+        <button type="button" onclick="removeUserBankRow(this)" class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2">
+            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">銀行名稱</label>
+            <input type="text" name="bank_accounts[${userBankIndex}][bank_name]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary" placeholder="例：台灣銀行"></div>
+            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">分行</label>
+            <input type="text" name="bank_accounts[${userBankIndex}][bank_branch]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary" placeholder="例：信義分行"></div>
+            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">帳號</label>
+            <input type="text" name="bank_accounts[${userBankIndex}][bank_account]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary"></div>
+            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">戶名</label>
+            <input type="text" name="bank_accounts[${userBankIndex}][account_name]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary"></div>
+            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">備註</label>
+            <input type="text" name="bank_accounts[${userBankIndex}][note]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-primary focus:border-primary"></div>
+        </div>
+        <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="bank_default" value="${userBankIndex}" class="text-primary focus:ring-primary">
+            <span class="text-xs text-gray-600 dark:text-gray-400">設為預設</span>
+        </label>
+    </div>`;
+    document.getElementById('userBankList').insertAdjacentHTML('beforeend', tpl);
+    userBankIndex++;
+});
+function removeUserBankRow(btn) {
+    const rows = document.querySelectorAll('#userBankList .user-bank-row');
+    if (rows.length > 1) btn.closest('.user-bank-row').remove();
+}
+</script>

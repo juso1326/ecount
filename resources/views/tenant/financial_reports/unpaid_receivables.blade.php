@@ -228,7 +228,7 @@
                         {{ $receivable->invoice_no }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {{ $receivable->company->name ?? '-' }}
+                        {{ $receivable->company->short_name ?? $receivable->company->name ?? '-' }}
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                         {{ $receivable->project->name ?? '-' }}

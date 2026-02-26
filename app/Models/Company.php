@@ -56,6 +56,16 @@ class Company extends Model
         'is_tax_entity' => 'boolean',
     ];
 
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(CompanyContact::class)->orderBy('sort_order');
+    }
+
+    public function bankAccounts(): HasMany
+    {
+        return $this->hasMany(CompanyBankAccount::class)->orderBy('sort_order');
+    }
+
     /**
      * 關聯：公司的所有專案
      */

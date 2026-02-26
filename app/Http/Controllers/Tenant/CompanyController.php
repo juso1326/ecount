@@ -99,12 +99,12 @@ class CompanyController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:50|unique:companies,code',
             'name' => 'required|string|max:255',
-            'short_name' => 'nullable|string|max:100',
+            'short_name' => 'required|string|max:100',
             'type' => 'required|in:company,individual',
             'tax_id' => 'nullable|string|max:20',
+            'invoice_title' => 'nullable|string|max:255',
+            'is_tax_entity' => 'boolean',
             'phone' => 'nullable|string|max:20',
-            'fax' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:255',
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
@@ -112,8 +112,8 @@ class CompanyController extends Controller
             'code.required' => '公司代碼為必填',
             'code.unique' => '公司代碼已存在',
             'name.required' => '名稱為必填',
+            'short_name.required' => '簡稱為必填',
             'type.required' => '類型為必填',
-            'email.email' => 'Email 格式不正確',
         ]);
 
         if ($validator->fails()) {
@@ -128,19 +128,40 @@ class CompanyController extends Controller
 
         $companyData = $request->only([
             'code', 'name', 'short_name', 'type', 'tax_id', 
-            'phone', 'fax', 'email', 'address'
+            'invoice_title', 'phone', 'address'
         ]);
         
-        // 如果沒有簡稱，使用名稱
-        if (empty($companyData['short_name'])) {
-            $companyData['short_name'] = $companyData['name'];
-        }
-        
+        $companyData['is_tax_entity'] = $request->boolean('is_tax_entity');
         $companyData['is_client'] = $request->boolean('is_client');
         $companyData['is_outsource'] = $request->boolean('is_outsource');
         $companyData['is_active'] = true;
 
         $company = Company::create($companyData);
+
+        // 處理銀行帳戶
+        foreach ($request->input('bank_accounts', []) as $i => $bank) {
+            if (!empty($bank['bank_name']) || !empty($bank['bank_account'])) {
+                $company->bankAccounts()->create([
+                    'bank_name' => $bank['bank_name'] ?? '',
+                    'bank_branch' => $bank['bank_branch'] ?? null,
+                    'bank_account' => $bank['bank_account'] ?? '',
+                    'bank_account_name' => $bank['bank_account_name'] ?? null,
+                    'note' => $bank['note'] ?? null,
+                ]);
+            }
+        }
+
+        // 處理聯絡人
+        foreach ($request->input('contacts', []) as $i => $contact) {
+            if (!empty($contact['name']) || !empty($contact['phone']) || !empty($contact['email'])) {
+                $company->contacts()->create([
+                    'name' => $contact['name'] ?? '',
+                    'phone' => $contact['phone'] ?? null,
+                    'mobile' => $contact['mobile'] ?? null,
+                    'email' => $contact['email'] ?? null,
+                ]);
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -172,6 +193,7 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
+        $company->load('contacts', 'bankAccounts');
         return view('tenant.companies.edit', compact('company'));
     }
 
@@ -225,8 +247,7 @@ class CompanyController extends Controller
             'name', 'short_name', 'type', 'tax_id', 
             'phone', 'mobile', 'fax', 'email', 'address', 'website',
             'contact_person', 'representative',
-            'invoice_title', 'bank_name', 'bank_branch', 'bank_account', 'bank_account_name',
-            'note',
+            'invoice_title', 'note',
         ]);
         
         $companyData['is_client'] = $request->boolean('is_client');
@@ -234,6 +255,35 @@ class CompanyController extends Controller
         $companyData['is_tax_entity'] = $request->boolean('is_tax_entity');
 
         $company->update($companyData);
+
+        // 同步多筆銀行資訊
+        $company->bankAccounts()->delete();
+        foreach ($request->input('bank_accounts', []) as $i => $bank) {
+            if (!empty($bank['bank_name']) || !empty($bank['bank_account'])) {
+                $company->bankAccounts()->create([
+                    'bank_name'         => $bank['bank_name'] ?? null,
+                    'bank_branch'       => $bank['bank_branch'] ?? null,
+                    'bank_account'      => $bank['bank_account'] ?? null,
+                    'bank_account_name' => $bank['bank_account_name'] ?? null,
+                    'note'              => $bank['note'] ?? null,
+                    'sort_order'        => $i,
+                ]);
+            }
+        }
+
+        // 同步多筆聯絡人
+        $company->contacts()->delete();
+        foreach ($request->input('contacts', []) as $i => $contact) {
+            if (!empty($contact['name'])) {
+                $company->contacts()->create([
+                    'name'       => $contact['name'],
+                    'phone'      => $contact['phone'] ?? null,
+                    'mobile'     => $contact['mobile'] ?? null,
+                    'email'      => $contact['email'] ?? null,
+                    'sort_order' => $i,
+                ]);
+            }
+        }
 
         if ($request->wantsJson()) {
             return response()->json([

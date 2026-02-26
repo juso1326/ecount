@@ -40,10 +40,8 @@ class ProjectController extends Controller
         // 專案狀態篩選
         if ($request->filled('status')) {
             $query->where('status', $request->status);
-        } else {
-            // 預設排除已取消專案（status != 'cancelled'）
-            $query->where('status', '!=', Project::STATUS_CANCELLED);
         }
+        // 若未篩選，不額外排除任何狀態（顯示全部）
 
         // 公司篩選
         if ($request->filled('company_id')) {
@@ -101,7 +99,9 @@ class ProjectController extends Controller
             'accumulated_income' => $projects->sum('accumulated_income'),
         ];
 
-        return view('tenant.projects.index', compact('projects', 'totals', 'dateStart', 'dateEnd'));
+        $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
+
+        return view('tenant.projects.index', compact('projects', 'totals', 'dateStart', 'dateEnd', 'projectStatuses'));
     }
 
     /**
@@ -114,8 +114,12 @@ class ProjectController extends Controller
         
         // 自動生成專案代碼
         $nextCode = $this->generateProjectCode();
+        
+        // 預設專案狀態（從租戶設定取得）
+        $defaultStatus = \App\Models\TenantSetting::get('default_project_status', 'in_progress');
+        $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
 
-        return view('tenant.projects.create', compact('companies', 'managers', 'nextCode'));
+        return view('tenant.projects.create', compact('companies', 'managers', 'nextCode', 'defaultStatus', 'projectStatuses'));
     }
 
     /**
@@ -126,6 +130,7 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'code' => 'nullable|string|max:50|unique:projects,code',
             'name' => 'required|string|max:255',
+            'project_type' => 'nullable|string|max:100',
             'company_id' => 'required|exists:companies,id',
             'manager_id' => 'nullable|exists:users,id',
             'status' => 'nullable|string',
@@ -196,7 +201,12 @@ class ProjectController extends Controller
             ];
         });
 
-        return view('tenant.projects.show', compact('project', 'receivablesData', 'payablesData', 'availableUsers'));
+        $projectRoles = \App\Models\Tag::where('type', \App\Models\Tag::TYPE_PROJECT_ROLE)
+            ->where('is_active', true)->orderBy('sort_order')->orderBy('name')->pluck('name')->toArray();
+
+        $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
+
+        return view('tenant.projects.show', compact('project', 'receivablesData', 'payablesData', 'availableUsers', 'projectRoles', 'projectStatuses'));
     }
 
     /**
@@ -206,8 +216,10 @@ class ProjectController extends Controller
     {
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $managers = User::where('is_active', true)->orderBy('name')->get();
+        $defaultStatus = \App\Models\TenantSetting::get('default_project_status', 'in_progress');
+        $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
 
-        return view('tenant.projects.edit', compact('project', 'companies', 'managers'));
+        return view('tenant.projects.edit', compact('project', 'companies', 'managers', 'defaultStatus', 'projectStatuses'));
     }
 
     /**
@@ -217,6 +229,7 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'project_type' => 'nullable|string|max:100',
             'company_id' => 'required|exists:companies,id',
             'manager_id' => 'nullable|exists:users,id',
             'start_date' => 'nullable|date',
@@ -283,13 +296,24 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
+            'role'    => 'nullable|string|max:100',
         ]);
         
         if ($project->members()->where('user_id', $validated['user_id'])->exists()) {
             return back()->with('error', '該使用者已經是專案成員');
         }
+
+        // Auto-create role tag if provided and not already in DB
+        $roleName = trim($validated['role'] ?? '');
+        if ($roleName) {
+            \App\Models\Tag::firstOrCreate(
+                ['type' => \App\Models\Tag::TYPE_PROJECT_ROLE, 'name' => $roleName],
+                ['color' => '#6B7280', 'sort_order' => 0, 'is_active' => true]
+            );
+        }
         
         $project->members()->attach($validated['user_id'], [
+            'role' => $roleName ?: null,
             'joined_at' => now(),
         ]);
         

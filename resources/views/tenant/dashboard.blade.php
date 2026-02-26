@@ -399,7 +399,7 @@
                     <div class="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
                         <span>{{ $project->code }}</span>
                         @if($project->company)
-                        <span>{{ $project->company->name }}</span>
+                        <span>{{ $project->company->short_name ?? $project->company->name }}</span>
                         @endif
                         <span>{{ format_date($project->start_date) }}</span>
                     </div>

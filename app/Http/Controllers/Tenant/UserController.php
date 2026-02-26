@@ -33,7 +33,16 @@ class UserController extends Controller
             $query->where('is_active', $request->is_active === '1');
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        // 預設隱藏已離職（resign_date 不為空），可透過 show_resigned=1 顯示
+        if (!$request->boolean('show_resigned')) {
+            $query->where(function($q) {
+                $q->whereNull('resign_date')->orWhere('resign_date', '>', now());
+            });
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $showResigned = $request->boolean('show_resigned');
+        $resignedCount = User::whereNotNull('resign_date')->where('resign_date', '<=', now())->count();
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -47,7 +56,7 @@ class UserController extends Controller
             ]);
         }
 
-        return view('tenant.users.index', compact('users'));
+        return view('tenant.users.index', compact('users', 'showResigned', 'resignedCount'));
     }
 
     /**
@@ -115,7 +124,7 @@ class UserController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $userData = $request->except(['role', 'password']);
+        $userData = $request->except(['role', 'password', 'bank_accounts', 'bank_default', 'bank_name', 'bank_branch', 'bank_account']);
         $userData['password'] = Hash::make($request->password);
         $userData['is_active'] = $request->boolean('is_active', true);
 
@@ -134,6 +143,21 @@ class UserController extends Controller
             $user->assignRole($request->role);
         }
 
+        // 儲存多筆銀行帳戶
+        $defaultIndex = $request->input('bank_default', 0);
+        foreach ($request->input('bank_accounts', []) as $i => $bank) {
+            if (!empty($bank['bank_name']) || !empty($bank['bank_account'])) {
+                $user->bankAccounts()->create([
+                    'bank_name'    => $bank['bank_name'] ?? null,
+                    'bank_branch'  => $bank['bank_branch'] ?? null,
+                    'bank_account' => $bank['bank_account'] ?? null,
+                    'account_name' => $bank['account_name'] ?? null,
+                    'note'         => $bank['note'] ?? null,
+                    'is_default'   => ((string)$i === (string)$defaultIndex),
+                ]);
+            }
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'message' => '使用者建立成功',
@@ -142,7 +166,7 @@ class UserController extends Controller
         }
 
         return redirect()->route('tenant.users.edit', $user)
-            ->with('success', '使用者建立成功，可在此頁面繼續設定銀行帳戶');
+            ->with('success', '使用者建立成功');
     }
 
     /**
@@ -251,6 +275,24 @@ class UserController extends Controller
         // 更新角色
         if ($request->filled('role')) {
             $user->syncRoles([$request->role]);
+        }
+
+        // 同步多筆銀行帳戶
+        if ($request->has('bank_accounts')) {
+            $user->bankAccounts()->delete();
+            $defaultIndex = $request->input('bank_default', 0);
+            foreach ($request->input('bank_accounts', []) as $i => $bank) {
+                if (!empty($bank['bank_name']) || !empty($bank['bank_account'])) {
+                    $user->bankAccounts()->create([
+                        'bank_name'    => $bank['bank_name'] ?? null,
+                        'bank_branch'  => $bank['bank_branch'] ?? null,
+                        'bank_account' => $bank['bank_account'] ?? null,
+                        'account_name' => $bank['account_name'] ?? null,
+                        'note'         => $bank['note'] ?? null,
+                        'is_default'   => ((string)$i === (string)$defaultIndex),
+                    ]);
+                }
+            }
         }
 
         if ($request->wantsJson()) {

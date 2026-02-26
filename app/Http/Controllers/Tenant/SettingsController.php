@@ -57,6 +57,44 @@ class SettingsController extends Controller
     }
 
     /**
+     * Default project statuses (fallback when no tags exist)
+     */
+    public static function defaultProjectStatuses(): array
+    {
+        return [
+            ['value' => '1', 'label' => '新成立', 'color' => '#94A3B8'],
+            ['value' => '2', 'label' => '提案',   'color' => '#A855F7'],
+            ['value' => '3', 'label' => '進行中', 'color' => '#3B82F6'],
+            ['value' => '4', 'label' => '結案',   'color' => '#22C55E'],
+            ['value' => '5', 'label' => '請款中', 'color' => '#F97316'],
+            ['value' => '6', 'label' => '已入帳', 'color' => '#10B981'],
+            ['value' => '7', 'label' => '待發票', 'color' => '#EAB308'],
+        ];
+    }
+
+    /**
+     * Get project statuses from Tag model (type='project_status'), falls back to defaults
+     */
+    public static function getProjectStatuses(): array
+    {
+        $tags = \App\Models\Tag::where('type', \App\Models\Tag::TYPE_PROJECT_STATUS)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        if ($tags->isNotEmpty()) {
+            return $tags->map(fn($t) => [
+                'value' => (string)$t->id,
+                'label' => $t->name,
+                'color' => $t->color,
+            ])->toArray();
+        }
+
+        return self::defaultProjectStatuses();
+    }
+
+    /**
      * Display system settings
      */
     public function system()
@@ -79,9 +117,9 @@ class SettingsController extends Controller
             'timezone' => 'required|string',
         ]);
         
-        foreach ($validated as $key => $value) {
-            TenantSetting::set($key, $value, 'system', 'string');
-        }
+        TenantSetting::set('date_format', $validated['date_format'], 'system', 'string');
+        TenantSetting::set('time_format', $validated['time_format'], 'system', 'string');
+        TenantSetting::set('timezone', $validated['timezone'], 'system', 'string');
         
         return redirect()->route('tenant.settings.system')
             ->with('success', '系統設定已更新');

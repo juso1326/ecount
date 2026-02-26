@@ -46,6 +46,14 @@
                 @enderror
             </div>
 
+            <!-- 專案類型 -->
+            <div>
+                <label for="project_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">專案類型</label>
+                <input type="text" name="project_type" id="project_type" value="{{ old('project_type', $project->project_type ?? '') }}"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary"
+                    placeholder="例：網站開發、行銷設計...">
+            </div>
+
             <!-- 客戶(3W公司) -->
             <div>
                 <label for="company_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">客戶 <span class="text-red-500">*</span></label>
@@ -87,6 +95,20 @@
                     @foreach($managers as $manager)
                         <option value="{{ $manager->id }}" {{ old('manager_id', $project->manager_id ?? auth()->id()) == $manager->id ? 'selected' : '' }}>
                             {{ $manager->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- 專案狀態 -->
+            <div>
+                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">專案狀態</label>
+                <select name="status" id="status"
+                    class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary">
+                    @php $currentStatus = old('status', $project->status ?? $defaultStatus ?? 'in_progress') @endphp
+                    @foreach($projectStatuses ?? [] as $ps)
+                        <option value="{{ $ps['value'] }}" {{ $currentStatus === $ps['value'] ? 'selected' : '' }}>
+                            {{ $ps['label'] }}
                         </option>
                     @endforeach
                 </select>

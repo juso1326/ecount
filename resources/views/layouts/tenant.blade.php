@@ -102,7 +102,7 @@
             x-transition:leave="transition ease-in duration-150 lg:transition-none"
             x-transition:leave-start="translate-x-0 lg:translate-x-0"
             x-transition:leave-end="-translate-x-full lg:translate-x-0"
-            class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg"
+            class="fixed lg:static inset-y-0 left-0 z-50 w-52 bg-white dark:bg-gray-800 shadow-lg"
         >
             <!-- Logo -->
             <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">

@@ -15,24 +15,16 @@
 //資料庫連線
 	$NewSql = new mysql();	
 	
-	$Sql = " Select memm01_numid, memm01_nm, memm01_nick,memm01_loginid,memm01_pwd
-			From mem_m01
-			 ";
-	$initRun = $NewSql -> db_query($Sql) or die("SQL ERROR");
-	$i = 0;
-	while($Data = $NewSql -> db_field($initRun)){
-		switch ($Data -> name){
-			case 'memm01_no':
-				break;
-			default:
-				$RowArr[$i] = $Data -> name;
-				$Arr[$i]	 = xRequest($Data -> name);
-				break;			
-		}
-		if($RowArr[$i] != ""){
-			$i ++;
-		}				
-	}
+	$RowArr = array('memm01_numid', 'memm01_nm', 'memm01_nick', 'memm01_loginid', 'memm01_pwd', 'memm01_open', 'MUG01_NO');
+	$Arr    = array(
+		xRequest('memm01_numid'),
+		xRequest('memm01_nm'),
+		xRequest('memm01_nick'),
+		xRequest('memm01_loginid'),
+		xRequest('memm01_pwd'),
+		xRequest('memm01_open'),
+		xRequest('MUG01_NO'),
+	);
 
 	//新增資料
 	Insert($NewSql,"mem_m01",$RowArr,$Arr);

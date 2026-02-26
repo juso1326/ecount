@@ -102,7 +102,6 @@
 	$Sql = getMember();
 	$memRun = $NewSql -> db_query($Sql) or die("SQL ERROR 1");
 	$memCount = $NewSql -> db_num_rows($memRun);
-	$memArr = $NewSql -> db_fetch_array($comm01Run);
 //總額
 	$Sql = "
 		Select sum(prjm01_totalmoney) as totalmoney
@@ -339,7 +338,6 @@
                 	<td class="center" width="30">序號</td>
                     <!--<td class="center" width="30"></td>-->
                     <td class="center" width="30">編輯</td>
-                    <td class="center" width="30">詳細</td>
                     <td class="center">開案日<?php echo OrderUrl($GetFileCode . ".php?" . $PageCon,"prjm01_startDate",$Culm,$ad);?></td>
                     <td class="center">客戶<?php echo OrderUrl($GetFileCode . ".php?" . $PageCon,"comm01_nicknm",$Culm,$ad);?></td>
                     <td class="left">專案名</td>
@@ -367,12 +365,6 @@
                         </div>
 					<?php }?>
                     </td> 
-                    <td class="center" width="30">
-                    	<div align="center" class="block blue">
-                        	<!--<a class="edit" onClick="SetKey(<?php echo $Data["prjm01_no"];?>);EventClick('View')"></a>-->
-                            <a class="edit" href="<?php echo $GetFileCode . '_View.php?PageCon=' . urlencode($PageCon) . '&DataKey=' . $Data["prjm01_no"];?>"></a>
-                        </div>
-                    </td>                                       
                     <td class="center"><?php echo Dspdate($Data["prjm01_startDate"],'/');?></td>
                     <td class="center"><?php echo $Data["comm01_nicknm"];?></td>
                     <td class="left"><?php echo $Data["prjm01_nm"];?></td>

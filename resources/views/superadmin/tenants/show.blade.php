@@ -13,6 +13,13 @@
                 重設密碼
             </button>
         </form>
+        <form method="POST" action="{{ route('superadmin.tenants.clear-login-lock', $tenant) }}" class="inline"
+              onsubmit="return confirm('確定要解除登入鎖定嗎？')">
+            @csrf
+            <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
+                解除登入鎖定
+            </button>
+        </form>
         <a href="{{ route('superadmin.tenants.edit', $tenant) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
             編輯
         </a>

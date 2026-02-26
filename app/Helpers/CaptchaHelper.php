@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Session;
 
 class CaptchaHelper
 {
-    private const CHARS = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    private const CHARS = '0123456789';
 
     /**
      * 產生驗證碼，儲存至 session 並回傳 SVG 字串
@@ -37,8 +37,8 @@ class CaptchaHelper
      */
     private static function renderSvg(string $code): string
     {
-        $width = 100;
-        $height = 50;
+        $width = 140;
+        $height = 56;
         $bgR = random_int(235, 255);
         $bgG = random_int(235, 255);
         $bgB = random_int(235, 255);
@@ -70,11 +70,11 @@ class CaptchaHelper
         // 每個字元
         $colors = ['#1e3a5f', '#6b21a8', '#065f46', '#7c2d12', '#1e40af'];
         for ($i = 0; $i < strlen($code); $i++) {
-            $x = 16 + $i * 30 + random_int(-2, 2);
-            $y = 36 + random_int(-6, 6);
+            $x = 22 + $i * 38 + random_int(-2, 2);
+            $y = 40 + random_int(-6, 6);
             $rot = random_int(-20, 20);
             $color = $colors[$i % count($colors)];
-            $size = random_int(22, 28);
+            $size = random_int(28, 34);
             $svg .= "<text x='{$x}' y='{$y}' font-size='{$size}' font-family='monospace' font-weight='bold'"
                   . " fill='{$color}' transform='rotate({$rot},{$x},{$y})'>{$code[$i]}</text>";
         }

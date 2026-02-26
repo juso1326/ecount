@@ -236,7 +236,7 @@
                         @if($payable->payee_type === 'user')
                             {{ $payable->payeeUser?->name ?? '-' }}
                         @else
-                            {{ $payable->payeeCompany?->name ?? $payable->company?->name ?? '-' }}
+                            {{ $payable->payeeCompany?->short_name ?? $payable->payeeCompany?->name ?? $payable->company?->short_name ?? $payable->company?->name ?? '-' }}
                         @endif
                     </td>
                     <!-- 專案/內容 -->

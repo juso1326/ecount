@@ -85,11 +85,9 @@
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">專案狀態</label>
                     <select name="status" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         <option value="">全部狀態</option>
-                        <option value="planning" {{ request('status') === 'planning' ? 'selected' : '' }}>規劃中</option>
-                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>進行中</option>
-                        <option value="on_hold" {{ request('status') === 'on_hold' ? 'selected' : '' }}>暫停</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>已完成</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>已取消</option>
+                        @foreach($projectStatuses as $ps)
+                            <option value="{{ $ps['value'] }}" {{ request('status') === $ps['value'] ? 'selected' : '' }}>{{ $ps['label'] }}</option>
+                        @endforeach
                     </select>
                 </div>
                 
@@ -98,8 +96,8 @@
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">客戶公司</label>
                     <select name="company_id" id="company_filter" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         <option value="">全部客戶</option>
-                        @foreach(\App\Models\Company::where('is_active', true)->orderBy('name')->get() as $company)
-                            <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                        @foreach(\App\Models\Company::where('is_active', true)->orderBy('short_name')->get() as $company)
+                            <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>{{ $company->short_name ?? $company->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -141,11 +139,11 @@
             @forelse($projects as $index => $project)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <!-- 序號 -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-900 dark:text-white">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-white">
                     {{ ($projects->currentPage() - 1) * $projects->perPage() + $index + 1 }}
                 </td>
                 <!-- 操作 -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-center space-x-2">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                     <a href="{{ route('tenant.projects.show', $project) }}" 
                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
                         詳細
@@ -156,30 +154,29 @@
                     </a>
                 </td>
                 <!-- 開案日 -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ format_date($project->start_date) }}
                 </td>
                 <!-- 客戶 -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-900 dark:text-white">
-                    {{ $project->company?->name ?? '-' }}
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    {{ $project->company?->short_name ?? $project->company?->name ?? '-' }}
                 </td>
                 <!-- 專案名 -->
-                <td class="px-3 py-2 text-xs text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
                     <div class="max-w-xs truncate" title="{{ $project->name }}">
                         {{ $project->name }}
                     </div>
-                    <div class="text-xs text-gray-500">{{ $project->code }}</div>
                 </td>
                 <!-- 類型 -->
-                <td class="px-3 py-2 text-xs text-gray-700 dark:text-gray-300">
+                <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
                     {{ $project->project_type ?? '-' }}
                 </td>
                 <!-- 專案負責 -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $project->manager?->name ?? '-' }}
                 </td>
                 <!-- 成員 -->
-                <td class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400">
+                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-1">
                         @if($project->members && $project->members->count() > 0)
                             <div class="flex -space-x-2">
@@ -191,53 +188,41 @@
                                 @endforeach
                             </div>
                             @if($project->members->count() > 3)
-                            <span class="text-xs text-gray-500">+{{ $project->members->count() - 3 }}</span>
+                            <span class="text-sm text-gray-500">+{{ $project->members->count() - 3 }}</span>
                             @endif
                         @else
-                            <span class="text-xs text-gray-400">無成員</span>
+                            <span class="text-sm text-gray-400">無成員</span>
                         @endif
                     </div>
                 </td>
                 <!-- 總額 (應收總額) -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-gray-900 dark:text-white font-medium">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white font-medium">
                     ${{ number_format($project->total_receivable ?? 0, 0) }}
                 </td>
                 <!-- 扣繳 -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-orange-600 dark:text-orange-400">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
                     ${{ number_format($project->withholding_tax ?? 0, 0) }}
                 </td>
                 <!-- 專案支出 (應付總額) -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-red-600 dark:text-red-400">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
                     ${{ number_format($project->total_payable ?? 0, 0) }}
                 </td>
                 <!-- 累計 (已收 - 已付) -->
-                <td class="px-3 py-2 whitespace-nowrap text-xs text-right font-medium 
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-right font-medium 
                     {{ ($project->accumulated_income ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                     ${{ number_format($project->accumulated_income ?? 0, 0) }}
                 </td>
                 <!-- 狀態 -->
                 <td class="px-3 py-2 whitespace-nowrap text-xs text-center">
-                    @if($project->status === 'in_progress')
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                            進行中
-                        </span>
-                    @elseif($project->status === 'completed')
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            已完成
-                        </span>
-                    @elseif($project->status === 'planning')
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                            規劃中
-                        </span>
-                    @elseif($project->status === 'on_hold')
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                            暫停
-                        </span>
-                    @else
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                            已取消
-                        </span>
-                    @endif
+                    @php
+                        $statusMap = collect($projectStatuses)->keyBy('value');
+                        $ps = $statusMap->get($project->status);
+                        $hexColor = $ps['color'] ?? '#6b7280';
+                    @endphp
+                    <span class="px-2 py-1 text-xs font-semibold"
+                          style="color: {{ $hexColor }};">
+                        {{ $ps['label'] ?? $project->status }}
+                    </span>
                 </td>
             </tr>
             @empty

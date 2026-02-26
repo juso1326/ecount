@@ -52,11 +52,11 @@
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400">狀態 <span class="text-red-500">*</span></label>
                         <select name="status" required
                             class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-1.5 px-2 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            <option value="planning" {{ $project->status === 'planning' ? 'selected' : '' }}>規劃中</option>
-                            <option value="in_progress" {{ $project->status === 'in_progress' ? 'selected' : '' }}>進行中</option>
-                            <option value="on_hold" {{ $project->status === 'on_hold' ? 'selected' : '' }}>暫停</option>
-                            <option value="completed" {{ $project->status === 'completed' ? 'selected' : '' }}>已完成</option>
-                            <option value="cancelled" {{ $project->status === 'cancelled' ? 'selected' : '' }}>已取消</option>
+                            @foreach($projectStatuses as $s)
+                                <option value="{{ $s['value'] }}" {{ $project->status == $s['value'] ? 'selected' : '' }}>
+                                    {{ $s['label'] }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -125,195 +125,6 @@
             </div>
         </div>
 
-        <!-- 應收帳款 -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-                    應收帳款
-                </h2>
-                <button onclick="document.getElementById('addReceivableModal').classList.remove('hidden')"
-                        class="text-blue-500 hover:text-blue-700 text-sm font-medium">
-                    + 快速新增
-                </button>
-            </div>
-            
-            @php
-                $receivables = $project->receivables;
-                $totalReceivable = $receivables->sum('amount');
-                $totalReceived = $receivables->sum('received_amount');
-                $totalRemaining = $totalReceivable - $totalReceived;
-            @endphp
-            
-            @if($receivables->count() > 0)
-                <div class="mb-3 grid grid-cols-3 gap-2 text-xs">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
-                        <div class="text-gray-600 dark:text-gray-400">應收總額</div>
-                        <div class="text-blue-700 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalReceivable, 0) }}</div>
-                    </div>
-                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded">
-                        <div class="text-gray-600 dark:text-gray-400">已收金額</div>
-                        <div class="text-green-700 dark:text-green-400 font-semibold">NT$ {{ number_format($totalReceived, 0) }}</div>
-                    </div>
-                    <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
-                        <div class="text-gray-600 dark:text-gray-400">未收金額</div>
-                        <div class="text-orange-700 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalRemaining, 0) }}</div>
-                    </div>
-                </div>
-                
-                <div class="space-y-2">
-                    @foreach($receivables as $receivable)
-                    <div class="border border-gray-200 dark:border-gray-700 rounded p-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="openEditReceivableModal({{ $receivable->id }})" 
-                                       class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                                        {{ $receivable->receipt_no }}
-                                    </button>
-                                    @if($receivable->status === 'paid')
-                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已收</span>
-                                    @elseif($receivable->status === 'partially_paid')
-                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
-                                    @else
-                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未收</span>
-                                    @endif
-                                </div>
-                                <div class="text-gray-500 dark:text-gray-400.5">
-                                    {{ format_date($receivable->receipt_date) }} 
-                                    @if($receivable->due_date)
-                                        <span class="text-gray-400">| 發票日: {{ format_date($receivable->due_date) }}</span>
-                                    @endif
-                                </div>
-                                @if($receivable->content)
-                                    <div class="text-gray-600 dark:text-gray-400.5">{{ $receivable->content }}</div>
-                                @endif
-                            </div>
-                            <div class="text-right flex items-start gap-2">
-                                <div>
-                                    <div class="font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($receivable->amount, 0) }}</div>
-                                    <div class="text-gray-500 dark:text-gray-400">已收: {{ number_format($receivable->received_amount, 0) }}</div>
-                                </div>
-                                <button onclick="openEditReceivableModal({{ $receivable->id }})" 
-                                   class="text-blue-500 hover:text-blue-700">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </button>
-                                <form action="{{ route('tenant.receivables.destroy', $receivable) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            @else
-                <p class="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">尚無應收帳款</p>
-            @endif
-        </div>
-
-        <!-- 應付帳款 -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-                    應付帳款
-                </h2>
-                <button onclick="document.getElementById('addPayableModal').classList.remove('hidden')"
-                        class="text-blue-500 hover:text-blue-700 text-sm font-medium">
-                    + 快速新增
-                </button>
-            </div>
-            
-            @php
-                $payables = $project->payables;
-                $totalPayable = $payables->sum('amount');
-                $totalPaid = $payables->sum('paid_amount');
-                $totalUnpaid = $totalPayable - $totalPaid;
-            @endphp
-            
-            @if($payables->count() > 0)
-                <div class="mb-3 grid grid-cols-3 gap-2 text-xs">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
-                        <div class="text-gray-600 dark:text-gray-400">應付總額</div>
-                        <div class="text-blue-700 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalPayable, 0) }}</div>
-                    </div>
-                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded">
-                        <div class="text-gray-600 dark:text-gray-400">已付金額</div>
-                        <div class="text-green-700 dark:text-green-400 font-semibold">NT$ {{ number_format($totalPaid, 0) }}</div>
-                    </div>
-                    <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
-                        <div class="text-gray-600 dark:text-gray-400">未付金額</div>
-                        <div class="text-orange-700 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</div>
-                    </div>
-                </div>
-                
-                <div class="space-y-2">
-                    @foreach($payables as $payable)
-                    <div class="border border-gray-200 dark:border-gray-700 rounded p-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="openEditPayableModal({{ $payable->id }})" 
-                                       class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                                        {{ $payable->payment_no }}
-                                    </button>
-                                    @if($payable->status === 'paid')
-                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已付</span>
-                                    @elseif($payable->status === 'partially_paid')
-                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
-                                    @else
-                                        <span class="px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未付</span>
-                                    @endif
-                                </div>
-                                <div class="text-gray-500 dark:text-gray-400.5">
-                                    {{ format_date($payable->payment_date) }}
-                                    @if($payable->due_date)
-                                        <span class="text-gray-400">| 到期: {{ format_date($payable->due_date) }}</span>
-                                    @endif
-                                </div>
-                                @if($payable->content)
-                                    <div class="text-gray-600 dark:text-gray-400.5">{{ $payable->content }}</div>
-                                @endif
-                                @if($payable->vendor)
-                                    <div class="text-gray-500 dark:text-gray-400.5">對象: {{ $payable->vendor }}</div>
-                                @endif
-                            </div>
-                            <div class="text-right flex items-start gap-2">
-                                <div>
-                                    <div class="font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payable->amount, 0) }}</div>
-                                    <div class="text-gray-500 dark:text-gray-400">已付: {{ number_format($payable->paid_amount, 0) }}</div>
-                                </div>
-                                <button onclick="openEditPayableModal({{ $payable->id }})" 
-                                   class="text-blue-500 hover:text-blue-700">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </button>
-                                <form action="{{ route('tenant.payables.destroy', $payable) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            @else
-                <p class="text-gray-500 dark:text-gray-400 text-center py-4 text-sm">尚無應付帳款</p>
-            @endif
-        </div>
-
         <!-- 專案描述 -->
         @if($project->description)
         <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -372,7 +183,7 @@
                 <h2 class="text-base font-semibold text-gray-900 dark:text-white">
                     專案成員 ({{ $project->members()->count() }})
                 </h2>
-                <button onclick="document.getElementById('addMemberModal').classList.remove('hidden')"
+                <button onclick="openAddMemberModal()"
                         class="text-primary hover:text-primary-dark">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -381,7 +192,7 @@
             </div>
             
             @php
-                $projectMembers = $project->members()->get();
+                $projectMembers = $project->members;
             @endphp
             
             @if($projectMembers->count() > 0)
@@ -415,6 +226,154 @@
             @endif
         </div>
     </div>
+</div>
+
+<!-- 應收帳款（全寬表格） -->
+@php
+    $receivables = $project->receivables;
+    $totalReceivable = $receivables->sum('amount');
+    $totalReceived = $receivables->sum('received_amount');
+    $totalRemaining = $totalReceivable - $totalReceived;
+@endphp
+<div class="mt-2 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
+    <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">應收帳款</h2>
+        <button onclick="document.getElementById('addReceivableModal').classList.remove('hidden')"
+                class="text-blue-500 hover:text-blue-700 text-sm font-medium">+ 快速新增</button>
+    </div>
+    @if($receivables->count() > 0)
+        <div class="grid grid-cols-3 divide-x divide-gray-200 dark:divide-gray-700 border-b border-gray-200 dark:border-gray-700 text-sm">
+            <div class="px-4 py-2 flex items-center gap-2"><span class="text-gray-500 dark:text-gray-400">應收總額</span><span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalReceivable, 0) }}</span></div>
+            <div class="px-4 py-2 flex items-center gap-2"><span class="text-gray-500 dark:text-gray-400">已收金額</span><span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalReceived, 0) }}</span></div>
+            <div class="px-4 py-2 flex items-center gap-2"><span class="text-gray-500 dark:text-gray-400">未收金額</span><span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalRemaining, 0) }}</span></div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                    <tr>
+                        <th class="text-left px-4 py-2 font-medium">單號</th>
+                        <th class="text-left px-3 py-2 font-medium">狀態</th>
+                        <th class="text-left px-3 py-2 font-medium">請款日</th>
+                        <th class="text-left px-3 py-2 font-medium">發票日</th>
+                        <th class="text-left px-3 py-2 font-medium">內容</th>
+                        <th class="text-right px-3 py-2 font-medium">金額</th>
+                        <th class="text-right px-3 py-2 font-medium">已收</th>
+                        <th class="text-center px-3 py-2 font-medium">操作</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @foreach($receivables as $receivable)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                        <td class="px-4 py-2">
+                            <button onclick="openEditReceivableModal({{ $receivable->id }})" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">{{ $receivable->receipt_no }}</button>
+                        </td>
+                        <td class="px-3 py-2">
+                            @if($receivable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已收</span>
+                            @elseif($receivable->status === 'partially_paid') <span class="px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
+                            @else <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未收</span>
+                            @endif
+                        </td>
+                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ format_date($receivable->receipt_date) }}</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $receivable->due_date ? format_date($receivable->due_date) : '—' }}</td>
+                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300">{{ $receivable->content ?: '—' }}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">{{ number_format($receivable->amount, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ number_format($receivable->received_amount, 0) }}</td>
+                        <td class="px-3 py-2 text-center whitespace-nowrap">
+                            <button onclick="openEditReceivableModal({{ $receivable->id }})" class="inline-flex items-center gap-1 text-blue-500 hover:text-blue-700 mr-2">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                編輯
+                            </button>
+                            <form action="{{ route('tenant.receivables.destroy', $receivable) }}" method="POST" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="inline-flex items-center gap-1 text-red-500 hover:text-red-700">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    刪除
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <p class="text-gray-500 dark:text-gray-400 text-center py-6 text-sm">尚無應收帳款</p>
+    @endif
+</div>
+
+<!-- 應付帳款（全寬表格） -->
+@php
+    $payables = $project->payables;
+    $totalPayable = $payables->sum('amount');
+    $totalPaid = $payables->sum('paid_amount');
+    $totalUnpaid = $totalPayable - $totalPaid;
+@endphp
+<div class="mt-2 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
+    <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">應付帳款</h2>
+        <button onclick="document.getElementById('addPayableModal').classList.remove('hidden')"
+                class="text-blue-500 hover:text-blue-700 text-sm font-medium">+ 快速新增</button>
+    </div>
+    @if($payables->count() > 0)
+        <div class="grid grid-cols-3 divide-x divide-gray-200 dark:divide-gray-700 border-b border-gray-200 dark:border-gray-700 text-sm">
+            <div class="px-4 py-2"><div class="text-gray-500 dark:text-gray-400">應付總額</div><div class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalPayable, 0) }}</div></div>
+            <div class="px-4 py-2"><div class="text-gray-500 dark:text-gray-400">已付金額</div><div class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalPaid, 0) }}</div></div>
+            <div class="px-4 py-2"><div class="text-gray-500 dark:text-gray-400">未付金額</div><div class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</div></div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+                    <tr>
+                        <th class="text-left px-4 py-2 font-medium">單號</th>
+                        <th class="text-left px-3 py-2 font-medium">狀態</th>
+                        <th class="text-left px-3 py-2 font-medium">付款日</th>
+                        <th class="text-left px-3 py-2 font-medium">到期日</th>
+                        <th class="text-left px-3 py-2 font-medium">對象</th>
+                        <th class="text-left px-3 py-2 font-medium">內容</th>
+                        <th class="text-right px-3 py-2 font-medium">金額</th>
+                        <th class="text-right px-3 py-2 font-medium">已付</th>
+                        <th class="text-center px-3 py-2 font-medium">操作</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @foreach($payables as $payable)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
+                        <td class="px-4 py-2">
+                            <button onclick="openEditPayableModal({{ $payable->id }})" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">{{ $payable->payment_no }}</button>
+                        </td>
+                        <td class="px-3 py-2">
+                            @if($payable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已付</span>
+                            @elseif($payable->status === 'partially_paid') <span class="px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
+                            @else <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未付</span>
+                            @endif
+                        </td>
+                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ format_date($payable->payment_date) }}</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->due_date ? format_date($payable->due_date) : '—' }}</td>
+                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ $payable->vendor ?: '—' }}</td>
+                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300">{{ $payable->content ?: '—' }}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">{{ number_format($payable->amount, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ number_format($payable->paid_amount, 0) }}</td>
+                        <td class="px-3 py-2 text-center whitespace-nowrap">
+                            <button onclick="openEditPayableModal({{ $payable->id }})" class="inline-flex items-center gap-1 text-blue-500 hover:text-blue-700 mr-2">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                編輯
+                            </button>
+                            <form action="{{ route('tenant.payables.destroy', $payable) }}" method="POST" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="inline-flex items-center gap-1 text-red-500 hover:text-red-700">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    刪除
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <p class="text-gray-500 dark:text-gray-400 text-center py-6 text-sm">尚無應付帳款</p>
+    @endif
 </div>
 
 <!-- 系統資訊 -->
@@ -451,9 +410,14 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         角色/職務
                     </label>
-                    <input type="text" name="role" 
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"
-                           placeholder="例如：前端開發、後端開發">
+                    <select name="role" id="memberRoleSelect"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg">
+                        <option value=""></option>
+                        @foreach($projectRoles as $roleName)
+                            <option value="{{ $roleName }}">{{ $roleName }}</option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">可從清單選擇，或直接輸入新職務（自動加入標籤庫）</p>
                 </div>
                 
                 <div class="flex justify-end gap-3">
@@ -849,13 +813,41 @@ $(document).ready(function() {
         theme: 'default'
     });
 
-    // 新增成員選擇
-    $('#memberUserSelect').select2({
-        placeholder: '搜尋姓名或 Email',
-        allowClear: true,
-        width: '100%',
-        dropdownParent: $('#addMemberModal')
-    });
+    // 新增成員 modal：開啟時再初始化兩個 select2，避免 hidden 元素寬度為 0
+    window.openAddMemberModal = function() {
+        document.getElementById('addMemberModal').classList.remove('hidden');
+        setTimeout(function() {
+            // 成員選擇
+            if ($('#memberUserSelect').hasClass('select2-hidden-accessible')) {
+                $('#memberUserSelect').select2('destroy');
+            }
+            $('#memberUserSelect').select2({
+                placeholder: '搜尋姓名或 Email',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#addMemberModal')
+            });
+            // 職務選擇（tags 模式）
+            if ($('#memberRoleSelect').hasClass('select2-hidden-accessible')) {
+                $('#memberRoleSelect').select2('destroy');
+            }
+            $('#memberRoleSelect').select2({
+                placeholder: '搜尋或輸入職務名稱...',
+                allowClear: true,
+                width: '100%',
+                tags: true,
+                dropdownParent: $('#addMemberModal'),
+                language: {
+                    noResults: function() { return '無相符職務，輸入後按 Enter 新增'; }
+                },
+                createTag: function(params) {
+                    var term = $.trim(params.term);
+                    if (term === '') return null;
+                    return { id: term, text: term };
+                }
+            });
+        }, 10);
+    };
 });
 </script>
 

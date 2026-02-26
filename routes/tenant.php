@@ -172,6 +172,7 @@ Route::middleware([
             'update' => 'tenant.tags.update',
             'destroy' => 'tenant.tags.destroy',
         ]);
+        Route::post('tags/{tag}/set-default-status', [\App\Http\Controllers\Tenant\TagController::class, 'setDefaultStatus'])->name('tenant.tags.set-default-status');
 
         // 支出項目管理
         Route::resource('expense-categories', \App\Http\Controllers\Tenant\ExpenseCategoryController::class)->names([

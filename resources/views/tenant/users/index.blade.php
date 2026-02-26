@@ -17,6 +17,13 @@
         @endif
     </div>
     <div class="flex gap-2">
+        @if($resignedCount > 0)
+        <a href="{{ route('tenant.users.index', array_merge(request()->except('page'), ['show_resigned' => $showResigned ? '0' : '1'])) }}"
+           class="flex items-center gap-1 text-sm font-medium py-2 px-4 rounded-lg border {{ $showResigned ? 'bg-amber-100 border-amber-400 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-gray-100 border-gray-300 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8m-9 4v4m4-4v4"/></svg>
+            {{ $showResigned ? '隱藏離職' : '顯示離職' }}（{{ $resignedCount }}）
+        </a>
+        @endif
         <a href="{{ route('tenant.users.export') }}" 
            class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-sm">
             匯出 Excel
@@ -93,12 +100,6 @@
             @forelse($users as $user)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
-                    @can('users.view')
-                    <a href="{{ route('tenant.users.show', $user) }}" 
-                       class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
-                        詳細
-                    </a>
-                    @endcan
                     @can('users.edit')
                     <a href="{{ route('tenant.users.edit', $user) }}" 
                        class="text-primary hover:text-primary-dark font-medium">

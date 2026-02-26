@@ -85,13 +85,6 @@
                 @enderror
             </div>
 
-            <!-- 統一編號 -->
-            <div>
-                <label for="tax_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">統一編號</label>
-                <input type="text" name="tax_id" id="tax_id" value="{{ old('tax_id', $company->tax_id) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
             <!-- 電話 -->
             <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">電話</label>
@@ -105,98 +98,190 @@
                 <input type="text" name="address" id="address" value="{{ old('address', $company->address) }}"
                     class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             </div>
-
-            <!-- 傳真 -->
-            <div>
-                <label for="fax" class="block text-sm font-medium text-gray-700 dark:text-gray-300">傳真</label>
-                <input type="text" name="fax" id="fax" value="{{ old('fax', $company->fax) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- Email -->
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                <input type="email" name="email" id="email" value="{{ old('email', $company->email) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 聯絡人 -->
-            <div>
-                <label for="contact_person" class="block text-sm font-medium text-gray-700 dark:text-gray-300">聯絡人</label>
-                <input type="text" name="contact_person" id="contact_person" value="{{ old('contact_person', $company->contact_person) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 代表人 -->
-            <div>
-                <label for="representative" class="block text-sm font-medium text-gray-700 dark:text-gray-300">代表人</label>
-                <input type="text" name="representative" id="representative" value="{{ old('representative', $company->representative) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 手機 -->
-            <div>
-                <label for="mobile" class="block text-sm font-medium text-gray-700 dark:text-gray-300">手機</label>
-                <input type="text" name="mobile" id="mobile" value="{{ old('mobile', $company->mobile) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- 網站 -->
-            <div>
-                <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300">網站</label>
-                <input type="text" name="website" id="website" value="{{ old('website', $company->website) }}"
-                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="https://...">
-            </div>
         </div>
 
         <!-- 發票資訊 -->
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">發票資訊</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                <div>
+                    <label for="tax_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">統一編號</label>
+                    <input type="text" name="tax_id" id="tax_id" value="{{ old('tax_id', $company->tax_id) }}"
+                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
                 <div>
                     <label for="invoice_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">發票抬頭</label>
                     <input type="text" name="invoice_title" id="invoice_title" value="{{ old('invoice_title', $company->invoice_title) }}"
                         class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">開立發票</label>
-                    <div class="flex items-center mt-2">
-                        <input type="checkbox" name="is_tax_entity" id="is_tax_entity" value="1" {{ old('is_tax_entity', $company->is_tax_entity) ? 'checked' : '' }}
-                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <label for="is_tax_entity" class="ml-2 text-sm text-gray-600 dark:text-gray-400">需開立發票</label>
-                    </div>
+                <div class="flex items-center pb-2">
+                    <input type="checkbox" name="is_tax_entity" id="is_tax_entity" value="1" {{ old('is_tax_entity', $company->is_tax_entity) ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    <label for="is_tax_entity" class="ml-2 text-sm text-gray-600 dark:text-gray-400">需開立發票</label>
                 </div>
             </div>
         </div>
 
-        <!-- 銀行資訊 -->
+        <!-- 聯絡人 -->
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">銀行資訊</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="bank_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">銀行名稱</label>
-                    <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $company->bank_name) }}"
-                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="例：台灣銀行">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">聯絡人</h3>
+                <button type="button" id="addContactBtn"
+                    class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    新增聯絡人
+                </button>
+            </div>
+            <div id="contactList" class="space-y-3">
+                @php
+                    $contacts = old('contacts', $company->contacts->map(fn($c) => $c->toArray())->toArray());
+                    if (empty($contacts)) $contacts = [[]];
+                @endphp
+                @foreach($contacts as $ci => $contact)
+                <div class="contact-row relative {{ $ci > 0 ? 'pt-3' : '' }}">
+                    <button type="button" onclick="removeContactRow(this)"
+                        class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">姓名</label>
+                            <input type="text" name="contacts[{{ $ci }}][name]"
+                                value="{{ $contact['name'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="姓名">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">公司電話</label>
+                            <input type="text" name="contacts[{{ $ci }}][phone]"
+                                value="{{ $contact['phone'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">手機</label>
+                            <input type="text" name="contacts[{{ $ci }}][mobile]"
+                                value="{{ $contact['mobile'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
+                            <input type="email" name="contacts[{{ $ci }}][email]"
+                                value="{{ $contact['email'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label for="bank_branch" class="block text-sm font-medium text-gray-700 dark:text-gray-300">分行</label>
-                    <input type="text" name="bank_branch" id="bank_branch" value="{{ old('bank_branch', $company->bank_branch) }}"
-                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">帳號</label>
-                    <input type="text" name="bank_account" id="bank_account" value="{{ old('bank_account', $company->bank_account) }}"
-                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label for="bank_account_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">戶名</label>
-                    <input type="text" name="bank_account_name" id="bank_account_name" value="{{ old('bank_account_name', $company->bank_account_name) }}"
-                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
+                @endforeach
             </div>
         </div>
+
+        <script>
+        let contactIndex = {{ count($contacts) }};
+        document.getElementById('addContactBtn').addEventListener('click', function() {
+            const tpl = `<div class="contact-row pt-3 relative">
+                <button type="button" onclick="removeContactRow(this)" class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">姓名</label>
+                    <input type="text" name="contacts[${contactIndex}][name]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="姓名"></div>
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">公司電話</label>
+                    <input type="text" name="contacts[${contactIndex}][phone]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">手機</label>
+                    <input type="text" name="contacts[${contactIndex}][mobile]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
+                    <input type="email" name="contacts[${contactIndex}][email]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                </div>
+            </div>`;
+            document.getElementById('contactList').insertAdjacentHTML('beforeend', tpl);
+            contactIndex++;
+        });
+        function removeContactRow(btn) {
+            const rows = document.querySelectorAll('#contactList .contact-row');
+            if (rows.length > 1) btn.closest('.contact-row').remove();
+        }
+        </script>
+
+        <!-- 銀行資訊 -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">銀行資訊</h3>
+                <button type="button" id="addBankBtn"
+                    class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    新增銀行帳戶
+                </button>
+            </div>
+            <div id="bankList" class="space-y-3">
+                @php
+                    $bankAccounts = old('bank_accounts', $company->bankAccounts->map(fn($b) => $b->toArray())->toArray());
+                    if (empty($bankAccounts)) $bankAccounts = [[]];
+                @endphp
+                @foreach($bankAccounts as $i => $bank)
+                <div class="bank-row {{ $i > 0 ? 'pt-3' : '' }} relative">
+                    <button type="button" onclick="removeBankRow(this)"
+                        class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">銀行名稱</label>
+                            <input type="text" name="bank_accounts[{{ $i }}][bank_name]"
+                                value="{{ $bank['bank_name'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="例：台灣銀行">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">分行</label>
+                            <input type="text" name="bank_accounts[{{ $i }}][bank_branch]"
+                                value="{{ $bank['bank_branch'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">帳號</label>
+                            <input type="text" name="bank_accounts[{{ $i }}][bank_account]"
+                                value="{{ $bank['bank_account'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">戶名</label>
+                            <input type="text" name="bank_accounts[{{ $i }}][bank_account_name]"
+                                value="{{ $bank['bank_account_name'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">備註</label>
+                        <input type="text" name="bank_accounts[{{ $i }}][note]"
+                            value="{{ $bank['note'] ?? '' }}"
+                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="備註（選填）">
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <script>
+        let bankIndex = {{ count($bankAccounts) }};
+        document.getElementById('addBankBtn').addEventListener('click', function() {
+            const tpl = `<div class="bank-row pt-3 relative">
+                <button type="button" onclick="removeBankRow(this)" class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">銀行名稱</label>
+                    <input type="text" name="bank_accounts[${bankIndex}][bank_name]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="例：台灣銀行"></div>
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">分行</label>
+                    <input type="text" name="bank_accounts[${bankIndex}][bank_branch]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">帳號</label>
+                    <input type="text" name="bank_accounts[${bankIndex}][bank_account]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">戶名</label>
+                    <input type="text" name="bank_accounts[${bankIndex}][bank_account_name]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></div>
+                </div>
+                <div class="mt-2"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">備註</label>
+                <input type="text" name="bank_accounts[${bankIndex}][note]" class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="備註（選填）"></div>
+            </div>`;
+            document.getElementById('bankList').insertAdjacentHTML('beforeend', tpl);
+            bankIndex++;
+        });
+        function removeBankRow(btn) {
+            const rows = document.querySelectorAll('#bankList .bank-row');
+            if (rows.length > 1) btn.closest('.bank-row').remove();
+        }
+        </script>
 
         <!-- 備註 -->
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">

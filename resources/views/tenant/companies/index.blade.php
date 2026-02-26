@@ -106,10 +106,6 @@
             @forelse($companies as $company)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
-                    <a href="{{ route('tenant.companies.show', $company) }}" 
-                       class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
-                        詳細
-                    </a>
                     <a href="{{ route('tenant.companies.edit', $company) }}" 
                        class="text-primary hover:text-primary-dark font-medium">
                         編輯

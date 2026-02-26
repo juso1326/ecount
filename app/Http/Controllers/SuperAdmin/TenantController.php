@@ -363,6 +363,22 @@ class TenantController extends Controller
     }
 
     /**
+     * 清除租戶登入鎖定
+     */
+    public function clearLoginLock(Tenant $tenant)
+    {
+        $deleted = 0;
+        $tenant->run(function () use (&$deleted) {
+            $deleted = \Illuminate\Support\Facades\DB::table('cache')
+                ->where('key', 'like', 'login_tenant:%')
+                ->delete();
+        });
+
+        return redirect()->route('superadmin.tenants.show', $tenant)
+            ->with('success', "已清除 {$deleted} 筆登入鎖定記錄");
+    }
+
+    /**
      * 重建租戶資料庫（重新執行 migration + 建立管理員帳號）
      */
     public function rebuild(Tenant $tenant)

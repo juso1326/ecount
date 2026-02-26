@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use App\Models\TenantSetting;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
@@ -21,8 +22,9 @@ class TagController extends Controller
             ->get();
 
         $types = Tag::getTypes();
+        $defaultStatusId = (int) TenantSetting::get('default_project_status', 0);
 
-        return view('tenant.tags.index', compact('tags', 'types', 'type'));
+        return view('tenant.tags.index', compact('tags', 'types', 'type', 'defaultStatusId'));
     }
 
     /**
@@ -119,5 +121,17 @@ class TagController extends Controller
         return redirect()
             ->route('tenant.tags.index', ['type' => $type])
             ->with('success', '標籤已刪除');
+    }
+
+    /**
+     * Set a project_status tag as the default
+     */
+    public function setDefaultStatus(Tag $tag)
+    {
+        TenantSetting::set('default_project_status', (string)$tag->id, 'project', 'string');
+
+        return redirect()
+            ->route('tenant.tags.index', ['type' => Tag::TYPE_PROJECT_STATUS])
+            ->with('success', "「{$tag->name}」已設為預設狀態");
     }
 }
