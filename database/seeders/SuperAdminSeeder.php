@@ -14,13 +14,15 @@ class SuperAdminSeeder extends Seeder
     public function run(): void
     {
         // 建立預設超級管理員
-        SuperAdmin::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@ecount.com',
-            'password' => Hash::make('admin123456'), // 預設密碼，生產環境請修改
-            'is_active' => true,
-            'email_verified_at' => now(),
-        ]);
+        SuperAdmin::firstOrCreate(
+            ['email' => 'admin@ecount.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('admin123456'),
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
 
         $this->command->info('✅ 預設超級管理員建立成功！');
         $this->command->info('Email: admin@ecount.com');

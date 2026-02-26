@@ -147,14 +147,14 @@ class BulkTestDataSeeder extends Seeder
     private function seedUsers(): \Illuminate\Support\Collection
     {
         $rows = [
-            ['name'=>'系統管理員','email'=>'admin@ecount.test','employee_no'=>'E001','position'=>'系統管理員','role'=>'admin'],
-            ['name'=>'張經理',    'email'=>'manager@ecount.test','employee_no'=>'E002','position'=>'專案經理','role'=>'manager'],
-            ['name'=>'王會計',    'email'=>'accountant@ecount.test','employee_no'=>'E003','position'=>'財務會計','role'=>'accountant'],
-            ['name'=>'李工程師',  'email'=>'employee@ecount.test','employee_no'=>'E004','position'=>'軟體工程師','role'=>'employee'],
-            ['name'=>'陳前端',    'email'=>'chen.frontend@ecount.test','employee_no'=>'E005','position'=>'前端工程師','role'=>'employee','hire_date'=>'2024-03-01'],
-            ['name'=>'林設計師',  'email'=>'lin.designer@ecount.test','employee_no'=>'E006','position'=>'UI設計師','role'=>'employee','hire_date'=>'2024-05-15'],
-            ['name'=>'黃後端',    'email'=>'huang.backend@ecount.test','employee_no'=>'E007','position'=>'後端工程師','role'=>'employee','hire_date'=>'2024-07-01'],
-            ['name'=>'吳助理',    'email'=>'wu.assistant@ecount.test','employee_no'=>'E008','position'=>'專案助理','role'=>'employee','hire_date'=>'2024-09-01'],
+            ['name'=>'系統管理員','email'=>'admin@ecount.test','employee_no'=>'E001','position'=>'系統管理員','role'=>'總管理'],
+            ['name'=>'張經理',    'email'=>'manager@ecount.test','employee_no'=>'E002','position'=>'專案經理','role'=>'專案經理'],
+            ['name'=>'王會計',    'email'=>'accountant@ecount.test','employee_no'=>'E003','position'=>'財務會計','role'=>'會計人員'],
+            ['name'=>'李工程師',  'email'=>'employee@ecount.test','employee_no'=>'E004','position'=>'軟體工程師','role'=>'一般員工'],
+            ['name'=>'陳前端',    'email'=>'chen.frontend@ecount.test','employee_no'=>'E005','position'=>'前端工程師','role'=>'一般員工','hire_date'=>'2024-03-01'],
+            ['name'=>'林設計師',  'email'=>'lin.designer@ecount.test','employee_no'=>'E006','position'=>'UI設計師','role'=>'一般員工','hire_date'=>'2024-05-15'],
+            ['name'=>'黃後端',    'email'=>'huang.backend@ecount.test','employee_no'=>'E007','position'=>'後端工程師','role'=>'一般員工','hire_date'=>'2024-07-01'],
+            ['name'=>'吳助理',    'email'=>'wu.assistant@ecount.test','employee_no'=>'E008','position'=>'專案助理','role'=>'一般員工','hire_date'=>'2024-09-01'],
         ];
 
         foreach ($rows as $ud) {
