@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Tenant;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\DB;
 
 class ClearTenantLoginLock extends Command
@@ -30,14 +31,17 @@ class ClearTenantLoginLock extends Command
 
         foreach ($tenants as $tenant) {
             $tenant->run(function () use ($tenant, $ip) {
-                $query = DB::table('cache')->where('key', 'like', 'login_tenant:%');
-
                 if ($ip) {
-                    $query->where('key', 'like', "%{$ip}%");
+                    // 清除指定 IP 的鎖定
+                    RateLimiter::clear('login_tenant:' . $ip);
+                    $this->info("[{$tenant->id}] 已清除 IP {$ip} 的登入鎖定");
+                } else {
+                    // 清除所有 login_tenant: 開頭的 cache key（含 tenant prefix）
+                    $deleted = DB::table('cache')
+                        ->where('key', 'like', '%login_tenant:%')
+                        ->delete();
+                    $this->info("[{$tenant->id}] 已清除 {$deleted} 筆登入鎖定記錄");
                 }
-
-                $deleted = $query->delete();
-                $this->info("[{$tenant->id}] 已清除 {$deleted} 筆鎖定記錄" . ($ip ? "（IP: {$ip}）" : ''));
             });
         }
 

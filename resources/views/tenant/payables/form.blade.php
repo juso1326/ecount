@@ -78,8 +78,8 @@
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
                         <option value="">請選擇</option>
                         <option value="member" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'member' ? 'selected' : '' }}>成員</option>
-                        <option value="vendor" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'vendor' ? 'selected' : '' }}>外製</option>
-                        <option value="expense" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'expense' ? 'selected' : '' }}>已支出</option>
+                        <option value="vendor" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'vendor' ? 'selected' : '' }}>外包</option>
+                        <option value="expense" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'expense' ? 'selected' : '' }}>採購</option>
                     </select>
                 </div>
 

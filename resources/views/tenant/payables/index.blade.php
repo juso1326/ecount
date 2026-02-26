@@ -106,7 +106,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                 <!-- 年度選擇器 -->
                 <div>
-                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">帳務年度</label>
+                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">帳務年度</label>
                     <select name="fiscal_year" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         <option value="">全部年度</option>
                         @foreach($availableYears as $year)
@@ -119,7 +119,7 @@
 
                 <!-- 類型篩選 -->
                 <div>
-                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">付款類型</label>
+                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">付款類型</label>
                     <select name="type" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         <option value="">全部類型</option>
                         <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
@@ -131,7 +131,7 @@
 
                 <!-- 狀態篩選 -->
                 <div>
-                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">付款狀態</label>
+                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">付款狀態</label>
                     <select name="status" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         <option value="">全部狀態</option>
                         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
@@ -150,20 +150,20 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">序號</th>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">操作</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">負責人</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">日期</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">類型</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">對象</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">專案/內容</th>
-                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">金額</th>
-                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">扣抵</th>
-                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">實付</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">付款日</th>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">狀態</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">發票日</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">發票號</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">序號</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:80px">操作</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px">負責人</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">日期</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">類型</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">對象</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:180px">專案/內容</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">金額</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:70px">扣抵</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">實付</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">付款日</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:70px">狀態</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">發票日</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">發票號</th>
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
@@ -187,52 +187,40 @@
             @forelse($payables as $index => $payable)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <!-- 序號 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-900 dark:text-gray-100">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-gray-100">
                         {{ ($payables->currentPage() - 1) * $payables->perPage() + $index + 1 }}
                     </td>
                     <!-- 操作 -->
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
-                        <a href="{{ route('tenant.payables.show', $payable) }}" 
-                           class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">詳細</a>
                         <a href="{{ route('tenant.payables.edit', $payable) }}" 
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
                         @if($payable->status !== 'paid' && $payable->remaining_amount > 0)
                             <a href="{{ route('tenant.payables.quick-pay', $payable) }}"
-                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">付款</a>
+                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</a>
                         @endif
-                        <form action="{{ route('tenant.payables.destroy', $payable) }}" 
-                              method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">刪除</button>
-                        </form>
                     </td>
                     <!-- 負責人 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                         {{ $payable->responsibleUser?->name ?? '-' }}
                     </td>
                     <!-- 日期 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-900 dark:text-gray-100">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                         @date($payable->payment_date)
                     </td>
                     <!-- 類型 -->
                     <td class="px-3 py-2 whitespace-nowrap text-xs">
-                        @if($payable->payee_type === 'user')
-                            <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Team</span>
-                        @elseif($payable->payee_type === 'company')
-                            <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">外製</span>
-                        @elseif($payable->type === 'purchase')
-                            <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">採購</span>
-                        @elseif($payable->type === 'expense')
-                            <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800">費用</span>
-                        @elseif($payable->type === 'service')
-                            <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">服務</span>
+                        @if($payable->payee_type === 'member' || $payable->payee_type === 'user')
+                            <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">成員</span>
+                        @elseif($payable->payee_type === 'vendor' || $payable->payee_type === 'company')
+                            <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">外包</span>
+                        @elseif($payable->payee_type === 'expense')
+                            <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">採購</span>
                         @else
-                            <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">其他</span>
+                            <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">其他</span>
                         @endif
                     </td>
                     <!-- 對象 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-900 dark:text-gray-100">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                         @if($payable->payee_type === 'user')
                             {{ $payable->payeeUser?->name ?? '-' }}
                         @else
@@ -240,7 +228,7 @@
                         @endif
                     </td>
                     <!-- 專案/內容 -->
-                    <td class="px-3 py-2 text-xs text-gray-700 dark:text-gray-300 max-w-xs">
+                    <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 max-w-xs">
                         @if($payable->project && $payable->content)
                             {{ $payable->project->name }} : {{ Str::limit($payable->content, 20) }}
                         @else
@@ -248,19 +236,19 @@
                         @endif
                     </td>
                     <!-- 金額 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-red-600 dark:text-red-400 font-medium">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400 font-medium">
                         NT$ {{ number_format($payable->amount, 0) }}
                     </td>
                     <!-- 扣抵 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-orange-600 dark:text-orange-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
                         NT$ {{ number_format($payable->deduction ?? 0, 0) }}
                     </td>
                     <!-- 實付 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-right text-green-600 dark:text-green-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
                         NT$ {{ number_format($payable->paid_amount ?? 0, 0) }}
                     </td>
                     <!-- 付款日 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         @date($payable->paid_date)
                     </td>
                     <!-- 狀態 -->
@@ -276,11 +264,11 @@
                         @endif
                     </td>
                     <!-- 發票日 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-500 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         @date($payable->invoice_date)
                     </td>
                     <!-- 發票號 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-700 dark:text-gray-300">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                         {{ $payable->invoice_no ?? '-' }}
                     </td>
                 </tr>

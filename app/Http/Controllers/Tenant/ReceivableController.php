@@ -145,7 +145,9 @@ class ReceivableController extends Controller
         $totalReceived = $stats->total_received ?? 0;
         $totalWithholding = $stats->total_withholding ?? 0;
 
-        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear'));
+        $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
+
+        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear', 'projectStatuses'));
     }
 
     /**
