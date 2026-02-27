@@ -21,6 +21,9 @@ class Payable extends Model
         'payee_type',
         'payee_user_id',
         'payee_company_id',
+        'expense_company_name',
+        'expense_tax_id',
+        'advance_user_id',
         'responsible_user_id',
         'type',
         'content',
@@ -102,6 +105,11 @@ class Payable extends Model
     public function payeeUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'payee_user_id');
+    }
+
+    public function advanceUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'advance_user_id');
     }
     
     /**

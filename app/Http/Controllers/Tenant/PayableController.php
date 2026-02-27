@@ -175,6 +175,9 @@ class PayableController extends Controller
             'payee_type' => 'nullable|string|max:20',
             'payee_user_id' => 'nullable|exists:users,id',
             'payee_company_id' => 'nullable|exists:companies,id',
+            'expense_company_name' => 'nullable|string|max:100',
+            'expense_tax_id' => 'nullable|string|max:20',
+            'advance_user_id' => 'nullable|exists:users,id',
             'type' => 'required|string|max:50',
             'content' => 'nullable|string',
             'payment_date' => 'required|date',
@@ -206,6 +209,13 @@ class PayableController extends Controller
         // 設定預設狀態
         if (empty($validated['status'])) {
             $validated['status'] = 'unpaid';
+        }
+
+        // 非採購類型清空採購欄位
+        if (($validated['payee_type'] ?? '') !== 'expense') {
+            $validated['expense_company_name'] = null;
+            $validated['expense_tax_id'] = null;
+            $validated['advance_user_id'] = null;
         }
 
         Payable::create($validated);
@@ -267,6 +277,12 @@ class PayableController extends Controller
             'project_id' => 'required|exists:projects,id',
             'company_id' => 'nullable|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
+            'payee_type' => 'nullable|string|max:20',
+            'payee_user_id' => 'nullable|exists:users,id',
+            'payee_company_id' => 'nullable|exists:companies,id',
+            'expense_company_name' => 'nullable|string|max:100',
+            'expense_tax_id' => 'nullable|string|max:20',
+            'advance_user_id' => 'nullable|exists:users,id',
             'type' => 'required|string|max:50',
             'payment_date' => 'required|date',
             'invoice_date' => 'nullable|date',
@@ -282,12 +298,18 @@ class PayableController extends Controller
             'note' => 'nullable|string',
         ]);
 
-        // 將空字串的日期欄位轉為 null
         $dateFields = ['payment_date', 'invoice_date', 'due_date', 'paid_date'];
         foreach ($dateFields as $field) {
             if (isset($validated[$field]) && $validated[$field] === '') {
                 $validated[$field] = null;
             }
+        }
+
+        // 非採購類型清空採購欄位
+        if (($validated['payee_type'] ?? '') !== 'expense') {
+            $validated['expense_company_name'] = null;
+            $validated['expense_tax_id'] = null;
+            $validated['advance_user_id'] = null;
         }
 
         $payable->update($validated);

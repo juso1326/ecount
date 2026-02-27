@@ -192,7 +192,7 @@
             </div>
             
             @php
-                $projectMembers = $project->members;
+                $projectMembers = $project->members ?? collect();
             @endphp
             
             @if($projectMembers->count() > 0)
@@ -236,61 +236,61 @@
     $totalRemaining = $totalReceivable - $totalReceived;
 @endphp
 <div class="mt-2 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-    <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-base font-semibold text-gray-900 dark:text-white">應收帳款</h2>
+    <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white shrink-0">應收帳款</h2>
+        @if($receivables->count() > 0)
+        <div class="flex items-center gap-4 text-sm flex-1">
+            <span class="text-gray-500 dark:text-gray-400">應收總額 <span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalReceivable, 0) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">已收 <span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalReceived, 0) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">未收 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalRemaining, 0) }}</span></span>
+        </div>
+        @endif
         <button onclick="document.getElementById('addReceivableModal').classList.remove('hidden')"
-                class="text-blue-500 hover:text-blue-700 text-sm font-medium">+ 快速新增</button>
+                class="text-blue-500 hover:text-blue-700 text-sm font-medium shrink-0">+ 快速新增</button>
     </div>
     @if($receivables->count() > 0)
-        <div class="grid grid-cols-3 divide-x divide-gray-200 dark:divide-gray-700 border-b border-gray-200 dark:border-gray-700 text-sm">
-            <div class="px-4 py-2 flex items-center gap-2"><span class="text-gray-500 dark:text-gray-400">應收總額</span><span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalReceivable, 0) }}</span></div>
-            <div class="px-4 py-2 flex items-center gap-2"><span class="text-gray-500 dark:text-gray-400">已收金額</span><span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalReceived, 0) }}</span></div>
-            <div class="px-4 py-2 flex items-center gap-2"><span class="text-gray-500 dark:text-gray-400">未收金額</span><span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalRemaining, 0) }}</span></div>
-        </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-xs">
+            <table class="w-full text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
                     <tr>
-                        <th class="text-left px-4 py-2 font-medium">單號</th>
-                        <th class="text-left px-3 py-2 font-medium">狀態</th>
-                        <th class="text-left px-3 py-2 font-medium">請款日</th>
-                        <th class="text-left px-3 py-2 font-medium">發票日</th>
+                        <th class="text-center px-2 py-2 font-medium whitespace-nowrap">編輯</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">開立日</th>
                         <th class="text-left px-3 py-2 font-medium">內容</th>
-                        <th class="text-right px-3 py-2 font-medium">金額</th>
-                        <th class="text-right px-3 py-2 font-medium">已收</th>
-                        <th class="text-center px-3 py-2 font-medium">操作</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">發票號碼</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">未稅</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">應收金額</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">入帳日</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">實收</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">扣繳</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">合計</th>
+                        <th class="text-center px-3 py-2 font-medium whitespace-nowrap">狀態</th>
+                        <th class="text-left px-3 py-2 font-medium">備註</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @foreach($receivables as $receivable)
+                    @php $net = ($receivable->received_amount ?? 0) - ($receivable->withholding_tax ?? 0); @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                        <td class="px-4 py-2">
-                            <button onclick="openEditReceivableModal({{ $receivable->id }})" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">{{ $receivable->receipt_no }}</button>
-                        </td>
-                        <td class="px-3 py-2">
-                            @if($receivable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已收</span>
-                            @elseif($receivable->status === 'partially_paid') <span class="px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
-                            @else <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未收</span>
-                            @endif
+                        <td class="px-2 py-2 text-center whitespace-nowrap">
+                            <a href="{{ route('tenant.receivables.edit', $receivable) }}" class="text-blue-500 hover:text-blue-700 dark:text-blue-400">編輯</a>
                         </td>
                         <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ format_date($receivable->receipt_date) }}</td>
-                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $receivable->due_date ? format_date($receivable->due_date) : '—' }}</td>
-                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300">{{ $receivable->content ?: '—' }}</td>
-                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">{{ number_format($receivable->amount, 0) }}</td>
-                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ number_format($receivable->received_amount, 0) }}</td>
+                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300 max-w-xs truncate">{{ $receivable->content ?: '—' }}</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $receivable->invoice_no ?: '—' }}</td>
+                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">${{ number_format($receivable->amount_before_tax ?? 0, 0) }}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($receivable->amount, 0) }}</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $receivable->paid_date ? format_date($receivable->paid_date) : '—' }}</td>
+                        <td class="px-3 py-2 text-right text-green-600 dark:text-green-400 whitespace-nowrap">${{ number_format($receivable->received_amount ?? 0, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-orange-500 dark:text-orange-400 whitespace-nowrap">${{ number_format($receivable->withholding_tax ?? 0, 0) }}</td>
+                        <td class="px-3 py-2 text-right font-semibold whitespace-nowrap {{ $net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400' }}">${{ number_format($net, 0) }}</td>
                         <td class="px-3 py-2 text-center whitespace-nowrap">
-                            <button onclick="openEditReceivableModal({{ $receivable->id }})" class="inline-flex items-center gap-1 text-blue-500 hover:text-blue-700 mr-2">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                編輯
-                            </button>
-                            <form action="{{ route('tenant.receivables.destroy', $receivable) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="inline-flex items-center gap-1 text-red-500 hover:text-red-700">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    刪除
-                                </button>
-                            </form>
+                            @if($receivable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已收</span>
+                            @elseif($receivable->status === 'partial') <span class="px-1.5 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-800">部分</span>
+                            @elseif($receivable->status === 'overdue') <span class="px-1.5 py-0.5 rounded-full text-xs bg-red-100 text-red-800">逾期</span>
+                            @else <span class="px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">待收</span>
+                            @endif
                         </td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-xs truncate">{{ $receivable->note ?: '—' }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -309,63 +309,82 @@
     $totalUnpaid = $totalPayable - $totalPaid;
 @endphp
 <div class="mt-2 bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-    <div class="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-        <h2 class="text-base font-semibold text-gray-900 dark:text-white">應付帳款</h2>
+    <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white shrink-0">應付帳款</h2>
+        @if($payables->count() > 0)
+        <div class="flex items-center gap-4 text-sm flex-1">
+            <span class="text-gray-500 dark:text-gray-400">應付總額 <span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalPayable, 0) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">已付 <span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalPaid, 0) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">未付 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</span></span>
+        </div>
+        @endif
         <button onclick="document.getElementById('addPayableModal').classList.remove('hidden')"
-                class="text-blue-500 hover:text-blue-700 text-sm font-medium">+ 快速新增</button>
+                class="text-blue-500 hover:text-blue-700 text-sm font-medium shrink-0">+ 快速新增</button>
     </div>
     @if($payables->count() > 0)
-        <div class="grid grid-cols-3 divide-x divide-gray-200 dark:divide-gray-700 border-b border-gray-200 dark:border-gray-700 text-sm">
-            <div class="px-4 py-2"><div class="text-gray-500 dark:text-gray-400">應付總額</div><div class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalPayable, 0) }}</div></div>
-            <div class="px-4 py-2"><div class="text-gray-500 dark:text-gray-400">已付金額</div><div class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalPaid, 0) }}</div></div>
-            <div class="px-4 py-2"><div class="text-gray-500 dark:text-gray-400">未付金額</div><div class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</div></div>
-        </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-xs">
+            <table class="w-full text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
                     <tr>
-                        <th class="text-left px-4 py-2 font-medium">單號</th>
-                        <th class="text-left px-3 py-2 font-medium">狀態</th>
-                        <th class="text-left px-3 py-2 font-medium">付款日</th>
-                        <th class="text-left px-3 py-2 font-medium">到期日</th>
-                        <th class="text-left px-3 py-2 font-medium">對象</th>
+                        <th class="text-center px-2 py-2 font-medium whitespace-nowrap">編輯</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">日期</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">類型</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">對象</th>
                         <th class="text-left px-3 py-2 font-medium">內容</th>
-                        <th class="text-right px-3 py-2 font-medium">金額</th>
-                        <th class="text-right px-3 py-2 font-medium">已付</th>
-                        <th class="text-center px-3 py-2 font-medium">操作</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">預算</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">比例</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">付款日</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">發票日</th>
+                        <th class="text-left px-3 py-2 font-medium whitespace-nowrap">發票號碼</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">扣抵</th>
+                        <th class="text-right px-3 py-2 font-medium whitespace-nowrap">實付</th>
+                        <th class="text-center px-3 py-2 font-medium whitespace-nowrap">狀態</th>
+                        <th class="text-left px-3 py-2 font-medium">備註</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     @foreach($payables as $payable)
+                    @php
+                        $ratio = $totalReceivable > 0 ? round($payable->amount / $totalReceivable * 100, 1) : 0;
+                        $payeeLabel = match($payable->payee_type) {
+                            'member', 'user' => '成員',
+                            'vendor', 'company' => '外包',
+                            'expense' => '採購',
+                            default => '其他',
+                        };
+                        $payeeName = $payable->payee_type === 'member' || $payable->payee_type === 'user'
+                            ? ($payable->payeeUser?->name ?? '-')
+                            : ($payable->payeeCompany?->short_name ?? $payable->payeeCompany?->name ?? $payable->company?->short_name ?? $payable->company?->name ?? '-');
+                    @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                        <td class="px-4 py-2">
-                            <button onclick="openEditPayableModal({{ $payable->id }})" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">{{ $payable->payment_no }}</button>
-                        </td>
-                        <td class="px-3 py-2">
-                            @if($payable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已付</span>
-                            @elseif($payable->status === 'partially_paid') <span class="px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">部分</span>
-                            @else <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">未付</span>
-                            @endif
+                        <td class="px-2 py-2 text-center whitespace-nowrap">
+                            <a href="{{ route('tenant.payables.edit', $payable) }}" class="text-blue-500 hover:text-blue-700 dark:text-blue-400">編輯</a>
                         </td>
                         <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ format_date($payable->payment_date) }}</td>
-                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->due_date ? format_date($payable->due_date) : '—' }}</td>
-                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ $payable->vendor ?: '—' }}</td>
-                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300">{{ $payable->content ?: '—' }}</td>
-                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">{{ number_format($payable->amount, 0) }}</td>
-                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ number_format($payable->paid_amount, 0) }}</td>
-                        <td class="px-3 py-2 text-center whitespace-nowrap">
-                            <button onclick="openEditPayableModal({{ $payable->id }})" class="inline-flex items-center gap-1 text-blue-500 hover:text-blue-700 mr-2">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                編輯
-                            </button>
-                            <form action="{{ route('tenant.payables.destroy', $payable) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="inline-flex items-center gap-1 text-red-500 hover:text-red-700">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    刪除
-                                </button>
-                            </form>
+                        <td class="px-3 py-2 whitespace-nowrap">
+                            <span class="px-1.5 py-0.5 rounded-full text-xs
+                                @if($payable->payee_type === 'member' || $payable->payee_type === 'user') bg-blue-100 text-blue-800
+                                @elseif($payable->payee_type === 'vendor' || $payable->payee_type === 'company') bg-purple-100 text-purple-800
+                                @elseif($payable->payee_type === 'expense') bg-orange-100 text-orange-800
+                                @else bg-gray-100 text-gray-700 @endif">{{ $payeeLabel }}</span>
                         </td>
+                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300 whitespace-nowrap">{{ $payeeName }}</td>
+                        <td class="px-3 py-2 text-gray-700 dark:text-gray-300 max-w-xs truncate">{{ $payable->content ?: '—' }}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($payable->amount, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $ratio }}%</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->paid_date ? format_date($payable->paid_date) : '—' }}</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->invoice_date ? format_date($payable->invoice_date) : '—' }}</td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->invoice_no ?: '—' }}</td>
+                        <td class="px-3 py-2 text-right text-orange-500 dark:text-orange-400 whitespace-nowrap">${{ number_format($payable->deduction ?? 0, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-green-600 dark:text-green-400 whitespace-nowrap">${{ number_format($payable->paid_amount ?? 0, 0) }}</td>
+                        <td class="px-3 py-2 text-center whitespace-nowrap">
+                            @if($payable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800">已付</span>
+                            @elseif($payable->status === 'partial') <span class="px-1.5 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-800">部分</span>
+                            @elseif($payable->status === 'overdue') <span class="px-1.5 py-0.5 rounded-full text-xs bg-red-100 text-red-800">逾期</span>
+                            @else <span class="px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">未付</span>
+                            @endif
+                        </td>
+                        <td class="px-3 py-2 text-gray-500 dark:text-gray-400 max-w-xs truncate">{{ $payable->note ?: '—' }}</td>
                     </tr>
                     @endforeach
                 </tbody>

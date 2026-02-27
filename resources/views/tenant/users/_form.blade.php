@@ -236,7 +236,7 @@ if (window.jQuery && typeof $.fn.select2 !== 'undefined') {
                 if (empty($userBankAccounts)) $userBankAccounts = [['is_default' => true]];
             @endphp
             @foreach($userBankAccounts as $bi => $bank)
-            <div class="user-bank-row pt-3 border-t border-gray-100 dark:border-gray-700 first:border-t-0 first:pt-0 relative">
+            <div class="user-bank-row {{ $bi > 0 ? 'pt-3 border-t border-gray-100 dark:border-gray-700' : '' }} relative">
                 <button type="button" onclick="removeUserBankRow(this)"
                     class="absolute top-2 right-2 text-red-400 hover:text-red-600 text-xs">✕</button>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2">

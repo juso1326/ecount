@@ -127,7 +127,7 @@
             <div style="margin-bottom:1.25rem;">
                 <label style="display:block; font-size:.8125rem; font-weight:500; color:#374151; margin-bottom:.375rem;">驗證碼</label>
                 <input type="text" name="captcha" id="captcha"
-                    autocomplete="off" maxlength="3" required
+                    autocomplete="off" maxlength="4" required
                     class="input-field {{ $errors->has('captcha') ? 'error' : '' }}"
                     style="letter-spacing:.2em; font-family:monospace; font-size:.9375rem; margin-bottom:.5rem;"
                     placeholder="輸入下方驗證碼">

@@ -151,7 +151,7 @@
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">序號</th>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:80px">操作</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:80px">編輯</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px">負責人</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">日期</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">類型</th>
@@ -221,8 +221,13 @@
                     </td>
                     <!-- 對象 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        @if($payable->payee_type === 'user')
+                        @if($payable->payee_type === 'user' || $payable->payee_type === 'member')
                             {{ $payable->payeeUser?->name ?? '-' }}
+                        @elseif($payable->payee_type === 'expense')
+                            {{ $payable->expense_company_name ?? '-' }}
+                            @if($payable->advanceUser)
+                                <span class="text-xs text-blue-500 ml-1">(代墊:{{ $payable->advanceUser->name }})</span>
+                            @endif
                         @else
                             {{ $payable->payeeCompany?->short_name ?? $payable->payeeCompany?->name ?? $payable->company?->short_name ?? $payable->company?->name ?? '-' }}
                         @endif

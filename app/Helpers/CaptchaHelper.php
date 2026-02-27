@@ -14,7 +14,7 @@ class CaptchaHelper
     public static function generate(string $sessionKey = 'captcha'): string
     {
         $code = '';
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $code .= self::CHARS[random_int(0, strlen(self::CHARS) - 1)];
         }
         Session::put($sessionKey, strtoupper($code));
@@ -37,7 +37,7 @@ class CaptchaHelper
      */
     private static function renderSvg(string $code): string
     {
-        $width = 140;
+        $width = 175;
         $height = 56;
         $bgR = random_int(235, 255);
         $bgG = random_int(235, 255);

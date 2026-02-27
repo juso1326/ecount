@@ -52,7 +52,7 @@
                     class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                 搜尋
             </button>
-            @if(request()->hasAny(['smart_search', 'date_start', 'date_end', 'status', 'company_id']))
+            @if(request()->hasAny(['smart_search', 'date_start', 'date_end', 'status', 'company_id', 'date_mode', 'show_closed']))
                 <a href="{{ route('tenant.projects.index') }}" 
                    class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                     清除
@@ -60,26 +60,44 @@
             @endif
         </div>
 
+        <!-- 日期模式 + 已結案勾選 -->
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-gray-600 dark:text-gray-400 font-medium">日期範圍：</span>
+                <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="date_mode" value="last_year" {{ ($dateMode ?? 'last_year') === 'last_year' ? 'checked' : '' }} onchange="toggleCustomDate(this.value)" class="text-primary">
+                    <span class="text-gray-700 dark:text-gray-300">最近一年</span>
+                </label>
+                <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="date_mode" value="this_year" {{ ($dateMode ?? '') === 'this_year' ? 'checked' : '' }} onchange="toggleCustomDate(this.value)" class="text-primary">
+                    <span class="text-gray-700 dark:text-gray-300">本年度</span>
+                </label>
+                <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="radio" name="date_mode" value="custom" {{ ($dateMode ?? '') === 'custom' ? 'checked' : '' }} onchange="toggleCustomDate(this.value)" class="text-primary">
+                    <span class="text-gray-700 dark:text-gray-300">自定義</span>
+                </label>
+            </div>
+            <div id="custom_date_range" class="{{ ($dateMode ?? 'last_year') === 'custom' ? 'flex' : 'hidden' }} items-center gap-2">
+                <input type="date" name="date_start" value="{{ $dateMode === 'custom' ? $dateStart : '' }}"
+                       class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1 text-sm">
+                <span class="text-gray-500">～</span>
+                <input type="date" name="date_end" value="{{ $dateMode === 'custom' ? $dateEnd : '' }}"
+                       class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-2 py-1 text-sm">
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                <input type="checkbox" name="show_closed" value="1" {{ ($showClosed ?? false) ? 'checked' : '' }} class="rounded text-primary">
+                <span class="text-gray-700 dark:text-gray-300">列出已結案</span>
+            </label>
+        </div>
+
         <!-- 進階篩選 -->
-        <details class="group">
+        <details class="group" {{ request()->hasAny(['status', 'company_id']) ? 'open' : '' }}>
             <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
                 <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
                 進階篩選
             </summary>
             
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                <!-- 開案日期範圍 -->
-                <div>
-                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">開案日（起）</label>
-                    <input type="date" name="date_start" value="{{ request('date_start') }}" 
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">開案日（迄）</label>
-                    <input type="date" name="date_end" value="{{ request('date_end') }}" 
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                </div>
-                
                 <!-- 狀態篩選 -->
                 <div>
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">專案狀態</label>
@@ -106,15 +124,22 @@
     </form>
 </div>
 
+<script>
+function toggleCustomDate(mode) {
+    document.getElementById('custom_date_range').classList.toggle('hidden', mode !== 'custom');
+    document.getElementById('custom_date_range').classList.toggle('flex', mode === 'custom');
+}
+</script>
+
 <!-- 資料表格 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">序號</th>
+                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案代碼</th>
                 <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">客戶</th>
+                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">公司簡稱</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案名</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案負責</th>
@@ -127,7 +152,7 @@
             </tr>
             <!-- 本頁總計 -->
             <tr class="bg-gray-100 dark:bg-gray-600 border-t border-gray-200 dark:border-gray-500 font-semibold">
-                <th colspan="8" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">本頁總計</th>
+                <th colspan="8" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">搜尋結果總計</th>
                 <th class="px-3 py-1 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
                 <th class="px-3 py-1 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">${{ number_format($totals['withholding_tax'] ?? 0, 0) }}</th>
                 <th class="px-3 py-1 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">${{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
@@ -138,9 +163,9 @@
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($projects as $index => $project)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                <!-- 序號 -->
+                <!-- 專案代碼 -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-white">
-                    {{ ($projects->currentPage() - 1) * $projects->perPage() + $index + 1 }}
+                    {{ $project->code ?? '-' }}
                 </td>
                 <!-- 操作 -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">

@@ -24,11 +24,22 @@ class ProjectController extends Controller
             $query->smartSearch($request->smart_search);
         }
 
-        // 日期範圍篩選（僅在明確指定時套用）
+        // 日期範圍篩選
+        // 預設：最近一年；可選本年度或自定義
+        $dateMode  = $request->input('date_mode', 'last_year'); // last_year | this_year | custom
         $dateStart = $request->input('date_start', '');
-        $dateEnd = $request->input('date_end', '');
+        $dateEnd   = $request->input('date_end', '');
 
-        if ($request->filled('date_start') && $request->filled('date_end')) {
+        if ($dateMode === 'this_year') {
+            $dateStart = date('Y-01-01');
+            $dateEnd   = date('Y-12-31');
+            $query->dateRange($dateStart, $dateEnd);
+        } elseif ($dateMode === 'custom' && $dateStart && $dateEnd) {
+            $query->dateRange($dateStart, $dateEnd);
+        } else {
+            // last_year default
+            $dateStart = now()->subYear()->format('Y-m-d');
+            $dateEnd   = now()->format('Y-m-d');
             $query->dateRange($dateStart, $dateEnd);
         }
 
@@ -40,8 +51,17 @@ class ProjectController extends Controller
         // 專案狀態篩選
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        } else {
+            // 預設排除「已結案」（is_system 且名稱為 已結案）
+            $showClosed = $request->boolean('show_closed', false);
+            if (!$showClosed) {
+                $closedTag = \App\Models\Tag::where('type', 'project_status')
+                    ->where('name', '已結案')->first();
+                if ($closedTag) {
+                    $query->where('status', '!=', (string)$closedTag->id);
+                }
+            }
         }
-        // 若未篩選，不額外排除任何狀態（顯示全部）
 
         // 公司篩選
         if ($request->filled('company_id')) {
@@ -52,6 +72,9 @@ class ProjectController extends Controller
         $orderBy = $request->input('order_by', 'id');
         $orderDir = $request->input('order_dir', 'desc');
         $query->orderBy($orderBy, $orderDir);
+
+        // 取得所有符合搜尋條件的專案 ID（用於全部結果統計）
+        $allProjectIds = (clone $query)->pluck('id');
 
         $projects = $query->paginate(15);
         
@@ -91,17 +114,28 @@ class ProjectController extends Controller
             return $project;
         });
 
-        // 計算總計
+        // 計算搜尋結果總計（全部結果，非當頁）
+        $receivableTotals = DB::table('receivables')
+            ->whereIn('project_id', $allProjectIds)
+            ->whereNull('deleted_at')
+            ->selectRaw('SUM(amount) as total_receivable, SUM(received_amount) as total_received, SUM(withholding_tax) as total_withholding_tax')
+            ->first();
+        $payableTotals = DB::table('payables')
+            ->whereIn('project_id', $allProjectIds)
+            ->whereNull('deleted_at')
+            ->selectRaw('SUM(amount) as total_payable, SUM(paid_amount) as total_paid')
+            ->first();
         $totals = [
-            'total_receivable' => $projects->sum('total_receivable'),
-            'withholding_tax' => $projects->sum('withholding_tax'),
-            'total_payable' => $projects->sum('total_payable'),
-            'accumulated_income' => $projects->sum('accumulated_income'),
+            'total_receivable' => $receivableTotals->total_receivable ?? 0,
+            'withholding_tax'  => $receivableTotals->total_withholding_tax ?? 0,
+            'total_payable'    => $payableTotals->total_payable ?? 0,
+            'accumulated_income' => (($receivableTotals->total_received ?? 0) - ($payableTotals->total_paid ?? 0)),
         ];
 
         $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
+        $showClosed = $request->boolean('show_closed', false);
 
-        return view('tenant.projects.index', compact('projects', 'totals', 'dateStart', 'dateEnd', 'projectStatuses'));
+        return view('tenant.projects.index', compact('projects', 'totals', 'dateStart', 'dateEnd', 'dateMode', 'showClosed', 'projectStatuses'));
     }
 
     /**
@@ -227,6 +261,7 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
+        $validStatuses = array_column(\App\Http\Controllers\Tenant\SettingsController::getProjectStatuses(), 'value');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'project_type' => 'nullable|string|max:100',
@@ -237,7 +272,7 @@ class ProjectController extends Controller
             'budget' => 'nullable|numeric|min:0',
             'actual_cost' => 'nullable|numeric|min:0',
             'quote_no' => 'nullable|string',
-            'status' => 'nullable|string|in:planning,in_progress,on_hold,completed,cancelled',
+            'status' => 'nullable|string|in:' . implode(',', $validStatuses),
             'description' => 'nullable|string',
             'content' => 'nullable|string',
             'note' => 'nullable|string',
@@ -262,8 +297,9 @@ class ProjectController extends Controller
      */
     public function quickUpdate(Request $request, Project $project)
     {
+        $validStatuses = array_column(\App\Http\Controllers\Tenant\SettingsController::getProjectStatuses(), 'value');
         $validated = $request->validate([
-            'status' => 'required|string|in:planning,in_progress,on_hold,completed,cancelled',
+            'status' => 'required|string|in:' . implode(',', $validStatuses),
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'note' => 'nullable|string',

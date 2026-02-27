@@ -110,11 +110,12 @@
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">序號</th>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:80px">操作</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">編輯</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">入帳</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px">負責人</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">開立日</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:180px">專案/內容</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px">專案狀態</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">客戶</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:160px">專案/內容</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">統編</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">報價單號</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">發票號碼</th>
@@ -128,7 +129,7 @@
             </tr>
             @if($receivables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
-                <td colspan="11" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                <td colspan="12" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（{{ $receivables->total() }}筆）：
                 </td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -153,12 +154,16 @@
                         {{ ($receivables->currentPage() - 1) * $receivables->perPage() + $index + 1 }}
                     </td>
                     <!-- 操作 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
                         <a href="{{ route('tenant.receivables.edit', $receivable) }}" 
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
                         @if($receivable->status !== 'paid' && $receivable->remaining_amount > 0)
                             <a href="{{ route('tenant.receivables.quick-receive', $receivable) }}"
                                class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</a>
+                        @else
+                            <span class="text-gray-300">—</span>
                         @endif
                     </td>
                     <!-- 負責人 -->
@@ -169,26 +174,21 @@
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                         @date($receivable->receipt_date)
                     </td>
+                    <!-- 客戶 -->
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        {{ $receivable->company?->short_name ?? $receivable->company?->name ?? '-' }}
+                    </td>
                     <!-- 專案/內容 -->
                     <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 max-w-xs">
-                        @if($receivable->project && $receivable->content)
-                            {{ $receivable->project->name }} : {{ Str::limit($receivable->content, 20) }}
-                        @else
-                            {{ $receivable->project?->name ?? '' }}{{ $receivable->content ? Str::limit($receivable->content, 25) : '' }}
-                        @endif
-                    </td>
-                    <!-- 專案狀態 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-xs">
-                        @if($receivable->project)
-                            @php
-                                $statusMap = collect($projectStatuses)->keyBy('value');
-                                $ps = $statusMap->get($receivable->project->status);
-                                $hexColor = $ps['color'] ?? '#6b7280';
-                            @endphp
-                            <span class="font-semibold" style="color: {{ $hexColor }};">{{ $ps['label'] ?? $receivable->project->status }}</span>
-                        @else
-                            <span class="text-gray-400">—</span>
-                        @endif
+                        <div class="truncate" title="{{ ($receivable->project?->name ?? '') . ($receivable->content ? ' ' . $receivable->content : '') }}">
+                            @if($receivable->project && $receivable->content)
+                                {{ $receivable->project->name }} : {{ Str::limit($receivable->content, 20) }}
+                            @elseif($receivable->project)
+                                {{ $receivable->project->name }}
+                            @else
+                                {{ $receivable->content ? Str::limit($receivable->content, 25) : '-' }}
+                            @endif
+                        </div>
                     </td>
                     <!-- 統編 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -241,7 +241,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="16" class="px-4 py-1 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    <td colspan="17" class="px-4 py-1 text-center text-gray-500 dark:text-gray-400 text-sm">
                         目前沒有應收帳款資料
                     </td>
                 </tr>

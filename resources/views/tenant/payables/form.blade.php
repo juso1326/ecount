@@ -111,7 +111,42 @@
                     </select>
                 </div>
             </div>
-        </div>
+
+            <!-- 採購欄位（payee_type = expense 時顯示） -->
+            <div id="expense_company_fields" style="display: none;" class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">公司名稱</label>
+                    <input type="text" name="expense_company_name" id="expense_company_name"
+                           value="{{ old('expense_company_name', isset($payable) ? $payable->expense_company_name : '') }}"
+                           placeholder="採購對象公司名稱"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">統一編號</label>
+                    <input type="text" name="expense_tax_id" id="expense_tax_id"
+                           value="{{ old('expense_tax_id', isset($payable) ? $payable->expense_tax_id : '') }}"
+                           placeholder="統編（選填）"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <input type="checkbox" id="has_advance" onchange="toggleAdvanceUser()"
+                               {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') ? 'checked' : '' }}
+                               class="rounded text-primary mr-1">
+                        成員代墊
+                    </label>
+                    <select name="advance_user_id" id="advance_user_id"
+                            style="{{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') ? '' : 'display:none' }}"
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">請選擇代墊成員</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
         <!-- 支出資訊區塊（給付對象為外製或已支出時顯示） -->
         <div id="expense_info_section" class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
@@ -383,40 +418,43 @@ document.getElementById('payee_type').addEventListener('change', function() {
     const payeeType = this.value;
     const memberField = document.getElementById('member_field');
     const vendorField = document.getElementById('vendor_field');
+    const expenseCompanyFields = document.getElementById('expense_company_fields');
     const expenseSection = document.getElementById('expense_info_section');
     const memberSelect = document.getElementById('payee_user_id');
     const vendorSelect = document.getElementById('payee_company_id');
     const expenseCategorySelect = document.getElementById('expense_category_id');
     const expenseContent = document.getElementById('expense_content');
     
-    // 隱藏所有欄位
     memberField.style.display = 'none';
     vendorField.style.display = 'none';
-    
-    // 清空欄位
+    expenseCompanyFields.style.display = 'none';
     memberSelect.value = '';
     vendorSelect.value = '';
     
-    // 根據類型顯示對應欄位
     if (payeeType === 'member') {
         memberField.style.display = 'block';
-        // 隱藏支出資訊區塊（成員不需要）
         expenseSection.style.display = 'none';
         expenseCategorySelect.removeAttribute('required');
         expenseContent.removeAttribute('required');
     } else if (payeeType === 'vendor') {
         vendorField.style.display = 'block';
-        // 顯示支出資訊區塊
         expenseSection.style.display = 'block';
         expenseCategorySelect.setAttribute('required', 'required');
         expenseContent.setAttribute('required', 'required');
     } else if (payeeType === 'expense') {
-        // 已支出也顯示支出資訊區塊
+        expenseCompanyFields.style.display = 'grid';
         expenseSection.style.display = 'block';
         expenseCategorySelect.setAttribute('required', 'required');
         expenseContent.setAttribute('required', 'required');
     }
 });
+
+function toggleAdvanceUser() {
+    const checked = document.getElementById('has_advance').checked;
+    const select = document.getElementById('advance_user_id');
+    select.style.display = checked ? 'block' : 'none';
+    if (!checked) select.value = '';
+}
 
 // 頁面載入時根據已選值顯示對應欄位
 document.addEventListener('DOMContentLoaded', function() {
@@ -424,6 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const expenseSection = document.getElementById('expense_info_section');
     const expenseCategorySelect = document.getElementById('expense_category_id');
     const expenseContent = document.getElementById('expense_content');
+    const expenseCompanyFields = document.getElementById('expense_company_fields');
     
     if (payeeType === 'member') {
         document.getElementById('member_field').style.display = 'block';
@@ -434,6 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('vendor_field').style.display = 'block';
         expenseSection.style.display = 'block';
     } else if (payeeType === 'expense') {
+        expenseCompanyFields.style.display = 'grid';
         expenseSection.style.display = 'block';
     }
 });

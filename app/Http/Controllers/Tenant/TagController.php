@@ -100,13 +100,20 @@ class TagController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $validated['is_active'] = $request->has('is_active');
+        // 系統內建標籤：只允許更新顏色、說明、排序，不允許改名或停用
+        if ($tag->is_system) {
+            unset($validated['name'], $validated['type']);
+            $validated['is_active'] = true;
+        } else {
+            $validated['is_active'] = $request->has('is_active');
+        }
+
         $validated['sort_order'] = $validated['sort_order'] ?? $tag->sort_order;
 
         $tag->update($validated);
 
         return redirect()
-            ->route('tenant.tags.index', ['type' => $validated['type']])
+            ->route('tenant.tags.index', ['type' => $tag->type])
             ->with('success', '標籤已更新');
     }
 
@@ -115,6 +122,12 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
+        if ($tag->is_system) {
+            return redirect()
+                ->route('tenant.tags.index', ['type' => $tag->type])
+                ->with('error', "「{$tag->name}」為系統內建標籤，無法刪除");
+        }
+
         $type = $tag->type;
         $tag->delete();
 
@@ -133,5 +146,18 @@ class TagController extends Controller
         return redirect()
             ->route('tenant.tags.index', ['type' => Tag::TYPE_PROJECT_STATUS])
             ->with('success', "「{$tag->name}」已設為預設狀態");
+    }
+
+    /**
+     * Update sort order only (allowed for system tags too)
+     */
+    public function updateSort(Request $request, Tag $tag)
+    {
+        $request->validate(['sort_order' => 'required|integer|min:0']);
+        $tag->update(['sort_order' => $request->sort_order]);
+
+        return redirect()
+            ->route('tenant.tags.index', ['type' => $tag->type])
+            ->with('success', '排序已更新');
     }
 }

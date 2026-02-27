@@ -87,10 +87,14 @@
             @forelse($tags as $tag)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
+                        @if($tag->is_system)
+                            <span class="text-gray-400 text-xs">🔒 系統</span>
+                        @else
                         <a href="{{ route('tenant.tags.edit', $tag) }}"
                            class="text-primary hover:text-primary-dark font-medium">
                             編輯
                         </a>
+                        @endif
                         @if($type === 'project_status')
                             <form action="{{ route('tenant.tags.set-default-status', $tag) }}" method="POST" class="inline">
                                 @csrf
@@ -102,6 +106,9 @@
                                 </button>
                             </form>
                         @endif
+                        @if($tag->is_system)
+                            <span class="text-gray-400 text-xs" title="系統內建，無法刪除">🔒</span>
+                        @else
                         <form action="{{ route('tenant.tags.destroy', $tag) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
@@ -109,9 +116,16 @@
                                 刪除
                             </button>
                         </form>
+                        @endif
                     </td>
-                    <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                        {{ $tag->sort_order }}
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        <form action="{{ route('tenant.tags.sort', $tag) }}" method="POST" class="flex items-center gap-1">
+                            @csrf
+                            @method('PATCH')
+                            <input type="number" name="sort_order" value="{{ $tag->sort_order }}" min="0"
+                                   class="w-14 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-1 py-0.5 text-sm text-center">
+                            <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">✓</button>
+                        </form>
                     </td>
                     <td class="px-6 py-2 whitespace-nowrap">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium" 
