@@ -323,6 +323,25 @@
 <script>
 let activeRenameTarget = null;
 
+function updateQtnExample() {
+    const pattern = document.getElementById('qtnPattern').value || 'AAAYYYY0000';
+    const year = new Date().getFullYear();
+    let ex = pattern.replace(/A+/g, 'REB').replace(/Y{4}/g, year).replace(/Y+/g, String(year).slice(-2));
+    const zeros = (pattern.match(/0+/) || ['0000'])[0].length;
+    ex = ex.replace(/0+/g, '0'.repeat(zeros - 1) + '1');
+    document.getElementById('qtnExample').textContent = ex;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Separator toggle preview
+    const sepCb = document.querySelector('input[name="use_thousand_separator"][type="checkbox"]');
+    if (sepCb) {
+        sepCb.addEventListener('change', () => {
+            document.getElementById('separatorLabel').textContent = sepCb.checked ? '1,234,567' : '1234567';
+        });
+    }
+});
+
 const TAB_CLASSES = {
     active: 'border-primary text-primary dark:text-primary-light',
     inactive: 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300'

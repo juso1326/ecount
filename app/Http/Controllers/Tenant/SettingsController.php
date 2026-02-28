@@ -107,8 +107,17 @@ class SettingsController extends Controller
         $taxNumber     = TenantSetting::get('tax_number', '');
         $taxRateLabel  = TenantSetting::get('tax_rate_label', 'Tax Rate');
         $taxNumberLabel= TenantSetting::get('tax_number_label', 'Tax Number');
-        $displayLang   = TenantSetting::get('display_language', 'zh_TW');
-        $displayName   = TenantSetting::get('display_name', '');
+        $displayLang      = TenantSetting::get('display_language', 'zh_TW');
+        $displayName      = TenantSetting::get('display_name', '');
+        $decimalPlaces    = TenantSetting::get('decimal_places', 2);
+        $useThousandSep   = TenantSetting::get('use_thousand_separator', true);
+        $quotationPattern = TenantSetting::get('quotation_number_pattern', 'AAAYYYY0000');
+
+        // Build example from pattern
+        $quotationExample = preg_replace('/A+/', 'REB', $quotationPattern);
+        $quotationExample = preg_replace('/Y+/', date('Y'), $quotationExample);
+        $quotationExample = preg_replace('/0+/', str_pad('1', strlen(preg_replace('/[^0]/', '', $quotationPattern)), '0', STR_PAD_LEFT), $quotationExample);
+        $useThousandSeparator = (bool)$useThousandSep;
         $subPlan       = TenantSetting::get('subscription_plan', '個人版');
         $subExpires    = TenantSetting::get('subscription_expires', '');
         $logoPath      = TenantSetting::get('company_logo', '');
@@ -128,6 +137,7 @@ class SettingsController extends Controller
             'dateFormat', 'timeFormat', 'timezone',
             'mainCurrency', 'taxRate', 'taxNumber',
             'taxRateLabel', 'taxNumberLabel', 'displayLang', 'displayName',
+            'decimalPlaces', 'useThousandSeparator', 'quotationPattern', 'quotationExample',
             'subPlan', 'subExpires', 'logoPath', 'user', 'currencies'
         ));
     }
@@ -147,7 +157,10 @@ class SettingsController extends Controller
             'tax_rate_label'     => 'nullable|string|max:50',
             'tax_number_label'   => 'nullable|string|max:50',
             'display_language'   => 'nullable|string|max:10',
-            'display_name'       => 'nullable|string|max:30',
+            'display_name'              => 'nullable|string|max:30',
+            'decimal_places'            => 'nullable|integer|min:0|max:6',
+            'use_thousand_separator'    => 'nullable',
+            'quotation_number_pattern'  => 'nullable|string|max:50',
         ]);
 
         TenantSetting::set('date_format',      $validated['date_format'],      'system', 'string');
@@ -158,8 +171,11 @@ class SettingsController extends Controller
         TenantSetting::set('tax_number',       $validated['tax_number'] ?? '', 'system', 'string');
         TenantSetting::set('tax_rate_label',   $validated['tax_rate_label'] ?? 'Tax Rate',   'system', 'string');
         TenantSetting::set('tax_number_label', $validated['tax_number_label'] ?? 'Tax Number', 'system', 'string');
-        TenantSetting::set('display_language', $validated['display_language'] ?? 'zh_TW', 'system', 'string');
-        TenantSetting::set('display_name',     $validated['display_name'] ?? '',          'system', 'string');
+        TenantSetting::set('display_language',         $validated['display_language'] ?? 'zh_TW', 'system', 'string');
+        TenantSetting::set('display_name',             $validated['display_name'] ?? '',          'system', 'string');
+        TenantSetting::set('decimal_places',           $validated['decimal_places'] ?? 2,         'system', 'number');
+        TenantSetting::set('use_thousand_separator',   isset($validated['use_thousand_separator']) && $validated['use_thousand_separator'] ? 'true' : 'false', 'system', 'boolean');
+        TenantSetting::set('quotation_number_pattern', $validated['quotation_number_pattern'] ?? 'AAAYYYY0000', 'system', 'string');
 
         return redirect()->route('tenant.settings.system', ['tab' => 'general'])
             ->with('success', '格式設定已儲存');
