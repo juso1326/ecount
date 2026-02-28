@@ -108,6 +108,7 @@ class SettingsController extends Controller
         $taxRateLabel  = TenantSetting::get('tax_rate_label', 'Tax Rate');
         $taxNumberLabel= TenantSetting::get('tax_number_label', 'Tax Number');
         $displayLang   = TenantSetting::get('display_language', 'zh_TW');
+        $displayName   = TenantSetting::get('display_name', '');
         $subPlan       = TenantSetting::get('subscription_plan', '個人版');
         $subExpires    = TenantSetting::get('subscription_expires', '');
         $logoPath      = TenantSetting::get('company_logo', '');
@@ -126,7 +127,7 @@ class SettingsController extends Controller
         return view('tenant.settings.system', compact(
             'dateFormat', 'timeFormat', 'timezone',
             'mainCurrency', 'taxRate', 'taxNumber',
-            'taxRateLabel', 'taxNumberLabel', 'displayLang',
+            'taxRateLabel', 'taxNumberLabel', 'displayLang', 'displayName',
             'subPlan', 'subExpires', 'logoPath', 'user', 'currencies'
         ));
     }
@@ -146,6 +147,7 @@ class SettingsController extends Controller
             'tax_rate_label'     => 'nullable|string|max:50',
             'tax_number_label'   => 'nullable|string|max:50',
             'display_language'   => 'nullable|string|max:10',
+            'display_name'       => 'nullable|string|max:30',
         ]);
 
         TenantSetting::set('date_format',      $validated['date_format'],      'system', 'string');
@@ -157,6 +159,7 @@ class SettingsController extends Controller
         TenantSetting::set('tax_rate_label',   $validated['tax_rate_label'] ?? 'Tax Rate',   'system', 'string');
         TenantSetting::set('tax_number_label', $validated['tax_number_label'] ?? 'Tax Number', 'system', 'string');
         TenantSetting::set('display_language', $validated['display_language'] ?? 'zh_TW', 'system', 'string');
+        TenantSetting::set('display_name',     $validated['display_name'] ?? '',          'system', 'string');
 
         return redirect()->route('tenant.settings.system', ['tab' => 'general'])
             ->with('success', '格式設定已儲存');

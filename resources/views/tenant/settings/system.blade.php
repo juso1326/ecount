@@ -177,6 +177,19 @@
                 <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Theme Customization <span class="font-normal text-gray-500">樣式設計</span></h2>
                 <div class="mt-4 space-y-5">
 
+                    <!-- 顯示名稱 -->
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="w-40 flex-shrink-0">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">顯示名稱</p>
+                            <p class="text-xs text-gray-400">Display Name</p>
+                        </div>
+                        <div class="flex-1">
+                            <input type="text" name="display_name" value="{{ $displayName }}" maxlength="30"
+                                placeholder="系統顯示名稱"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                    </div>
+
                     <!-- Display Language -->
                     <div class="flex items-center justify-between gap-4">
                         <div class="w-40 flex-shrink-0">
