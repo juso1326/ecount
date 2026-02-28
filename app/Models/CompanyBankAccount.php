@@ -9,7 +9,7 @@ class CompanyBankAccount extends Model
 {
     protected $fillable = [
         'company_id', 'bank_name', 'bank_branch',
-        'bank_account', 'bank_account_name', 'note', 'sort_order',
+        'bank_account', 'bank_account_name', 'note', 'sort_order', 'is_default',
     ];
 
     public function company(): BelongsTo

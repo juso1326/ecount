@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Company;
 use App\Models\User;
+use App\Models\TaxSetting;
+use App\Models\ExpenseCategory;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -226,12 +229,20 @@ class ProjectController extends Controller
 
         $payablesData = $project->payables->map(function($p) {
             return [
-                'id' => $p->id,
-                'payment_date' => $p->payment_date?->format('Y-m-d'),
-                'amount' => $p->amount,
-                'vendor' => $p->vendor,
-                'content' => $p->content,
-                'note' => $p->note,
+                'id'                   => $p->id,
+                'payment_date'         => $p->payment_date?->format('Y-m-d'),
+                'amount'               => $p->amount,
+                'payee_type'           => $p->payee_type,
+                'payee_user_id'        => $p->payee_user_id,
+                'payee_company_id'     => $p->payee_company_id,
+                'expense_company_name' => $p->expense_company_name,
+                'expense_tax_id'       => $p->expense_tax_id,
+                'advance_user_id'      => $p->advance_user_id,
+                'content'              => $p->content,
+                'note'                 => $p->note,
+                'invoice_no'           => $p->invoice_no,
+                'due_date'             => $p->due_date?->format('Y-m-d'),
+                'payment_method'       => $p->payment_method,
             ];
         });
 
@@ -240,7 +251,18 @@ class ProjectController extends Controller
 
         $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
 
-        return view('tenant.projects.show', compact('project', 'receivablesData', 'payablesData', 'availableUsers', 'projectRoles', 'projectStatuses'));
+        // 快速新增應付帳款所需資料
+        $allUsers = User::where('is_active', true)->orderBy('name')->get();
+        $vendors = Company::where('is_active', true)->where('is_outsource', true)->orderBy('name')->get();
+        $taxSettings = TaxSetting::active()->ordered()->get();
+        $defaultTaxId = TaxSetting::getDefault()?->id;
+        $expenseCategories = ExpenseCategory::active()->ordered()->get();
+        $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
+
+        return view('tenant.projects.show', compact(
+            'project', 'receivablesData', 'payablesData', 'availableUsers', 'projectRoles', 'projectStatuses',
+            'allUsers', 'vendors', 'taxSettings', 'defaultTaxId', 'expenseCategories', 'paymentMethods'
+        ));
     }
 
     /**
@@ -415,34 +437,44 @@ class ProjectController extends Controller
     {
         $validated = $request->validate([
             'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:0',
-            'vendor' => 'nullable|string',
-            'content' => 'nullable|string',
-            'note' => 'nullable|string',
+            'amount'       => 'required|numeric|min:0',
+            'payee_type'   => 'nullable|string|in:member,vendor,expense',
+            'payee_user_id'        => 'nullable|exists:users,id',
+            'payee_company_id'     => 'nullable|exists:companies,id',
+            'expense_company_name' => 'nullable|string|max:255',
+            'expense_tax_id'       => 'nullable|string|max:50',
+            'advance_user_id'      => 'nullable|exists:users,id',
+            'content'  => 'nullable|string',
+            'note'     => 'nullable|string',
+            'fiscal_year'     => 'nullable|integer',
+            'invoice_no'      => 'nullable|string|max:50',
+            'due_date'        => 'nullable|date',
+            'payment_method'  => 'nullable|string|max:50',
         ]);
-        
+
         // 自動生成付款編號
         $lastPayable = \App\Models\Payable::withTrashed()
             ->where('payment_no', 'like', 'PAY-%')
             ->orderByRaw('CAST(SUBSTRING(payment_no, 5) AS UNSIGNED) DESC')
             ->first();
-        
+
         if ($lastPayable) {
             preg_match('/PAY-(\d+)/', $lastPayable->payment_no, $matches);
             $nextNumber = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
         } else {
             $nextNumber = 1;
         }
-        
-        $validated['payment_no'] = 'PAY-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-        $validated['project_id'] = $project->id;
-        $validated['company_id'] = $project->company_id;
-        $validated['status'] = \App\Models\Payable::STATUS_UNPAID;
-        $validated['paid_amount'] = 0;
+
+        $validated['payment_no']          = 'PAY-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        $validated['project_id']          = $project->id;
+        $validated['company_id']          = $project->company_id;
+        $validated['status']              = \App\Models\Payable::STATUS_UNPAID;
+        $validated['paid_amount']         = 0;
         $validated['responsible_user_id'] = auth()->id();
-        
+        $validated['fiscal_year']         = $validated['fiscal_year'] ?? date('Y');
+
         \App\Models\Payable::create($validated);
-        
+
         return redirect()->route('tenant.projects.show', $project)
             ->with('success', '應付帳款新增成功');
     }

@@ -72,13 +72,8 @@
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @forelse($roles as $role)
                 @php
-                    $isSystemRole = in_array($role->name, ['super_admin', 'financial_manager', 'project_manager', 'employee']);
-                    $roleLabels = [
-                        'super_admin' => '總管理',
-                        'financial_manager' => '財務主管',
-                        'project_manager' => '專案經理',
-                        'employee' => '一般員工',
-                    ];
+                    $isSystemRole = $role->name === '總管理';
+                    $roleLabels = ['總管理' => '總管理'];
                 @endphp
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">

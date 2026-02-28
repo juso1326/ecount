@@ -101,12 +101,10 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        // 檢查是否為系統預設角色（只有三個）
-        $systemRoles = ['總管理', '財務主管', '專案經理'];
-        
-        if (in_array($role->name, $systemRoles)) {
+        // 只有「總管理」不可刪除
+        if ($role->name === '總管理') {
             return redirect()->route('tenant.roles.index')
-                ->with('error', '系統預設角色不可刪除');
+                ->with('error', '總管理角色不可刪除');
         }
 
         // 檢查是否有用戶使用此角色

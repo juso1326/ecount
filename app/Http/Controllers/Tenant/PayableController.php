@@ -357,11 +357,19 @@ class PayableController extends Controller
     public function quickUpdate(Request $request, Payable $payable)
     {
         $validated = $request->validate([
-            'payment_date' => 'required|date',
-            'amount' => 'required|numeric|min:0',
-            'vendor' => 'nullable|string',
-            'content' => 'nullable|string',
-            'note' => 'nullable|string',
+            'payment_date'         => 'required|date',
+            'amount'               => 'required|numeric|min:0',
+            'payee_type'           => 'nullable|string|in:member,vendor,expense',
+            'payee_user_id'        => 'nullable|exists:users,id',
+            'payee_company_id'     => 'nullable|exists:companies,id',
+            'expense_company_name' => 'nullable|string|max:255',
+            'expense_tax_id'       => 'nullable|string|max:50',
+            'advance_user_id'      => 'nullable|exists:users,id',
+            'content'              => 'nullable|string',
+            'note'                 => 'nullable|string',
+            'invoice_no'           => 'nullable|string|max:50',
+            'due_date'             => 'nullable|date',
+            'payment_method'       => 'nullable|string|max:50',
         ]);
 
         $payable->update($validated);

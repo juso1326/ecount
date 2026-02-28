@@ -195,8 +195,8 @@
                         <a href="{{ route('tenant.payables.edit', $payable) }}" 
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
                         @if($payable->status !== 'paid' && $payable->remaining_amount > 0)
-                            <a href="{{ route('tenant.payables.quick-pay', $payable) }}"
-                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</a>
+                            <button onclick="openQuickPayModal({{ $payable->id }}, {{ $payable->remaining_amount }}, '{{ addslashes($payable->payment_no) }}')"
+                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
                         @endif
                     </td>
                     <!-- 負責人 -->
@@ -294,4 +294,56 @@
     {{ $payables->withQueryString()->links() }}
 </div>
 @endif
+
+<!-- 快速入帳 Modal -->
+<div id="quickPayModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">快速入帳</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4" id="qp_payment_no"></p>
+        <form id="quickPayForm" method="POST">
+            @csrf
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">給付日期 <span class="text-red-500">*</span></label>
+                    <input type="date" name="payment_date" id="qp_date" value="{{ date('Y-m-d') }}" required
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">給付金額 <span class="text-red-500">*</span></label>
+                    <input type="number" name="amount" id="qp_amount" step="1" min="1" required
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <p class="text-xs text-gray-500 mt-1">剩餘應付：NT$ <span id="qp_remaining"></span></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">付款方式</label>
+                    <select name="payment_method" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <option value="">請選擇</option>
+                        @foreach(\App\Models\Tag::where('type', \App\Models\Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get() as $m)
+                            <option value="{{ $m->name }}">{{ $m->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">備註</label>
+                    <input type="text" name="note" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-4">
+                <button type="button" onclick="document.getElementById('quickPayModal').classList.add('hidden')"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg text-sm">取消</button>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg text-sm">確認入帳</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+function openQuickPayModal(id, remaining, paymentNo) {
+    document.getElementById('qp_payment_no').textContent = '單號：' + paymentNo;
+    document.getElementById('qp_remaining').textContent = remaining.toLocaleString();
+    document.getElementById('qp_amount').value = remaining;
+    document.getElementById('qp_amount').max = remaining;
+    document.getElementById('quickPayForm').action = '/payable-payments/' + id;
+    document.getElementById('quickPayModal').classList.remove('hidden');
+}
+</script>
 @endsection

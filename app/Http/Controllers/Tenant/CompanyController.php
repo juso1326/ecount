@@ -139,14 +139,18 @@ class CompanyController extends Controller
         $company = Company::create($companyData);
 
         // 處理銀行帳戶
+        $defaultSet = false;
         foreach ($request->input('bank_accounts', []) as $i => $bank) {
             if (!empty($bank['bank_name']) || !empty($bank['bank_account'])) {
+                $isDefault = isset($bank['is_default']) && !$defaultSet;
+                if ($isDefault) $defaultSet = true;
                 $company->bankAccounts()->create([
-                    'bank_name' => $bank['bank_name'] ?? '',
-                    'bank_branch' => $bank['bank_branch'] ?? null,
-                    'bank_account' => $bank['bank_account'] ?? '',
+                    'bank_name'         => $bank['bank_name'] ?? '',
+                    'bank_branch'       => $bank['bank_branch'] ?? null,
+                    'bank_account'      => $bank['bank_account'] ?? '',
                     'bank_account_name' => $bank['bank_account_name'] ?? null,
-                    'note' => $bank['note'] ?? null,
+                    'note'              => $bank['note'] ?? null,
+                    'is_default'        => $isDefault,
                 ]);
             }
         }
@@ -258,8 +262,11 @@ class CompanyController extends Controller
 
         // 同步多筆銀行資訊
         $company->bankAccounts()->delete();
+        $defaultSet = false;
         foreach ($request->input('bank_accounts', []) as $i => $bank) {
             if (!empty($bank['bank_name']) || !empty($bank['bank_account'])) {
+                $isDefault = isset($bank['is_default']) && !$defaultSet;
+                if ($isDefault) $defaultSet = true;
                 $company->bankAccounts()->create([
                     'bank_name'         => $bank['bank_name'] ?? null,
                     'bank_branch'       => $bank['bank_branch'] ?? null,
@@ -267,6 +274,7 @@ class CompanyController extends Controller
                     'bank_account_name' => $bank['bank_account_name'] ?? null,
                     'note'              => $bank['note'] ?? null,
                     'sort_order'        => $i,
+                    'is_default'        => $isDefault,
                 ]);
             }
         }

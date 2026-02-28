@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['projects']);
+        $query = User::with(['projects' => fn($q) => $q->whereNotIn('status', ['closed', 'archived'])]);
 
         // 搜尋
         if ($request->filled('search')) {

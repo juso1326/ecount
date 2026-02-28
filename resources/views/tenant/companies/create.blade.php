@@ -128,7 +128,7 @@
         </div>
 
         <!-- 聯絡人 -->
-        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="mt-6">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">聯絡人</h3>
                 <button type="button" id="addContactBtn"
@@ -201,7 +201,7 @@
         </script>
 
         <!-- 銀行資訊 -->
-        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="mt-6">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">銀行資訊</h3>
                 <button type="button" id="addBankBtn"
@@ -243,12 +243,20 @@
                                 class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">備註</label>
-                        <input type="text" name="bank_accounts[{{ $i }}][note]"
-                            value="{{ $bank['note'] ?? '' }}"
-                            class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="備註（選填）">
+                    <div class="mt-2 flex items-center gap-4">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">備註</label>
+                            <input type="text" name="bank_accounts[{{ $i }}][note]"
+                                value="{{ $bank['note'] ?? '' }}"
+                                class="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="備註（選填）">
+                        </div>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 cursor-pointer mt-4">
+                            <input type="radio" name="bank_default" value="{{ $i }}"
+                                {{ !empty($bank['is_default']) ? 'checked' : '' }}
+                                onchange="document.querySelectorAll('[name^=\'bank_accounts\'][name$=\'[is_default]\']').forEach(el=>el.remove()); var h=document.createElement('input'); h.type='hidden'; h.name='bank_accounts['+this.value+'][is_default]'; h.value='1'; this.closest('.bank-row').appendChild(h);">
+                            預設
+                        </label>
                     </div>
                 </div>
                 @endforeach

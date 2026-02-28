@@ -136,7 +136,6 @@ function toggleCustomDate(mode) {
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案代碼</th>
                 <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日</th>
                 <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">公司簡稱</th>
@@ -152,7 +151,7 @@ function toggleCustomDate(mode) {
             </tr>
             <!-- 本頁總計 -->
             <tr class="bg-gray-100 dark:bg-gray-600 border-t border-gray-200 dark:border-gray-500 font-semibold">
-                <th colspan="8" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">搜尋結果總計</th>
+                <th colspan="7" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">搜尋結果總計</th>
                 <th class="px-3 py-1 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
                 <th class="px-3 py-1 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">${{ number_format($totals['withholding_tax'] ?? 0, 0) }}</th>
                 <th class="px-3 py-1 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">${{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
@@ -163,10 +162,6 @@ function toggleCustomDate(mode) {
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($projects as $index => $project)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
-                <!-- 專案代碼 -->
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-white">
-                    {{ $project->code ?? '-' }}
-                </td>
                 <!-- 操作 -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-center space-x-2">
                     <a href="{{ route('tenant.projects.show', $project) }}" 

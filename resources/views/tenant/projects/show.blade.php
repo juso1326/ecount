@@ -318,7 +318,7 @@
             <span class="text-gray-500 dark:text-gray-400">未付 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</span></span>
         </div>
         @endif
-        <button onclick="document.getElementById('addPayableModal').classList.remove('hidden')"
+        <button onclick="openAddPayableModal()"
                 class="text-blue-500 hover:text-blue-700 text-sm font-medium shrink-0">+ 快速新增</button>
     </div>
     @if($payables->count() > 0)
@@ -357,8 +357,13 @@
                             : ($payable->payeeCompany?->short_name ?? $payable->payeeCompany?->name ?? $payable->company?->short_name ?? $payable->company?->name ?? '-');
                     @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
-                        <td class="px-2 py-2 text-center whitespace-nowrap">
-                            <a href="{{ route('tenant.payables.edit', $payable) }}" class="text-blue-500 hover:text-blue-700 dark:text-blue-400">編輯</a>
+                        <td class="px-2 py-2 text-center whitespace-nowrap space-x-2">
+                            <button onclick="openEditPayableModal({{ $payable->id }})" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 text-xs">編輯</button>
+                            <form action="{{ route('tenant.payables.destroy', $payable) }}" method="POST" class="inline"
+                                  onsubmit="return confirm('確定刪除此應付帳款？')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:text-red-700 dark:text-red-400 text-xs">刪除</button>
+                            </form>
                         </td>
                         <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ format_date($payable->payment_date) }}</td>
                         <td class="px-3 py-2 whitespace-nowrap">
@@ -540,18 +545,130 @@
 
 <!-- 快速新增應付帳款 Modal -->
 <div id="addPayableModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div class="relative top-10 mx-auto p-5 border w-[620px] max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">快速新增應付帳款</h3>
-            <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <div class="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 <p>專案：{{ $project->name }}</p>
                 <p>客戶：{{ $project->company?->name ?? '-' }} | 統編：{{ $project->company?->tax_id ?? '-' }}</p>
             </div>
-            
+
             <form action="{{ route('tenant.projects.payables.quick-add', $project) }}" method="POST">
                 @csrf
-                
+
                 <div class="space-y-3">
+                    <!-- 給付對象 -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                對象 <span class="text-red-500">*</span>
+                            </label>
+                            <select name="payee_type" id="qa_payee_type" required
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇</option>
+                                <option value="member">成員</option>
+                                <option value="vendor">外包</option>
+                                <option value="expense">採購</option>
+                            </select>
+                        </div>
+
+                        <!-- 成員選擇 -->
+                        <div id="qa_member_field" style="display:none">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">成員</label>
+                            <select name="payee_user_id" id="qa_payee_user_id"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇成員</option>
+                                @foreach($allUsers as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- 外包廠商選擇 -->
+                        <div id="qa_vendor_field" style="display:none">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">廠商</label>
+                            <select name="payee_company_id" id="qa_payee_company_id"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇廠商</option>
+                                @foreach($vendors as $vendor)
+                                    <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 採購欄位 -->
+                    <div id="qa_expense_fields" style="display:none" class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">採購公司名稱</label>
+                            <input type="text" name="expense_company_name" id="qa_expense_company_name"
+                                   placeholder="採購對象公司名稱"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">統一編號</label>
+                            <input type="text" name="expense_tax_id" id="qa_expense_tax_id"
+                                   placeholder="統編（選填）"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- 成員代墊 -->
+                    <div id="qa_advance_section" style="display:none">
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 cursor-pointer">
+                            <input type="checkbox" id="qa_has_advance" onchange="qaToggleAdvance()" class="rounded text-primary">
+                            成員代墊
+                        </label>
+                        <select name="advance_user_id" id="qa_advance_user_id" style="display:none"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                            <option value="">請選擇代墊成員</option>
+                            @foreach($allUsers as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- 內容說明 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">內容說明</label>
+                        <textarea name="content" rows="2"
+                                  class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">{{ $project->name }}</textarea>
+                    </div>
+
+                    <!-- 金額 & 稅款 -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                未稅金額 <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="qa_amount_before_tax" step="1" min="0" required
+                                   oninput="qaCalcTax()"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">稅款</label>
+                            <select id="qa_tax_setting_id" onchange="qaCalcTax()"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="" data-rate="0">無</option>
+                                @foreach($taxSettings as $tax)
+                                    <option value="{{ $tax->id }}"
+                                            data-rate="{{ $tax->rate }}"
+                                            {{ $tax->id == $defaultTaxId ? 'selected' : '' }}>
+                                        {{ $tax->name }} ({{ $tax->rate }}%)
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                總計 <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="amount" id="qa_amount" step="1" min="0" required readonly
+                                   class="w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-bold">
+                        </div>
+                    </div>
+
+                    <!-- 付款日期 & 預計付款日 -->
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -560,42 +677,42 @@
                             <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" required
                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         </div>
-                        
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                金額 <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" name="amount" step="1" min="0" required
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">預計付款日</label>
+                            <input type="date" name="due_date"
                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         </div>
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            收款對象
-                        </label>
-                        <input type="text" name="vendor"
-                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+
+                    <!-- 發票號碼 & 付款方式 -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">發票號碼</label>
+                            <input type="text" name="invoice_no"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm"
+                                   placeholder="例如：AB12345678">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">付款方式</label>
+                            <select name="payment_method"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇</option>
+                                @foreach($paymentMethods as $method)
+                                    <option value="{{ $method->name }}">{{ $method->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                    
+
+                    <!-- 備註 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            內容說明
-                        </label>
-                        <textarea name="content" rows="2"
-                                  class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">{{ $project->name }}</textarea>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            備註
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">備註</label>
                         <textarea name="note" rows="2"
                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm"></textarea>
                     </div>
                 </div>
-                
-                <div class="flex justify-end gap-3">
+
+                <div class="flex justify-end gap-3 mt-4">
                     <button type="button"
                             onclick="document.getElementById('addPayableModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
@@ -704,70 +821,138 @@
 
 <!-- 快速編輯應付帳款 Modal -->
 <div id="editPayableModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-[500px] shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div class="relative top-10 mx-auto p-5 border w-[620px] max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">快速編輯應付帳款</h3>
-            
-            <!-- 專案和客戶資訊 -->
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">快速編輯應付帳款</h3>
             <div class="mb-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm">
-                <div class="text-gray-700 dark:text-gray-300">
-                    <strong>專案：</strong>{{ $project->name }}
-                </div>
-                <div class="text-gray-600 dark:text-gray-400">
-                    <strong>客戶：</strong>{{ $project->company->name ?? '-' }} | 
-                    <strong>統編：</strong>{{ $project->company->tax_id ?? '-' }}
-                </div>
+                <div class="text-gray-700 dark:text-gray-300"><strong>專案：</strong>{{ $project->name }}</div>
+                <div class="text-gray-600 dark:text-gray-400"><strong>客戶：</strong>{{ $project->company->name ?? '-' }} | <strong>統編：</strong>{{ $project->company->tax_id ?? '-' }}</div>
             </div>
-            
+
             <form id="editPayableForm" method="POST">
                 @csrf
                 @method('PATCH')
-                
+
                 <div class="space-y-3">
+                    <!-- 給付對象 -->
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                付款日期 <span class="text-red-500">*</span>
-                            </label>
-                            <input type="date" name="payment_date" id="edit_payment_date" required
-                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">對象</label>
+                            <select name="payee_type" id="ep_payee_type"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇</option>
+                                <option value="member">成員</option>
+                                <option value="vendor">外包</option>
+                                <option value="expense">採購</option>
+                            </select>
                         </div>
-                        
+                        <!-- 成員 -->
+                        <div id="ep_member_field" style="display:none">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">成員</label>
+                            <select name="payee_user_id" id="ep_payee_user_id"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇成員</option>
+                                @foreach($allUsers as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <!-- 外包廠商 -->
+                        <div id="ep_vendor_field" style="display:none">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">廠商</label>
+                            <select name="payee_company_id" id="ep_payee_company_id"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇廠商</option>
+                                @foreach($vendors as $vendor)
+                                    <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 採購欄位 -->
+                    <div id="ep_expense_fields" style="display:none" class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                金額 <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" name="amount" id="edit_payable_amount" step="1" min="0" required
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">採購公司名稱</label>
+                            <input type="text" name="expense_company_name" id="ep_expense_company_name"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">統一編號</label>
+                            <input type="text" name="expense_tax_id" id="ep_expense_tax_id"
                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                         </div>
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            收款對象
+
+                    <!-- 成員代墊 -->
+                    <div id="ep_advance_section" style="display:none">
+                        <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 cursor-pointer">
+                            <input type="checkbox" id="ep_has_advance" onchange="epToggleAdvance()" class="rounded text-primary">
+                            成員代墊
                         </label>
-                        <input type="text" name="vendor" id="edit_vendor"
-                               class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        <select name="advance_user_id" id="ep_advance_user_id" style="display:none"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                            <option value="">請選擇代墊成員</option>
+                            @foreach($allUsers as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    
+
+                    <!-- 內容說明 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            內容說明
-                        </label>
-                        <textarea name="content" id="edit_payable_content" rows="2"
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">內容說明</label>
+                        <textarea name="content" id="ep_content" rows="2"
                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm"></textarea>
                     </div>
-                    
+
+                    <!-- 金額 & 日期 -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">金額 <span class="text-red-500">*</span></label>
+                            <input type="number" name="amount" id="ep_amount" step="1" min="0" required
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">付款日期 <span class="text-red-500">*</span></label>
+                            <input type="date" name="payment_date" id="ep_payment_date" required
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- 發票號碼 & 預計付款日 & 付款方式 -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">發票號碼</label>
+                            <input type="text" name="invoice_no" id="ep_invoice_no"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">預計付款日</label>
+                            <input type="date" name="due_date" id="ep_due_date"
+                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">付款方式</label>
+                            <select name="payment_method" id="ep_payment_method"
+                                    class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                                <option value="">請選擇</option>
+                                @foreach($paymentMethods as $method)
+                                    <option value="{{ $method->name }}">{{ $method->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 備註 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            備註
-                        </label>
-                        <textarea name="note" id="edit_payable_note" rows="2"
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">備註</label>
+                        <textarea name="note" id="ep_note" rows="2"
                                   class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm"></textarea>
                     </div>
                 </div>
-                
-                <div class="flex justify-end gap-3">
+
+                <div class="flex justify-end gap-3 mt-4">
                     <button type="button"
                             onclick="document.getElementById('editPayableModal').classList.add('hidden')"
                             class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-4 rounded-lg">
@@ -786,6 +971,37 @@
 <script>
 const receivablesData = @json($receivablesData);
 const payablesData = @json($payablesData);
+
+// 快速新增應付帳款：給付對象切換
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('qa_payee_type').addEventListener('change', function() {
+        const type = this.value;
+        document.getElementById('qa_member_field').style.display   = type === 'member'  ? 'block' : 'none';
+        document.getElementById('qa_vendor_field').style.display   = type === 'vendor'  ? 'block' : 'none';
+        document.getElementById('qa_expense_fields').style.display = type === 'expense' ? 'grid'  : 'none';
+        document.getElementById('qa_advance_section').style.display = type === 'expense' ? 'block' : 'none';
+        // 清空不相關欄位
+        if (type !== 'member')  { document.getElementById('qa_payee_user_id').value = ''; }
+        if (type !== 'vendor')  { document.getElementById('qa_payee_company_id').value = ''; }
+        if (type !== 'expense') { document.getElementById('qa_expense_company_name').value = ''; document.getElementById('qa_expense_tax_id').value = ''; }
+        if (type !== 'expense') { document.getElementById('qa_has_advance').checked = false; qaToggleAdvance(); }
+    });
+});
+
+function qaToggleAdvance() {
+    const checked = document.getElementById('qa_has_advance').checked;
+    const sel = document.getElementById('qa_advance_user_id');
+    sel.style.display = checked ? 'block' : 'none';
+    if (!checked) sel.value = '';
+}
+
+function qaCalcTax() {
+    const beforeTax = parseFloat(document.getElementById('qa_amount_before_tax').value) || 0;
+    const taxSel = document.getElementById('qa_tax_setting_id');
+    const rate = parseFloat(taxSel.options[taxSel.selectedIndex]?.getAttribute('data-rate')) || 0;
+    const taxAmount = Math.round(beforeTax * rate / 100);
+    document.getElementById('qa_amount').value = beforeTax + taxAmount;
+}
 
 function openEditReceivableModal(id) {
     const receivable = receivablesData.find(r => r.id === id);
@@ -807,23 +1023,83 @@ function openEditReceivableModal(id) {
 
 function openEditPayableModal(id) {
     const payable = payablesData.find(p => p.id === id);
-    if (!payable) {
-        console.error('Payable not found:', id);
-        return;
+    if (!payable) { console.error('Payable not found:', id); return; }
+
+    // 基本欄位
+    document.getElementById('ep_payment_date').value = payable.payment_date || '';
+    document.getElementById('ep_amount').value        = payable.amount || '';
+    document.getElementById('ep_content').value       = payable.content || '';
+    document.getElementById('ep_note').value          = payable.note || '';
+    document.getElementById('ep_invoice_no').value    = payable.invoice_no || '';
+    document.getElementById('ep_due_date').value      = payable.due_date || '';
+    document.getElementById('ep_payment_method').value = payable.payment_method || '';
+
+    // 給付對象
+    const type = payable.payee_type || '';
+    document.getElementById('ep_payee_type').value = type;
+    epSwitchPayeeType(type);
+
+    if (type === 'member')  { $('#ep_payee_user_id').val(payable.payee_user_id || '').trigger('change'); }
+    if (type === 'vendor')  { $('#ep_payee_company_id').val(payable.payee_company_id || '').trigger('change'); }
+    if (type === 'expense') {
+        document.getElementById('ep_expense_company_name').value = payable.expense_company_name || '';
+        document.getElementById('ep_expense_tax_id').value       = payable.expense_tax_id || '';
+        const hasAdv = !!payable.advance_user_id;
+        document.getElementById('ep_has_advance').checked = hasAdv;
+        document.getElementById('ep_advance_user_id').style.display = hasAdv ? 'block' : 'none';
+        if (hasAdv) { $('#ep_advance_user_id').val(payable.advance_user_id).trigger('change'); }
     }
-    
-    document.getElementById('edit_payment_date').value = payable.payment_date || '';
-    document.getElementById('edit_payable_amount').value = payable.amount || '';
-    document.getElementById('edit_vendor').value = payable.vendor || '';
-    document.getElementById('edit_payable_content').value = payable.content || '';
-    document.getElementById('edit_payable_note').value = payable.note || '';
-    
+
     document.getElementById('editPayableForm').action = `/payables/${id}/quick-update`;
     document.getElementById('editPayableModal').classList.remove('hidden');
+    setTimeout(function() {
+        ['#ep_payee_user_id', '#ep_payee_company_id', '#ep_advance_user_id'].forEach(function(sel) {
+            if ($(sel).hasClass('select2-hidden-accessible')) $(sel).select2('destroy');
+            $(sel).select2({ placeholder: '搜尋...', allowClear: true, width: '100%', dropdownParent: $('#editPayableModal') });
+        });
+        if (type === 'member')  { $('#ep_payee_user_id').val(payable.payee_user_id || '').trigger('change'); }
+        if (type === 'vendor')  { $('#ep_payee_company_id').val(payable.payee_company_id || '').trigger('change'); }
+        if (payable.advance_user_id) { $('#ep_advance_user_id').val(payable.advance_user_id).trigger('change'); }
+    }, 10);
 }
+
+function epSwitchPayeeType(type) {
+    document.getElementById('ep_member_field').style.display   = type === 'member'  ? 'block' : 'none';
+    document.getElementById('ep_vendor_field').style.display   = type === 'vendor'  ? 'block' : 'none';
+    document.getElementById('ep_expense_fields').style.display = type === 'expense' ? 'grid'  : 'none';
+    document.getElementById('ep_advance_section').style.display = type === 'expense' ? 'block' : 'none';
+}
+
+function epToggleAdvance() {
+    const checked = document.getElementById('ep_has_advance').checked;
+    const sel = document.getElementById('ep_advance_user_id');
+    sel.style.display = checked ? 'block' : 'none';
+    if (!checked) sel.value = '';
+}
+
+document.getElementById('ep_payee_type').addEventListener('change', function() {
+    epSwitchPayeeType(this.value);
+});
 
 // 初始化專案標籤 Select2
 $(document).ready(function() {
+    // 快速新增應付帳款 modal：開啟時初始化 Select2
+    window.openAddPayableModal = function() {
+        document.getElementById('addPayableModal').classList.remove('hidden');
+        setTimeout(function() {
+            ['#qa_payee_user_id', '#qa_payee_company_id', '#qa_advance_user_id'].forEach(function(sel) {
+                if ($(sel).hasClass('select2-hidden-accessible')) $(sel).select2('destroy');
+                $(sel).select2({
+                    placeholder: '搜尋...',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#addPayableModal')
+                });
+            });
+            qaCalcTax();
+        }, 10);
+    };
+
     $('#projectTags').select2({
         placeholder: '選擇標籤',
         allowClear: true,
