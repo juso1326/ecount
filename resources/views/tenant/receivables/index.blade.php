@@ -382,10 +382,11 @@ function loadPaymentHistory(receivableId) {
             }
             let html = '<table class="w-full text-sm">';
             html += '<thead><tr class="text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-600">';
-            html += '<th class="text-left pb-1">日期</th><th class="text-left pb-1">方式</th><th class="text-right pb-1">金額</th><th class="text-left pb-1 pl-2">備註</th><th class="pb-1"></th>';
+            html += '<th class="text-left pb-1 pr-2">#</th><th class="text-left pb-1">日期</th><th class="text-left pb-1">方式</th><th class="text-right pb-1">金額</th><th class="text-left pb-1 pl-2">備註</th><th class="pb-1"></th>';
             html += '</tr></thead><tbody>';
-            payments.forEach(p => {
+            payments.forEach((p, i) => {
                 html += `<tr class="border-b dark:border-gray-700 last:border-0">
+                    <td class="py-1 pr-2 text-gray-400 text-xs">${i + 1}</td>
                     <td class="py-1 pr-2 whitespace-nowrap">${p.payment_date ? p.payment_date.substring(0, 10) : '-'}</td>
                     <td class="py-1 pr-2 text-gray-600 dark:text-gray-300">${p.payment_method ?? '-'}</td>
                     <td class="py-1 pr-2 text-right font-medium">NT$${Number(p.amount).toLocaleString()}</td>
