@@ -147,8 +147,9 @@ class ReceivableController extends Controller
 
         $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
         $paymentMethods = \App\Models\Tag::where('type', \App\Models\Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
+        $decimalPlaces = (int)\App\Models\TenantSetting::get('decimal_places', 0);
 
-        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear', 'projectStatuses', 'paymentMethods'));
+        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear', 'projectStatuses', 'paymentMethods', 'decimalPlaces'));
     }
 
     /**
@@ -223,11 +224,12 @@ class ReceivableController extends Controller
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
         $taxSettings = \App\Models\TaxSetting::where('is_active', true)->orderBy('rate')->get();
+        $decimalPlaces = (int)\App\Models\TenantSetting::get('decimal_places', 0);
         
         // 自動生成應收單號
         $nextCode = $this->generateReceiptCode();
 
-        return view('tenant.receivables.create', compact('projects', 'companies', 'users', 'taxSettings', 'nextCode'));
+        return view('tenant.receivables.create', compact('projects', 'companies', 'users', 'taxSettings', 'nextCode', 'decimalPlaces'));
     }
 
     /**
@@ -239,8 +241,9 @@ class ReceivableController extends Controller
         $companies = Company::where('is_active', true)->orderBy('name')->get();
         $users = User::where('is_active', true)->orderBy('name')->get();
         $taxSettings = \App\Models\TaxSetting::where('is_active', true)->orderBy('rate')->get();
+        $decimalPlaces = (int)\App\Models\TenantSetting::get('decimal_places', 0);
 
-        return view('tenant.receivables.edit', compact('receivable', 'projects', 'companies', 'users', 'taxSettings'));
+        return view('tenant.receivables.edit', compact('receivable', 'projects', 'companies', 'users', 'taxSettings', 'decimalPlaces'));
     }
 
     /**

@@ -245,11 +245,12 @@ class PayableController extends Controller
         $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
         $taxSettings = TaxSetting::where('is_active', true)->orderBy('name')->get();
         $expenseCategories = ExpenseCategory::orderBy('parent_id')->orderBy('sort_order')->get();
+        $decimalPlaces = (int)\App\Models\TenantSetting::get('decimal_places', 0);
         
         // 自動生成應付單號
         $nextCode = $this->generatePaymentCode();
 
-        return view('tenant.payables.create', compact('projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'expenseCategories', 'nextCode'));
+        return view('tenant.payables.create', compact('projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'expenseCategories', 'nextCode', 'decimalPlaces'));
     }
 
     /**
@@ -263,8 +264,9 @@ class PayableController extends Controller
         $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
         $taxSettings = TaxSetting::where('is_active', true)->orderBy('name')->get();
         $expenseCategories = ExpenseCategory::orderBy('parent_id')->orderBy('sort_order')->get();
+        $decimalPlaces = (int)\App\Models\TenantSetting::get('decimal_places', 0);
 
-        return view('tenant.payables.edit', compact('payable', 'projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'expenseCategories'));
+        return view('tenant.payables.edit', compact('payable', 'projects', 'companies', 'users', 'paymentMethods', 'taxSettings', 'expenseCategories', 'decimalPlaces'));
     }
 
     /**

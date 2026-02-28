@@ -161,6 +161,7 @@ class SettingsController extends Controller
             'decimal_places'            => 'nullable|integer|min:0|max:6',
             'use_thousand_separator'    => 'nullable',
             'quotation_number_pattern'  => 'nullable|string|max:50',
+            'logo'                      => 'nullable|image|max:2048',
         ]);
 
         TenantSetting::set('date_format',      $validated['date_format'],      'system', 'string');
@@ -176,6 +177,16 @@ class SettingsController extends Controller
         TenantSetting::set('decimal_places',           $validated['decimal_places'] ?? 2,         'system', 'number');
         TenantSetting::set('use_thousand_separator',   isset($validated['use_thousand_separator']) && $validated['use_thousand_separator'] ? 'true' : 'false', 'system', 'boolean');
         TenantSetting::set('quotation_number_pattern', $validated['quotation_number_pattern'] ?? 'AAAYYYY0000', 'system', 'string');
+
+        // Logo upload
+        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+            $old = TenantSetting::get('company_logo', '');
+            if ($old && \Illuminate\Support\Facades\Storage::disk('public')->exists($old)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($old);
+            }
+            $path = $request->file('logo')->store('logos', 'public');
+            TenantSetting::set('company_logo', $path, 'system', 'string');
+        }
 
         return redirect()->route('tenant.settings.system', ['tab' => 'general'])
             ->with('success', '格式設定已儲存');

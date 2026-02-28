@@ -106,11 +106,16 @@
         >
             <!-- Logo -->
             <div class="flex items-center justify-between h-12 px-4 border-b border-gray-200 dark:border-gray-700">
-                <a href="{{ route('tenant.dashboard') }}" class="flex items-center space-x-2">
-                    <span class="text-2xl">💼</span>
-                    <span class="text-xl font-bold text-gray-800 dark:text-white">{{ \App\Models\TenantSetting::get('display_name', 'ECount') }}</span>
+                @php $__logoPath = \App\Models\TenantSetting::get('company_logo', ''); @endphp
+                <a href="{{ route('tenant.dashboard') }}" class="flex items-center space-x-2 min-w-0">
+                    @if($__logoPath)
+                        <img src="{{ asset('storage/'.$__logoPath) }}" alt="logo" class="h-7 w-7 object-contain rounded flex-shrink-0">
+                    @else
+                        <span class="text-2xl flex-shrink-0">💼</span>
+                    @endif
+                    <span class="text-xl font-bold text-gray-800 dark:text-white truncate">{{ \App\Models\TenantSetting::get('display_name', 'ECount') }}</span>
                 </a>
-                <button @click="sidebarOpen = false" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <button @click="sidebarOpen = false" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 flex-shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>

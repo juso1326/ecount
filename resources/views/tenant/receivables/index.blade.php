@@ -133,14 +133,14 @@
                     總計（{{ $receivables->total() }}筆）：
                 </td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
-                    NT$ {{ number_format($totalAmount, 0) }}
+                    NT$ {{ number_format($totalAmount, $decimalPlaces) }}
                 </td>
                 <td></td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-green-600 dark:text-green-400">
-                    NT$ {{ number_format($totalReceived, 0) }}
+                    NT$ {{ number_format($totalReceived, $decimalPlaces) }}
                 </td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-orange-600 dark:text-orange-400">
-                    NT$ {{ number_format($totalWithholding, 0) }}
+                    NT$ {{ number_format($totalWithholding, $decimalPlaces) }}
                 </td>
                 <td></td>
             </tr>
@@ -200,15 +200,15 @@
                     </td>
                     <!-- 未稅額 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-gray-100">
-                        NT$ {{ number_format($receivable->amount_before_tax ?? 0, 0) }}
+                        NT$ {{ number_format($receivable->amount_before_tax ?? 0, $decimalPlaces) }}
                     </td>
                     <!-- 稅 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-400">
-                        NT$ {{ number_format($receivable->tax_amount ?? 0, 0) }}
+                        NT$ {{ number_format($receivable->tax_amount ?? 0, $decimalPlaces) }}
                     </td>
                     <!-- 應收 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-gray-100 font-medium">
-                        NT$ {{ number_format($receivable->amount, 0) }}
+                        NT$ {{ number_format($receivable->amount, $decimalPlaces) }}
                     </td>
                     <!-- 入帳日 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -216,11 +216,11 @@
                     </td>
                     <!-- 實收 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400 font-medium">
-                        NT$ {{ number_format($receivable->received_amount ?? 0, 0) }}
+                        NT$ {{ number_format($receivable->received_amount ?? 0, $decimalPlaces) }}
                     </td>
                     <!-- 扣繳 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
-                        NT$ {{ number_format($receivable->withholding_tax ?? 0, 0) }}
+                        NT$ {{ number_format($receivable->withholding_tax ?? 0, $decimalPlaces) }}
                     </td>
                     <!-- 狀態 -->
                     <td class="px-3 py-2 whitespace-nowrap text-center">
