@@ -160,8 +160,8 @@
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
                         @if($receivable->status !== 'paid' && $receivable->remaining_amount > 0)
-                            <a href="{{ route('tenant.receivables.quick-receive', $receivable) }}"
-                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</a>
+                            <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ addslashes($receivable->receipt_no ?? '') }}')"
+                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
                         @else
                             <span class="text-gray-300">—</span>
                         @endif
@@ -302,11 +302,9 @@
                     <select name="payment_method" id="payment_method"
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                         <option value="">請選擇</option>
-                        <option value="現金">現金</option>
-                        <option value="轉帳">轉帳</option>
-                        <option value="支票">支票</option>
-                        <option value="信用卡">信用卡</option>
-                        <option value="其他">其他</option>
+                        @foreach($paymentMethods as $m)
+                            <option value="{{ $m->name }}">{{ $m->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 

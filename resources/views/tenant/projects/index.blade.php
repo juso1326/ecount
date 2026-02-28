@@ -136,26 +136,26 @@ function toggleCustomDate(mode) {
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">開案日</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">公司簡稱</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案名</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">類型</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案負責</th>
-                <th class="px-3 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">成員</th>
-                <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">總額</th>
-                <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣繳</th>
-                <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">專案支出</th>
-                <th class="px-3 py-1 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">累計</th>
-                <th class="px-3 py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">操作</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">開案日</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">公司簡稱</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">專案名</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">類型</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">專案負責</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">成員</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">總額</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">扣繳</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">專案支出</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">累計</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">狀態</th>
             </tr>
             <!-- 本頁總計 -->
-            <tr class="bg-gray-100 dark:bg-gray-600 border-t border-gray-200 dark:border-gray-500 font-semibold">
-                <th colspan="7" class="px-3 py-1 text-right text-xs text-gray-600 dark:text-gray-200">搜尋結果總計</th>
-                <th class="px-3 py-1 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
-                <th class="px-3 py-1 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">${{ number_format($totals['withholding_tax'] ?? 0, 0) }}</th>
-                <th class="px-3 py-1 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">${{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
-                <th class="px-3 py-1 text-right text-xs whitespace-nowrap {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">${{ number_format($totals['accumulated_income'] ?? 0, 0) }}</th>
+            <tr class="bg-blue-50 dark:bg-blue-900/30 border-t border-gray-200 dark:border-gray-500 font-semibold">
+                <th colspan="7" class="px-3 py-2 text-right text-xs text-gray-600 dark:text-gray-200">搜尋結果總計</th>
+                <th class="px-3 py-2 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">NT$ {{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">NT$ {{ number_format($totals['withholding_tax'] ?? 0, 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">NT$ {{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs whitespace-nowrap {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">NT$ {{ number_format($totals['accumulated_income'] ?? 0, 0) }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -239,8 +239,8 @@ function toggleCustomDate(mode) {
                         $ps = $statusMap->get($project->status);
                         $hexColor = $ps['color'] ?? '#6b7280';
                     @endphp
-                    <span class="px-2 py-1 text-xs font-semibold"
-                          style="color: {{ $hexColor }};">
+                    <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full"
+                          style="color: {{ $hexColor }}; background-color: {{ $hexColor }}1a;">
                         {{ $ps['label'] ?? $project->status }}
                     </span>
                 </td>

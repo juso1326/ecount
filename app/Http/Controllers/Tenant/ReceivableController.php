@@ -146,8 +146,9 @@ class ReceivableController extends Controller
         $totalWithholding = $stats->total_withholding ?? 0;
 
         $projectStatuses = \App\Http\Controllers\Tenant\SettingsController::getProjectStatuses();
+        $paymentMethods = \App\Models\Tag::where('type', \App\Models\Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
 
-        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear', 'projectStatuses'));
+        return view('tenant.receivables.index', compact('receivables', 'dateStart', 'dateEnd', 'totalAmount', 'totalReceived', 'totalWithholding', 'availableYears', 'fiscalYear', 'projectStatuses', 'paymentMethods'));
     }
 
     /**
