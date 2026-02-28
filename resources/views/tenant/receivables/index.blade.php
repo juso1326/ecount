@@ -160,7 +160,7 @@
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
                         @if($receivable->status !== 'paid' && $receivable->remaining_amount > 0)
-                            <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ addslashes($receivable->receipt_no ?? '') }}')"
+                            <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ addslashes($receivable->receipt_no ?? '') }}', '{{ addslashes($receivable->project->name ?? '') }}', '{{ addslashes($receivable->company->tax_id ?? '') }}')"
                                class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
                         @else
                             <span class="text-gray-300">—</span>
@@ -262,9 +262,13 @@
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
             <!-- Modal 標題 -->
-            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-4">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-1">
                 快速收款 - <span id="modalReceiptNo"></span>
             </h3>
+            <div class="mb-4 text-sm text-gray-500 dark:text-gray-400 space-y-0.5">
+                <div id="modalProjectName" class="hidden">專案：<span id="modalProjectNameText" class="text-gray-700 dark:text-gray-200 font-medium"></span></div>
+                <div id="modalTaxId" class="hidden">統編：<span id="modalTaxIdText" class="text-gray-700 dark:text-gray-200 font-medium"></span></div>
+            </div>
             
             <!-- 表單 -->
             <form id="quickReceiveForm" method="POST">
@@ -335,11 +339,20 @@
 </div>
 
 <script>
-function openQuickReceiveModal(receivableId, remainingAmount, receiptNo) {
+function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, projectName, taxId) {
     document.getElementById('receivableId').value = receivableId;
     document.getElementById('amount').value = remainingAmount;
     document.getElementById('remainingAmount').textContent = new Intl.NumberFormat().format(remainingAmount);
     document.getElementById('modalReceiptNo').textContent = receiptNo;
+
+    const pEl = document.getElementById('modalProjectName');
+    if (projectName) { document.getElementById('modalProjectNameText').textContent = projectName; pEl.classList.remove('hidden'); }
+    else { pEl.classList.add('hidden'); }
+
+    const tEl = document.getElementById('modalTaxId');
+    if (taxId) { document.getElementById('modalTaxIdText').textContent = taxId; tEl.classList.remove('hidden'); }
+    else { tEl.classList.add('hidden'); }
+
     document.getElementById('quickReceiveModal').classList.remove('hidden');
     
     // 設定表單 action
