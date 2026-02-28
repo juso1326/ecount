@@ -106,6 +106,15 @@
                         編輯
                     </a>
                     @endcan
+                    @can('users.edit')
+                    @if($user->id !== auth()->id())
+                    <form method="POST" action="{{ route('tenant.users.destroy', $user) }}" class="inline"
+                          onsubmit="return confirm('確定刪除「{{ addslashes($user->name) }}」？此操作無法復原。')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="text-red-500 hover:text-red-700 font-medium">刪除</button>
+                    </form>
+                    @endif
+                    @endcan
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {{ $user->employee_no ?? '-' }}

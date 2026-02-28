@@ -169,6 +169,58 @@
                         </div>
                     </div>
 
+                    <!-- Decimal places -->
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="w-40 flex-shrink-0">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Decimal places</p>
+                            <p class="text-xs text-gray-400">小數點位數</p>
+                        </div>
+                        <div class="flex-1">
+                            <input type="number" name="decimal_places" value="{{ $decimalPlaces }}" min="0" max="6"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Use 1000 separator -->
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="w-40 flex-shrink-0">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Use 1000 separator (,)</p>
+                            <p class="text-xs text-gray-400">使用千位(,)標示</p>
+                        </div>
+                        <div class="flex-1">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="use_thousand_separator" value="0">
+                                <input type="checkbox" name="use_thousand_separator" value="1" class="sr-only peer"
+                                    {{ $useThousandSeparator ? 'checked' : '' }}>
+                                <div class="w-10 h-5 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400" id="separatorLabel">{{ $useThousandSeparator ? '1,234,567' : '1234567' }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Quotation Number type -->
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="w-40 flex-shrink-0 pt-1">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Quotation Number type</p>
+                            <p class="text-xs text-gray-400">單號規則</p>
+                        </div>
+                        <div class="flex-1 space-y-2">
+                            <input type="text" name="quotation_number_pattern" id="qtnPattern"
+                                value="{{ $quotationPattern }}"
+                                placeholder="AAAYYYY0000"
+                                oninput="updateQtnExample()"
+                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono">
+                            <p class="text-xs text-gray-400">
+                                規則：<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">AAA</code>=前綴字母
+                                　<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">YYYY</code>=年份
+                                　<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">0000</code>=流水號
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                example：<span id="qtnExample" class="font-medium text-gray-700 dark:text-gray-200">{{ $quotationExample }}</span>
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

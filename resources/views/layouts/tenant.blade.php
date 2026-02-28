@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', '租戶管理系統') - ECount</title>
+    <title>@yield('title', '租戶管理系統') - {{ \App\Models\TenantSetting::get('display_name', 'ECount') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -108,7 +108,7 @@
             <div class="flex items-center justify-between h-12 px-4 border-b border-gray-200 dark:border-gray-700">
                 <a href="{{ route('tenant.dashboard') }}" class="flex items-center space-x-2">
                     <span class="text-2xl">💼</span>
-                    <span class="text-xl font-bold text-gray-800 dark:text-white">ECount</span>
+                    <span class="text-xl font-bold text-gray-800 dark:text-white">{{ \App\Models\TenantSetting::get('display_name', 'ECount') }}</span>
                 </a>
                 <button @click="sidebarOpen = false" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
