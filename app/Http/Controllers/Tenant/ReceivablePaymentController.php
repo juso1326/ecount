@@ -10,6 +10,15 @@ use Illuminate\Http\Request;
 class ReceivablePaymentController extends Controller
 {
     /**
+     * 取得應收款項的已入帳記錄（JSON API）
+     */
+    public function getPayments(Receivable $receivable)
+    {
+        $payments = $receivable->payments()->orderByDesc('payment_date')->get(['id', 'payment_date', 'amount', 'payment_method', 'note']);
+        return response()->json($payments);
+    }
+
+    /**
      * 新增入帳記錄
      */
     public function store(Request $request, Receivable $receivable)

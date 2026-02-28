@@ -259,7 +259,7 @@
 
 <!-- 快速收款 Modal -->
 <div id="quickReceiveModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div class="relative top-10 mx-auto p-5 border w-[520px] max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
             <!-- Modal 標題 -->
             <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-1">
@@ -334,12 +334,23 @@
                     </button>
                 </div>
             </form>
+
+            <!-- 已收款列表 -->
+            <div id="paymentHistorySection" class="mt-5 border-t pt-4 dark:border-gray-600">
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">已收款記錄</h4>
+                <div id="paymentHistoryList">
+                    <p class="text-sm text-gray-400 text-center py-2">載入中...</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
+let _currentReceivableId = null;
+
 function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, projectName, taxId) {
+    _currentReceivableId = receivableId;
     document.getElementById('receivableId').value = receivableId;
     document.getElementById('amount').value = remainingAmount;
     document.getElementById('remainingAmount').textContent = new Intl.NumberFormat().format(remainingAmount);
@@ -354,9 +365,54 @@ function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, project
     else { tEl.classList.add('hidden'); }
 
     document.getElementById('quickReceiveModal').classList.remove('hidden');
-    
-    // 設定表單 action
     document.getElementById('quickReceiveForm').action = `/receivable-payments/${receivableId}`;
+
+    loadPaymentHistory(receivableId);
+}
+
+function loadPaymentHistory(receivableId) {
+    const list = document.getElementById('paymentHistoryList');
+    list.innerHTML = '<p class="text-sm text-gray-400 text-center py-2">載入中...</p>';
+    fetch(`/receivable-payments/${receivableId}/list`)
+        .then(r => r.json())
+        .then(payments => {
+            if (!payments.length) {
+                list.innerHTML = '<p class="text-sm text-gray-400 text-center py-2">尚無收款記錄</p>';
+                return;
+            }
+            let html = '<table class="w-full text-sm">';
+            html += '<thead><tr class="text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-600">';
+            html += '<th class="text-left pb-1">日期</th><th class="text-left pb-1">方式</th><th class="text-right pb-1">金額</th><th class="text-left pb-1 pl-2">備註</th><th class="pb-1"></th>';
+            html += '</tr></thead><tbody>';
+            payments.forEach(p => {
+                html += `<tr class="border-b dark:border-gray-700 last:border-0">
+                    <td class="py-1 pr-2 whitespace-nowrap">${p.payment_date ?? '-'}</td>
+                    <td class="py-1 pr-2 text-gray-600 dark:text-gray-300">${p.payment_method ?? '-'}</td>
+                    <td class="py-1 pr-2 text-right font-medium">NT$${Number(p.amount).toLocaleString()}</td>
+                    <td class="py-1 pl-2 text-gray-500 dark:text-gray-400 text-xs max-w-[80px] truncate">${p.note ?? ''}</td>
+                    <td class="py-1 pl-1">
+                        <button onclick="deletePayment(${p.id})" class="text-red-400 hover:text-red-600 text-xs">刪除</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            list.innerHTML = html;
+        })
+        .catch(() => { list.innerHTML = '<p class="text-sm text-red-400 text-center py-2">載入失敗</p>'; });
+}
+
+function deletePayment(paymentId) {
+    if (!confirm('確定刪除此筆收款記錄？')) return;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/receivable-payments/${paymentId}`;
+    form.innerHTML = `@csrf @method('DELETE')`;
+    // Use proper tokens
+    const csrf = document.createElement('input'); csrf.type='hidden'; csrf.name='_token'; csrf.value='{{ csrf_token() }}';
+    const method = document.createElement('input'); method.type='hidden'; method.name='_method'; method.value='DELETE';
+    form.appendChild(csrf); form.appendChild(method);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function closeQuickReceiveModal() {
@@ -368,17 +424,12 @@ function closeQuickReceiveModal() {
 document.getElementById('amount').addEventListener('input', function() {
     const remaining = parseFloat(document.getElementById('remainingAmount').textContent.replace(/,/g, ''));
     const amount = parseFloat(this.value);
-    
-    if (amount > remaining) {
-        this.value = remaining;
-    }
+    if (amount > remaining) { this.value = remaining; }
 });
 
 // 點擊 modal 外部關閉
 document.getElementById('quickReceiveModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeQuickReceiveModal();
-    }
+    if (e.target === this) { closeQuickReceiveModal(); }
 });
 </script>
 @endsection

@@ -118,6 +118,7 @@ Route::middleware([
         
         // 應收入帳記錄
         Route::post('receivable-payments/{receivable}', [\App\Http\Controllers\Tenant\ReceivablePaymentController::class, 'store'])->name('tenant.receivable-payments.store');
+        Route::get('receivable-payments/{receivable}/list', [\App\Http\Controllers\Tenant\ReceivablePaymentController::class, 'getPayments'])->name('tenant.receivable-payments.list');
         Route::delete('receivable-payments/{payment}', [\App\Http\Controllers\Tenant\ReceivablePaymentController::class, 'destroy'])->name('tenant.receivable-payments.destroy');
         Route::post('receivables/{receivable}/reset-payments', [\App\Http\Controllers\Tenant\ReceivableController::class, 'resetPayments'])->name('tenant.receivables.reset-payments');
 
