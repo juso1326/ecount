@@ -159,12 +159,8 @@
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
-                        @if($receivable->status !== 'paid' && $receivable->remaining_amount > 0)
-                            <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ addslashes($receivable->receipt_no ?? '') }}', '{{ addslashes($receivable->project->name ?? '') }}', '{{ addslashes($receivable->company->tax_id ?? '') }}')"
-                               class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
-                        @else
-                            <span class="text-gray-300">—</span>
-                        @endif
+                        <button onclick="openQuickReceiveModal({{ $receivable->id }}, {{ $receivable->remaining_amount }}, '{{ addslashes($receivable->receipt_no ?? '') }}', '{{ addslashes($receivable->project->name ?? '') }}', '{{ addslashes($receivable->company->tax_id ?? '') }}')"
+                           class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
                     </td>
                     <!-- 負責人 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
@@ -363,6 +359,11 @@ function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, project
     const tEl = document.getElementById('modalTaxId');
     if (taxId) { document.getElementById('modalTaxIdText').textContent = taxId; tEl.classList.remove('hidden'); }
     else { tEl.classList.add('hidden'); }
+
+    // 已收款完畢則隱藏新增表單
+    const formEl = document.getElementById('quickReceiveForm');
+    if (remainingAmount <= 0) { formEl.classList.add('hidden'); }
+    else { formEl.classList.remove('hidden'); }
 
     document.getElementById('quickReceiveModal').classList.remove('hidden');
     document.getElementById('quickReceiveForm').action = `/receivable-payments/${receivableId}`;
