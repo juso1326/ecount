@@ -14,7 +14,7 @@ class ReceivablePaymentController extends Controller
      */
     public function getPayments(Receivable $receivable)
     {
-        $payments = $receivable->payments()->orderByDesc('payment_date')->get(['id', 'payment_date', 'amount', 'payment_method', 'note']);
+        $payments = $receivable->payments()->orderByDesc('payment_date')->orderByDesc('id')->get(['id', 'payment_date', 'amount', 'payment_method', 'note']);
         return response()->json($payments);
     }
 
