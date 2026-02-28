@@ -1081,24 +1081,25 @@ document.getElementById('ep_payee_type').addEventListener('change', function() {
     epSwitchPayeeType(this.value);
 });
 
+// 快速新增應付帳款 modal
+function openAddPayableModal() {
+    document.getElementById('addPayableModal').classList.remove('hidden');
+    setTimeout(function() {
+        ['#qa_payee_user_id', '#qa_payee_company_id', '#qa_advance_user_id'].forEach(function(sel) {
+            if ($(sel).hasClass('select2-hidden-accessible')) $(sel).select2('destroy');
+            $(sel).select2({
+                placeholder: '搜尋...',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('#addPayableModal')
+            });
+        });
+        qaCalcTax();
+    }, 10);
+}
+
 // 初始化專案標籤 Select2
 $(document).ready(function() {
-    // 快速新增應付帳款 modal：開啟時初始化 Select2
-    window.openAddPayableModal = function() {
-        document.getElementById('addPayableModal').classList.remove('hidden');
-        setTimeout(function() {
-            ['#qa_payee_user_id', '#qa_payee_company_id', '#qa_advance_user_id'].forEach(function(sel) {
-                if ($(sel).hasClass('select2-hidden-accessible')) $(sel).select2('destroy');
-                $(sel).select2({
-                    placeholder: '搜尋...',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#addPayableModal')
-                });
-            });
-            qaCalcTax();
-        }, 10);
-    };
 
     $('#projectTags').select2({
         placeholder: '選擇標籤',
@@ -1109,41 +1110,42 @@ $(document).ready(function() {
     });
 
     // 新增成員 modal：開啟時再初始化兩個 select2，避免 hidden 元素寬度為 0
-    window.openAddMemberModal = function() {
-        document.getElementById('addMemberModal').classList.remove('hidden');
-        setTimeout(function() {
-            // 成員選擇
-            if ($('#memberUserSelect').hasClass('select2-hidden-accessible')) {
-                $('#memberUserSelect').select2('destroy');
-            }
-            $('#memberUserSelect').select2({
-                placeholder: '搜尋姓名或 Email',
-                allowClear: true,
-                width: '100%',
-                dropdownParent: $('#addMemberModal')
-            });
-            // 職務選擇（tags 模式）
-            if ($('#memberRoleSelect').hasClass('select2-hidden-accessible')) {
-                $('#memberRoleSelect').select2('destroy');
-            }
-            $('#memberRoleSelect').select2({
-                placeholder: '搜尋或輸入職務名稱...',
-                allowClear: true,
-                width: '100%',
-                tags: true,
-                dropdownParent: $('#addMemberModal'),
-                language: {
-                    noResults: function() { return '無相符職務，輸入後按 Enter 新增'; }
-                },
-                createTag: function(params) {
-                    var term = $.trim(params.term);
-                    if (term === '') return null;
-                    return { id: term, text: term };
-                }
-            });
-        }, 10);
-    };
 });
+
+function openAddMemberModal() {
+    document.getElementById('addMemberModal').classList.remove('hidden');
+    setTimeout(function() {
+        // 成員選擇
+        if ($('#memberUserSelect').hasClass('select2-hidden-accessible')) {
+            $('#memberUserSelect').select2('destroy');
+        }
+        $('#memberUserSelect').select2({
+            placeholder: '搜尋姓名或 Email',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#addMemberModal')
+        });
+        // 職務選擇（tags 模式）
+        if ($('#memberRoleSelect').hasClass('select2-hidden-accessible')) {
+            $('#memberRoleSelect').select2('destroy');
+        }
+        $('#memberRoleSelect').select2({
+            placeholder: '搜尋或輸入職務名稱...',
+            allowClear: true,
+            width: '100%',
+            tags: true,
+            dropdownParent: $('#addMemberModal'),
+            language: {
+                noResults: function() { return '無相符職務，輸入後按 Enter 新增'; }
+            },
+            createTag: function(params) {
+                var term = $.trim(params.term);
+                if (term === '') return null;
+                return { id: term, text: term };
+            }
+        });
+    }, 10);
+}
 </script>
 
 <!-- 操作按鈕 -->
