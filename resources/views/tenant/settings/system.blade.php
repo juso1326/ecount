@@ -52,6 +52,40 @@
         </div>
         @endif
     </div>
+
+    <!-- Danger Zone -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-800 p-6 max-w-lg mt-6">
+        <h2 class="text-base font-semibold text-red-600 dark:text-red-400 mb-2">危險區域</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">刪除帳號後所有資料將永久移除，無法復原。</p>
+        <button type="button" onclick="document.getElementById('deleteAccountModal').classList.remove('hidden')"
+            class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
+            刪除帳號
+        </button>
+    </div>
+</div>
+
+<!-- Delete Account Confirm Modal -->
+<div id="deleteAccountModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">確認刪除帳號？</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">此操作無法復原，所有資料將永久刪除。請輸入您的密碼確認。</p>
+        <form action="{{ route('tenant.settings.system.account.delete') }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <input type="password" name="password" placeholder="請輸入密碼" required
+                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm mb-4 focus:ring-2 focus:ring-red-500 focus:border-transparent">
+            <div class="flex gap-3 justify-end">
+                <button type="button" onclick="document.getElementById('deleteAccountModal').classList.add('hidden')"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition">
+                    取消
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">
+                    確認刪除
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- ===== 帳戶 ===== -->

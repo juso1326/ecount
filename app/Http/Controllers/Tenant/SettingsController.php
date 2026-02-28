@@ -217,6 +217,25 @@ class SettingsController extends Controller
     }
 
     /**
+     * Delete account (self)
+     */
+    public function deleteAccount(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate(['password' => 'required|string']);
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => '密碼錯誤'])->with('tab', 'setup');
+        }
+
+        auth()->logout();
+        $user->delete();
+
+        return redirect('/login')->with('success', '帳號已刪除');
+    }
+
+    /**
      * Upload company logo
      */
     public function uploadLogo(Request $request)
