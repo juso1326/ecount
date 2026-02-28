@@ -147,6 +147,9 @@ class PayableController extends Controller
         $totalDeduction = $stats->total_deduction ?? 0;
         $totalPaid = $stats->total_paid ?? 0;
 
+        $paymentMethods = Tag::where('type', Tag::TYPE_PAYMENT_METHOD)->orderBy('name')->get();
+        $decimalPlaces  = (int)\App\Models\TenantSetting::get('decimal_places', 0);
+
         return view('tenant.payables.index', compact(
             'payables', 
             'dateStart', 
@@ -158,7 +161,9 @@ class PayableController extends Controller
             'fiscalYear',
             'overduePayables',
             'dueSoon7Days',
-            'dueSoon30Days'
+            'dueSoon30Days',
+            'paymentMethods',
+            'decimalPlaces'
         ));
     }
 

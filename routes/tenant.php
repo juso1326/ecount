@@ -136,6 +136,7 @@ Route::middleware([
         // 應付給付記錄（薪資入帳）
         Route::post('payable-payments/{payable}', [\App\Http\Controllers\Tenant\PayablePaymentController::class, 'store'])->name('tenant.payable-payments.store');
         Route::delete('payable-payments/{payment}', [\App\Http\Controllers\Tenant\PayablePaymentController::class, 'destroy'])->name('tenant.payable-payments.destroy');
+        Route::get('payable-payments/{payable}/list', [\App\Http\Controllers\Tenant\PayablePaymentController::class, 'getPayments'])->name('tenant.payable-payments.list');
         Route::post('payables/{payable}/reset-payments', [\App\Http\Controllers\Tenant\PayableController::class, 'resetPayments'])->name('tenant.payables.reset-payments');
 
         // 設定管理
