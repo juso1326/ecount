@@ -99,66 +99,104 @@ class SettingsController extends Controller
      */
     public function system()
     {
-        $dateFormat = TenantSetting::get('date_format', 'Y-m-d');
-        $timeFormat = TenantSetting::get('time_format', 'H:i:s');
-        $timezone = TenantSetting::get('timezone', 'Asia/Taipei');
-        
-        return view('tenant.settings.system', compact('dateFormat', 'timeFormat', 'timezone'));
+        $dateFormat    = TenantSetting::get('date_format', 'Y-m-d');
+        $timeFormat    = TenantSetting::get('time_format', 'H:i:s');
+        $timezone      = TenantSetting::get('timezone', 'Asia/Taipei');
+        $mainCurrency  = TenantSetting::get('default_currency', 'TWD');
+        $taxRate       = TenantSetting::get('tax_rate', '5');
+        $taxNumber     = TenantSetting::get('tax_number', '');
+        $taxRateLabel  = TenantSetting::get('tax_rate_label', 'Tax Rate');
+        $taxNumberLabel= TenantSetting::get('tax_number_label', 'Tax Number');
+        $displayLang   = TenantSetting::get('display_language', 'zh_TW');
+        $subPlan       = TenantSetting::get('subscription_plan', '個人版');
+        $subExpires    = TenantSetting::get('subscription_expires', '');
+        $logoPath      = TenantSetting::get('company_logo', '');
+        $user          = auth()->user();
+
+        $currencies = [
+            'TWD' => 'TWD - Taiwan New Dollar',
+            'USD' => 'USD - US Dollar',
+            'CNY' => 'CNY - Chinese Yuan',
+            'JPY' => 'JPY - Japanese Yen',
+            'EUR' => 'EUR - Euro',
+            'GBP' => 'GBP - British Pound',
+            'HKD' => 'HKD - Hong Kong Dollar',
+        ];
+
+        return view('tenant.settings.system', compact(
+            'dateFormat', 'timeFormat', 'timezone',
+            'mainCurrency', 'taxRate', 'taxNumber',
+            'taxRateLabel', 'taxNumberLabel', 'displayLang',
+            'subPlan', 'subExpires', 'logoPath', 'user', 'currencies'
+        ));
     }
-    
+
     /**
-     * Update system settings
+     * Update system (general) settings
      */
     public function updateSystem(Request $request)
     {
         $validated = $request->validate([
-            'date_format' => 'required|in:Y-m-d,Y/m/d,Y.m.d,m/d/Y,d/m/Y,Ymd',
-            'time_format' => 'required|in:H:i:s,H:i,h:i:s A,h:i A',
-            'timezone' => 'required|string',
+            'date_format'        => 'required|in:Y-m-d,Y/m/d,Y.m.d,m/d/Y,d/m/Y,Ymd',
+            'time_format'        => 'required|in:H:i:s,H:i,h:i:s A,h:i A',
+            'timezone'           => 'required|string',
+            'default_currency'   => 'required|string|max:10',
+            'tax_rate'           => 'nullable|numeric|min:0|max:100',
+            'tax_number'         => 'nullable|string|max:50',
+            'tax_rate_label'     => 'nullable|string|max:50',
+            'tax_number_label'   => 'nullable|string|max:50',
+            'display_language'   => 'nullable|string|max:10',
         ]);
-        
-        TenantSetting::set('date_format', $validated['date_format'], 'system', 'string');
-        TenantSetting::set('time_format', $validated['time_format'], 'system', 'string');
-        TenantSetting::set('timezone', $validated['timezone'], 'system', 'string');
-        
-        return redirect()->route('tenant.settings.system')
-            ->with('success', '系統設定已更新');
+
+        TenantSetting::set('date_format',      $validated['date_format'],      'system', 'string');
+        TenantSetting::set('time_format',      $validated['time_format'],      'system', 'string');
+        TenantSetting::set('timezone',         $validated['timezone'],         'system', 'string');
+        TenantSetting::set('default_currency', $validated['default_currency'], 'financial', 'string');
+        TenantSetting::set('tax_rate',         $validated['tax_rate'] ?? '5',  'system', 'string');
+        TenantSetting::set('tax_number',       $validated['tax_number'] ?? '', 'system', 'string');
+        TenantSetting::set('tax_rate_label',   $validated['tax_rate_label'] ?? 'Tax Rate',   'system', 'string');
+        TenantSetting::set('tax_number_label', $validated['tax_number_label'] ?? 'Tax Number', 'system', 'string');
+        TenantSetting::set('display_language', $validated['display_language'] ?? 'zh_TW', 'system', 'string');
+
+        return redirect()->route('tenant.settings.system', ['tab' => 'general'])
+            ->with('success', '格式設定已儲存');
     }
 
     /**
-     * Display account settings
-     */
-    public function account()
-    {
-        $user = auth()->user();
-        
-        return view('tenant.settings.account', compact('user'));
-    }
-
-    /**
-     * Update account settings
+     * Update account (name / email / password)
      */
     public function updateAccount(Request $request)
     {
         $user = auth()->user();
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6|confirmed',
+            'name'                  => 'required|string|max:255',
+            'email'                 => 'required|email|unique:users,email,' . $user->id,
+            'password'              => 'nullable|string|min:6|confirmed',
         ]);
 
-        $user->name = $validated['name'];
+        $user->name  = $validated['name'];
         $user->email = $validated['email'];
-        
         if (!empty($validated['password'])) {
             $user->password = bcrypt($validated['password']);
         }
-
         $user->save();
 
-        return redirect()->route('tenant.settings.account')
-            ->with('success', '帳號設定已更新');
+        return redirect()->route('tenant.settings.system', ['tab' => 'account'])
+            ->with('success', '帳戶資料已更新');
+    }
+
+    /**
+     * Upload company logo
+     */
+    public function uploadLogo(Request $request)
+    {
+        $request->validate(['logo' => 'required|image|max:2048']);
+        $path = $request->file('logo')->store('logos', 'public');
+        TenantSetting::set('company_logo', $path, 'system', 'string');
+
+        return redirect()->route('tenant.settings.system', ['tab' => 'general'])
+            ->with('success', 'Logo 已上傳');
     }
     
     

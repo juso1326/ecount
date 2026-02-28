@@ -160,6 +160,8 @@ Route::middleware([
             // 系統設定
             Route::get('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'system'])->name('system');
             Route::post('system', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateSystem'])->name('system.update');
+            Route::post('system/account', [\App\Http\Controllers\Tenant\SettingsController::class, 'updateAccount'])->name('system.account.update');
+            Route::post('system/logo', [\App\Http\Controllers\Tenant\SettingsController::class, 'uploadLogo'])->name('system.logo.upload');
         });
 
         // 標籤管理
