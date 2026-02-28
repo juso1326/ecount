@@ -46,18 +46,21 @@ class ReceivablePaymentController extends Controller
         // 建立入帳記錄
         $receivable->payments()->create($validated);
         
-        // 更新應收帳款狀態和已收金額
+        // 更新應收帳款狀態、已收金額、最新入帳日
         $newTotalReceived = $totalReceived + $validated['amount'];
-        
+        $latestDate = $receivable->payments()->max('payment_date');
+
         if ($newTotalReceived >= $receivable->amount) {
             $receivable->update([
                 'status' => 'paid',
                 'received_amount' => $newTotalReceived,
+                'paid_date' => $latestDate,
             ]);
         } elseif ($newTotalReceived > 0) {
             $receivable->update([
                 'status' => 'partial',
                 'received_amount' => $newTotalReceived,
+                'paid_date' => $latestDate,
             ]);
         }
         
@@ -73,23 +76,27 @@ class ReceivablePaymentController extends Controller
         $receivable = $payment->receivable;
         $payment->delete();
         
-        // 重新計算狀態和已收金額
+        // 重新計算狀態、已收金額、最新入帳日
         $totalReceived = $receivable->payments()->sum('amount');
-        
+        $latestDate = $receivable->payments()->max('payment_date');
+
         if ($totalReceived >= $receivable->amount) {
             $receivable->update([
                 'status' => 'paid',
                 'received_amount' => $totalReceived,
+                'paid_date' => $latestDate,
             ]);
         } elseif ($totalReceived > 0) {
             $receivable->update([
                 'status' => 'partial',
                 'received_amount' => $totalReceived,
+                'paid_date' => $latestDate,
             ]);
         } else {
             $receivable->update([
                 'status' => 'unpaid',
                 'received_amount' => 0,
+                'paid_date' => null,
             ]);
         }
         
