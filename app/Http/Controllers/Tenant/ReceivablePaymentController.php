@@ -52,7 +52,7 @@ class ReceivablePaymentController extends Controller
             ]);
         }
         
-        return redirect()->route('tenant.receivables.quick-receive', $receivable)
+        return redirect()->route('tenant.receivables.index')
             ->with('success', '入帳記錄新增成功');
     }
     
@@ -84,7 +84,7 @@ class ReceivablePaymentController extends Controller
             ]);
         }
         
-        return redirect()->route('tenant.receivables.quick-receive', $receivable)
+        return redirect()->route('tenant.receivables.index')
             ->with('success', '入帳記錄刪除成功');
     }
 }
