@@ -194,8 +194,15 @@
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
                         <a href="{{ route('tenant.payables.edit', $payable) }}"
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400">編輯</a>
-                        <button onclick="openQuickPayModal({{ $payable->id }}, {{ $payable->remaining_amount }}, '{{ addslashes($payable->payment_no) }}', '{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}')"
-                           class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
+                        <button onclick="openQuickPayModal(
+                            {{ $payable->id }},
+                            {{ $payable->remaining_amount }},
+                            '{{ addslashes($payable->payment_no) }}',
+                            '{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}',
+                            '{{ addslashes($payable->content ?? '') }}',
+                            '{{ addslashes($payable->project?->name ?? '') }}',
+                            {{ $payable->amount }}
+                        )" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
                     </td>
                     <!-- 支付內容 -->
                     <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
@@ -313,13 +320,17 @@
         <!-- Header -->
         <div class="px-5 pt-5 pb-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white">出帳</h3>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">出帳 - <span id="qp_payment_no"></span></h3>
                 <button onclick="closeQuickPayModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5" id="qp_payment_no"></p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5" id="qp_payee_name"></p>
+            <div class="mt-1 text-sm text-gray-500 dark:text-gray-400 space-y-0.5">
+                <div id="qp_payee_row" class="hidden">對象：<span id="qp_payee_name" class="font-medium text-gray-700 dark:text-gray-200"></span></div>
+                <div id="qp_content_row" class="hidden">說明：<span id="qp_content" class="font-medium text-gray-700 dark:text-gray-200"></span></div>
+                <div id="qp_project_row" class="hidden">專案：<span id="qp_project" class="font-medium text-gray-700 dark:text-gray-200"></span></div>
+                <div id="qp_total_row" class="hidden">帳款金額：NT$ <span id="qp_total" class="font-medium text-gray-700 dark:text-gray-200"></span></div>
+            </div>
         </div>
         <!-- Scrollable body -->
         <div class="overflow-y-auto flex-1 px-5 py-4 space-y-4">
@@ -387,14 +398,29 @@
 <script>
 let _qpPayableId = null;
 
-function openQuickPayModal(id, remaining, paymentNo, payeeName) {
+function openQuickPayModal(id, remaining, paymentNo, payeeName, content, projectName, totalAmount) {
     _qpPayableId = id;
-    document.getElementById('qp_payment_no').textContent = '單號：' + paymentNo;
-    document.getElementById('qp_payee_name').textContent = payeeName || '';
+    document.getElementById('qp_payment_no').textContent = paymentNo;
     document.getElementById('qp_remaining').textContent = Number(remaining).toLocaleString();
     document.getElementById('qp_amount').value = remaining > 0 ? remaining : '';
     document.getElementById('qp_amount').max = remaining > 0 ? remaining : '';
     document.getElementById('quickPayForm').action = '/payable-payments/' + id;
+
+    const payeeRow = document.getElementById('qp_payee_row');
+    if (payeeName) { document.getElementById('qp_payee_name').textContent = payeeName; payeeRow.classList.remove('hidden'); }
+    else { payeeRow.classList.add('hidden'); }
+
+    const contentRow = document.getElementById('qp_content_row');
+    if (content) { document.getElementById('qp_content').textContent = content; contentRow.classList.remove('hidden'); }
+    else { contentRow.classList.add('hidden'); }
+
+    const projectRow = document.getElementById('qp_project_row');
+    if (projectName) { document.getElementById('qp_project').textContent = projectName; projectRow.classList.remove('hidden'); }
+    else { projectRow.classList.add('hidden'); }
+
+    const totalRow = document.getElementById('qp_total_row');
+    if (totalAmount !== undefined) { document.getElementById('qp_total').textContent = new Intl.NumberFormat().format(totalAmount); totalRow.classList.remove('hidden'); }
+    else { totalRow.classList.add('hidden'); }
 
     // Show/hide add form
     if (remaining <= 0) {
