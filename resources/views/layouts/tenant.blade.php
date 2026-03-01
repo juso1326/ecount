@@ -83,8 +83,9 @@
         }
         
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 44px;
+            line-height: normal;
             padding-left: 0.75rem;
+            padding-top: 0.5rem;
         }
         
         .select2-container--default .select2-selection--single .select2-selection__arrow {
