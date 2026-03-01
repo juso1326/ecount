@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\SalaryAdjustment;
+use App\Models\TenantSetting;
 use App\Services\SalaryService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -19,12 +20,29 @@ class SalaryController extends Controller
     }
 
     /**
+     * 根據關帳日決定預設薪資月份
+     * 若今天 < 關帳日，預設顯示上個月；否則顯示本月
+     */
+    protected function defaultSalaryPeriod(): array
+    {
+        $closingDay = (int) TenantSetting::get('closing_day', 1);
+        $today = Carbon::today();
+        if ($today->day < $closingDay) {
+            $ref = $today->copy()->subMonth();
+        } else {
+            $ref = $today->copy();
+        }
+        return [(string) $ref->year, $ref->format('m')];
+    }
+
+    /**
      * 薪資總表
      */
     public function index(Request $request)
     {
-        $year = $request->get('year', date('Y'));
-        $month = $request->get('month', date('m'));
+        [$defaultYear, $defaultMonth] = $this->defaultSalaryPeriod();
+        $year = $request->get('year', $defaultYear);
+        $month = $request->get('month', $defaultMonth);
         
         // 處理月份導航
         if ($request->get('nav') === 'prev') {
@@ -71,8 +89,9 @@ class SalaryController extends Controller
      */
     public function show(Request $request, User $user)
     {
-        $year = $request->get('year', date('Y'));
-        $month = $request->get('month', date('m'));
+        [$defaultYear, $defaultMonth] = $this->defaultSalaryPeriod();
+        $year = $request->get('year', $defaultYear);
+        $month = $request->get('month', $defaultMonth);
         
         // 處理月份導航
         if ($request->get('nav') === 'prev') {
@@ -307,8 +326,9 @@ class SalaryController extends Controller
      */
     public function vendors(Request $request)
     {
-        $year = $request->get('year', date('Y'));
-        $month = $request->get('month', date('m'));
+        [$defaultYear, $defaultMonth] = $this->defaultSalaryPeriod();
+        $year = $request->get('year', $defaultYear);
+        $month = $request->get('month', $defaultMonth);
         
         // 處理月份導航
         if ($request->get('nav') === 'prev') {

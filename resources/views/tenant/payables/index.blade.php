@@ -181,13 +181,13 @@
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
-                <td colspan="9" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                <td colspan="8" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（{{ $payables->total() }}筆）：
                 </td>
-                <td class="px-3 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
+                <td class="px-3 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400" colspan="2">
                     NT$ {{ number_format($totalAmount, 0) }}
                 </td>
-                <td colspan="5"></td>
+                <td colspan="4"></td>
             </tr>
             @endif
         </thead>
@@ -199,7 +199,7 @@
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
                         <a href="{{ route('tenant.payables.edit', $payable) }}" class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400">編輯</a>
-                        <button onclick="openQuickPayModal({{ $payable->id }},{{ $payable->remaining_amount }},'{{ addslashes($payable->payment_no) }}','{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}','{{ addslashes($payable->content ?? '') }}','{{ addslashes($payable->project?->name ?? '') }}',{{ $payable->amount }})" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
+                        <button onclick="openQuickPayModal({{ $payable->id }},{{ (int)$payable->remaining_amount }},'{{ addslashes($payable->payment_no) }}','{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}','{{ addslashes($payable->content ?? '') }}','{{ addslashes($payable->project?->name ?? '') }}',{{ (int)$payable->amount }})" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                         @date($payable->payment_date)
@@ -298,10 +298,10 @@
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
-                <td colspan="7" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                <td colspan="6" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（{{ $payables->total() }}筆）：
                 </td>
-                <td class="px-3 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400">
+                <td class="px-3 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400" colspan="2" >
                     NT$ {{ number_format($totalAmount, 0) }}
                 </td>
                 <td colspan="6"></td>
@@ -322,9 +322,9 @@
                     <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-500 dark:text-gray-400">
                         {{ ($payables->currentPage() - 1) * $payables->perPage() + $index + 1 }}
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-s font-medium space-x-1">
                         <a href="{{ route('tenant.payables.edit', $payable) }}" class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400">編輯</a>
-                        <button onclick="openQuickPayModal({{ $payable->id }},{{ $payable->remaining_amount }},'{{ addslashes($payable->payment_no) }}','{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}','{{ addslashes($payable->content ?? '') }}','{{ addslashes($payable->project?->name ?? '') }}',{{ $payable->amount }})" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
+                        <button onclick="openQuickPayModal({{ $payable->id }},{{ (int)$payable->remaining_amount }},'{{ addslashes($payable->payment_no) }}','{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}','{{ addslashes($payable->content ?? '') }}','{{ addslashes($payable->project?->name ?? '') }}',{{ (int)$payable->amount }})" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                         {{ $payable->responsibleUser?->name ?? '-' }}
@@ -466,11 +466,11 @@
             </div>
             <!-- Payment history -->
             <div>
-                <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">出帳記錄</h4>
+                <h4 class="text-s font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">出帳記錄</h4>
                 <div id="qp_history_loading" class="text-xs text-gray-400 py-2">載入中…</div>
-                <table id="qp_history_table" class="hidden w-full text-xs">
+                <table id="qp_history_table" class="hidden w-full text-s">
                     <thead>
-                        <tr class="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
+                        <tr class="text-xs border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
                             <th class="py-1 text-left w-6">#</th>
                             <th class="py-1 text-left">日期</th>
                             <th class="py-1 text-left">方式</th>
@@ -479,7 +479,7 @@
                             <th class="py-1 w-8"></th>
                         </tr>
                     </thead>
-                    <tbody id="qp_history_body"></tbody>
+                    <tbody id="qp_history_body" ></tbody>
                 </table>
                 <p id="qp_no_history" class="hidden text-xs text-gray-400 py-1">尚無出帳記錄</p>
             </div>
