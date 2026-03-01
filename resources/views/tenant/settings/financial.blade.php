@@ -5,17 +5,6 @@
 @section('page-title', '財務設定')
 
 @section('content')
-<!-- 麵包屑 -->
-<div class="mb-4">
-    <p class="text-sm text-gray-600 dark:text-gray-400">系統設定 &gt; 財務設定</p>
-</div>
-
-<!-- 頁面標題 -->
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">財務設定</h1>
-    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">設定財務相關的基本參數</p>
-</div>
-
 <!-- 成功訊息 -->
 @if(session('success'))
     <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">

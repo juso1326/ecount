@@ -184,7 +184,11 @@ class SettingsController extends Controller
             if ($old && \Illuminate\Support\Facades\Storage::disk('public')->exists($old)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($old);
             }
+            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('logos');
             $path = $request->file('logo')->store('logos', 'public');
+            if ($path === false) {
+                return back()->withErrors(['logo' => 'Logo 上傳失敗，請確認儲存目錄權限。'])->withInput();
+            }
             TenantSetting::set('company_logo', $path, 'system', 'string');
         }
 

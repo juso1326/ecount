@@ -109,7 +109,7 @@
                 @php $__logoPath = \App\Models\TenantSetting::get('company_logo', ''); @endphp
                 <a href="{{ route('tenant.dashboard') }}" class="flex items-center space-x-2 min-w-0">
                     @if($__logoPath)
-                        <img src="{{ asset('storage/'.$__logoPath) }}" alt="logo" class="h-7 w-7 object-contain rounded flex-shrink-0">
+                        <img src="/storage/{{ $__logoPath }}" alt="logo" class="h-7 w-7 object-contain rounded flex-shrink-0">
                     @else
                         <span class="text-2xl flex-shrink-0">💼</span>
                     @endif

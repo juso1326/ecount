@@ -19,7 +19,18 @@
     </div>
     
     <!-- 右側：操作按鈕 -->
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-center">
+        <!-- 視圖切換 -->
+        <div class="flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden text-sm">
+            <button id="btn-view-summary" onclick="setPayableView('summary')"
+                class="px-3 py-1.5 font-medium transition whitespace-nowrap">
+                應付總表
+            </button>
+            <button id="btn-view-disbursement" onclick="setPayableView('disbursement')"
+                class="px-3 py-1.5 font-medium transition whitespace-nowrap border-l border-gray-300 dark:border-gray-600">
+                出帳管理
+            </button>
+        </div>
         @if($payables->total() > 0)
         <a href="{{ route('tenant.payables.export', request()->all()) }}" 
            class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition">
@@ -159,12 +170,12 @@
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:70px">負責人</th>
                 <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">應付</th>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">狀態</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">實付日</th>
-                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px">實付</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">發票日</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:110px">憑證/發票號</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">代墊</th>
-                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">備註</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px" data-col="disbursement">實付日</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px" data-col="disbursement">實付</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px" data-col="disbursement">發票日</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:110px" data-col="disbursement">憑證/發票號</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px" data-col="disbursement">代墊</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px" data-col="disbursement">備註</th>
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
@@ -263,11 +274,11 @@
                         @endif
                     </td>
                     <!-- 實付日 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-col="disbursement">
                         @date($payable->paid_date)
                     </td>
                     <!-- 實付 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400" data-col="disbursement">
                         @if($payable->paid_amount > 0)
                             NT$ {{ number_format($payable->paid_amount, 0) }}
                         @else
@@ -275,15 +286,15 @@
                         @endif
                     </td>
                     <!-- 發票日 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-col="disbursement">
                         @date($payable->invoice_date)
                     </td>
                     <!-- 憑證/發票號 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300" data-col="disbursement">
                         {{ $payable->invoice_no ?? '—' }}
                     </td>
                     <!-- 代墊 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400" data-col="disbursement">
                         @if($payable->advanceUser)
                             <span class="text-blue-600 dark:text-blue-400">{{ $payable->advanceUser->name }}</span>
                             <span class="text-xs text-gray-400 ml-1">代墊</span>
@@ -292,7 +303,7 @@
                         @endif
                     </td>
                     <!-- 備註 -->
-                    <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 max-w-[120px]">
+                    <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 max-w-[120px]" data-col="disbursement">
                         <div class="truncate" title="{{ $payable->note }}">{{ $payable->note ?? '—' }}</div>
                     </td>
                 </tr>
@@ -477,6 +488,37 @@ function loadPayHistory(id) {
 // Close on backdrop click
 document.getElementById('quickPayModal').addEventListener('click', function(e) {
     if (e.target === this) closeQuickPayModal();
+});
+
+// ===== View mode toggle =====
+function setPayableView(mode) {
+    localStorage.setItem('payableViewMode', mode);
+    applyPayableView(mode);
+}
+
+function applyPayableView(mode) {
+    const isSummary = mode === 'summary';
+    document.querySelectorAll('[data-col="disbursement"]').forEach(el => {
+        el.style.display = isSummary ? 'none' : '';
+    });
+    const btnSummary = document.getElementById('btn-view-summary');
+    const btnDisb = document.getElementById('btn-view-disbursement');
+    if (isSummary) {
+        btnSummary.classList.add('bg-primary', 'text-white');
+        btnSummary.classList.remove('text-gray-600', 'dark:text-gray-300', 'bg-white', 'dark:bg-gray-800');
+        btnDisb.classList.remove('bg-primary', 'text-white');
+        btnDisb.classList.add('text-gray-600', 'dark:text-gray-300', 'bg-white', 'dark:bg-gray-800');
+    } else {
+        btnDisb.classList.add('bg-primary', 'text-white');
+        btnDisb.classList.remove('text-gray-600', 'dark:text-gray-300', 'bg-white', 'dark:bg-gray-800');
+        btnSummary.classList.remove('bg-primary', 'text-white');
+        btnSummary.classList.add('text-gray-600', 'dark:text-gray-300', 'bg-white', 'dark:bg-gray-800');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const saved = localStorage.getItem('payableViewMode') || 'disbursement';
+    applyPayableView(saved);
 });
 </script>
 @endsection

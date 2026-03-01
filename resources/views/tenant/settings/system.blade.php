@@ -3,14 +3,19 @@
 @section('page-title', '系統設定')
 
 @section('content')
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">系統設定</h1>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">設定系統基本偏好與顯示格式</p>
-</div>
-
 @if(session('success'))
 <div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg text-sm">
     {{ session('success') }}
+</div>
+@endif
+
+@if($errors->any())
+<div class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
+    <ul class="list-disc list-inside space-y-0.5">
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
 </div>
 @endif
 
@@ -301,7 +306,7 @@
                         </div>
                         <div class="flex-1">
                             @if($logoPath)
-                            <img src="{{ asset('storage/'.$logoPath) }}" alt="Logo" class="h-12 mb-2 rounded">
+                            <img src="/storage/{{ $logoPath }}" alt="Logo" class="h-12 mb-2 rounded">
                             @endif
                             <label class="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-sm text-gray-500 dark:text-gray-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
