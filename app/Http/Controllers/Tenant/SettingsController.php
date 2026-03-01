@@ -161,7 +161,7 @@ class SettingsController extends Controller
             'decimal_places'            => 'nullable|integer|min:0|max:6',
             'use_thousand_separator'    => 'nullable',
             'quotation_number_pattern'  => 'nullable|string|max:50',
-            'logo'                      => 'nullable|image|max:2048',
+            'logo'                      => 'nullable|mimes:jpeg,jpg,png,gif,webp,svg|max:2048',
         ]);
 
         TenantSetting::set('date_format',      $validated['date_format'],      'system', 'string');
