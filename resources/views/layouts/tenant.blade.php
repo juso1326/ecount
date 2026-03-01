@@ -549,6 +549,13 @@
     <!-- EcountValidator — 客製化表單驗證 -->
     <script src="{{ asset('js/ecount-validator.js') }}"></script>
 
+    <script>
+    // Global number formatter — always comma thousands separator, no decimals
+    window.fmtNum = function(n) {
+        return Math.round(Number(n)).toLocaleString('en-US');
+    };
+    </script>
+
     @stack('scripts')
 </body>
 </html>

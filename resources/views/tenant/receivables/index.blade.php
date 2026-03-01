@@ -110,8 +110,7 @@
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">序號</th>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">編輯</th>
-                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">入帳</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:50px">操作</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:80px">負責人</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">開立日</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">客戶</th>
@@ -154,11 +153,9 @@
                         {{ ($receivables->currentPage() - 1) * $receivables->perPage() + $index + 1 }}
                     </td>
                     <!-- 操作 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-s font-medium">
                         <a href="{{ route('tenant.receivables.edit', $receivable) }}" 
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
-                    </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium">
                         <button onclick="openQuickReceiveModal(
                             {{ $receivable->id }},
                             {{ $receivable->remaining_amount }},
@@ -168,7 +165,7 @@
                             '{{ addslashes($receivable->company?->short_name ?? $receivable->company?->name ?? '') }}',
                             '{{ addslashes($receivable->content ?? '') }}',
                             {{ $receivable->amount }}
-                        )" class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
+                        )" class="text-green-600 pl-1 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300">入帳</button>
                     </td>
                     <!-- 負責人 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
@@ -360,7 +357,7 @@ function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, project
     _currentReceivableId = receivableId;
     document.getElementById('receivableId').value = receivableId;
     document.getElementById('amount').value = remainingAmount;
-    document.getElementById('remainingAmount').textContent = new Intl.NumberFormat().format(remainingAmount);
+    document.getElementById('remainingAmount').textContent = fmtNum(remainingAmount);
     document.getElementById('modalReceiptNo').textContent = receiptNo;
 
     const cEl = document.getElementById('modalCompanyName');
@@ -380,7 +377,7 @@ function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, project
     else { tEl.classList.add('hidden'); }
 
     const taEl = document.getElementById('modalTotalAmount');
-    if (totalAmount !== undefined) { document.getElementById('modalTotalAmountText').textContent = new Intl.NumberFormat().format(totalAmount); taEl.classList.remove('hidden'); }
+    if (totalAmount !== undefined) { document.getElementById('modalTotalAmountText').textContent = fmtNum(totalAmount); taEl.classList.remove('hidden'); }
     else { taEl.classList.add('hidden'); }
 
     // 已收款完畢則隱藏新增表單
@@ -413,7 +410,7 @@ function loadPaymentHistory(receivableId) {
                     <td class="py-1 pr-2 text-gray-400 text-xs">${i + 1}</td>
                     <td class="py-1 pr-2 whitespace-nowrap">${p.payment_date ? p.payment_date.substring(0, 10) : '-'}</td>
                     <td class="py-1 pr-2 text-gray-600 dark:text-gray-300">${p.payment_method ?? '-'}</td>
-                    <td class="py-1 pr-2 text-right font-medium">NT$${Number(p.amount).toLocaleString()}</td>
+                    <td class="py-1 pr-2 text-right font-medium">NT$${fmtNum(p.amount)}</td>
                     <td class="py-1 pl-2 text-gray-500 dark:text-gray-400 text-xs max-w-[80px] truncate">${p.note ?? ''}</td>
                     <td class="py-1 pl-1">
                         <button onclick="deletePayment(${p.id})" class="text-red-400 hover:text-red-600 text-xs">刪除</button>

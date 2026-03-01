@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
@@ -229,6 +230,7 @@ class CompanyController extends Controller
             'bank_account_name' => 'nullable|string|max:100',
             'is_client' => 'boolean',
             'is_outsource' => 'boolean',
+            'logo' => 'nullable|image|max:2048',
         ], [
             'code.required' => '公司代碼為必填',
             'code.unique' => '公司代碼已存在',
@@ -258,6 +260,17 @@ class CompanyController extends Controller
         $companyData['is_client'] = $request->boolean('is_client');
         $companyData['is_outsource'] = $request->boolean('is_outsource');
         $companyData['is_tax_entity'] = $request->boolean('is_tax_entity');
+
+        if ($request->hasFile('logo')) {
+            Storage::disk('public')->makeDirectory('company-logos');
+            $path = $request->file('logo')->store('company-logos', 'public');
+            if ($path) {
+                if ($company->logo_path) {
+                    Storage::disk('public')->delete($company->logo_path);
+                }
+                $companyData['logo_path'] = $path;
+            }
+        }
 
         $company->update($companyData);
 

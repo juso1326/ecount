@@ -121,7 +121,12 @@
                     {{ $company->is_outsource ? '是' : '' }}
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {{ $company->name }}
+                    <div class="flex items-center gap-2">
+                        @if($company->logo_path)
+                            <img src="/storage/{{ $company->logo_path }}" alt="" class="h-7 w-7 object-contain rounded border border-gray-200 dark:border-gray-600 bg-white p-0.5 shrink-0">
+                        @endif
+                        {{ $company->name }}
+                    </div>
                 </td>
                 <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {{ $company->short_name }}

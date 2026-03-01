@@ -8,7 +8,7 @@
 </div>
 
 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-    <form method="POST" action="{{ route('tenant.companies.update', $company) }}">
+    <form method="POST" action="{{ route('tenant.companies.update', $company) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -297,6 +297,41 @@
             <textarea name="note" id="note" rows="3"
                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $company->note) }}</textarea>
         </div>
+
+        <!-- Logo -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">公司 Logo</label>
+            <div class="flex items-center gap-4">
+                @if($company->logo_path)
+                    <img src="/storage/{{ $company->logo_path }}" alt="logo" class="h-16 w-16 object-contain rounded border border-gray-200 dark:border-gray-600 bg-white p-1" id="logoPreview">
+                @else
+                    <div class="h-16 w-16 flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-400 text-xs" id="logoPreviewWrap">
+                        <img src="" alt="" class="hidden h-16 w-16 object-contain rounded" id="logoPreview">
+                        <span id="logoPlaceholder">無圖片</span>
+                    </div>
+                @endif
+                <div>
+                    <input type="file" name="logo" id="logoInput" accept="image/*"
+                           class="block text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="mt-1 text-xs text-gray-400">PNG / JPG，最大 2MB</p>
+                </div>
+            </div>
+        </div>
+        <script>
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = document.getElementById('logoPreview');
+                img.src = ev.target.result;
+                img.classList.remove('hidden');
+                const ph = document.getElementById('logoPlaceholder');
+                if (ph) ph.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+        </script>
 
         <div class="mt-6 flex justify-end space-x-3">
             <a href="{{ route('tenant.companies.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 font-bold py-2 px-4 rounded">

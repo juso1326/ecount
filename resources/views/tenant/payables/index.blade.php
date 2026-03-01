@@ -493,7 +493,7 @@ let _qpPayableId = null;
 function openQuickPayModal(id, remaining, paymentNo, payeeName, content, projectName, totalAmount) {
     _qpPayableId = id;
     document.getElementById('qp_payment_no').textContent = paymentNo;
-    document.getElementById('qp_remaining').textContent = Number(remaining).toLocaleString();
+    document.getElementById('qp_remaining').textContent = fmtNum(remaining);
     document.getElementById('qp_amount').value = remaining > 0 ? remaining : '';
     document.getElementById('qp_amount').max = remaining > 0 ? remaining : '';
     document.getElementById('quickPayForm').action = '/payable-payments/' + id;
@@ -511,7 +511,7 @@ function openQuickPayModal(id, remaining, paymentNo, payeeName, content, project
     else { projectRow.classList.add('hidden'); }
 
     const totalRow = document.getElementById('qp_total_row');
-    if (totalAmount !== undefined) { document.getElementById('qp_total').textContent = new Intl.NumberFormat().format(totalAmount); totalRow.classList.remove('hidden'); }
+    if (totalAmount !== undefined) { document.getElementById('qp_total').textContent = fmtNum(totalAmount); totalRow.classList.remove('hidden'); }
     else { totalRow.classList.add('hidden'); }
 
     // Show/hide add form
@@ -551,7 +551,7 @@ function loadPayHistory(id) {
                     <td class="py-1.5 text-gray-400">${i+1}</td>
                     <td class="py-1.5 text-gray-700 dark:text-gray-300">${(p.payment_date||'').substring(0,10)}</td>
                     <td class="py-1.5 text-gray-600 dark:text-gray-400">${p.payment_method||'—'}</td>
-                    <td class="py-1.5 text-right font-medium text-red-600 dark:text-red-400">NT$ ${Number(p.amount).toLocaleString()}</td>
+                    <td class="py-1.5 text-right font-medium text-red-600 dark:text-red-400">NT$ ${fmtNum(p.amount)}</td>
                     <td class="py-1.5 pl-2 text-gray-500 dark:text-gray-400 max-w-[80px] truncate">${p.note||''}</td>
                     <td class="py-1.5 text-right">
                         <form method="POST" action="/payable-payments/${p.id}" onsubmit="return confirm('確認刪除此出帳記錄？')" class="inline">
