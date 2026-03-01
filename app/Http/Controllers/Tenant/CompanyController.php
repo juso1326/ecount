@@ -23,7 +23,8 @@ class CompanyController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('short_name', 'like', "%{$search}%")
                   ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('tax_id', 'like', "%{$search}%");
+                  ->orWhere('tax_id', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%");
             });
         }
 
