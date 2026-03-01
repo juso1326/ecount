@@ -17,13 +17,7 @@
         @endif
     </div>
     <div class="flex gap-2">
-        @if($resignedCount > 0)
-        <a href="{{ route('tenant.users.index', array_merge(request()->except('page'), ['show_resigned' => $showResigned ? '0' : '1'])) }}"
-           class="flex items-center gap-1 text-sm font-medium py-2 px-4 rounded-lg border {{ $showResigned ? 'bg-amber-100 border-amber-400 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-gray-100 border-gray-300 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8m-9 4v4m4-4v4"/></svg>
-            {{ $showResigned ? '隱藏離職' : '顯示離職' }}（{{ $resignedCount }}）
-        </a>
-        @endif
+
         <a href="{{ route('tenant.users.export') }}" 
            class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow-sm">
             匯出 Excel
@@ -51,7 +45,7 @@
                     class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                 搜尋
             </button>
-            @if(request()->hasAny(['search', 'is_active']))
+            @if(request()->hasAny(['search', 'is_active', 'show_resigned']))
                 <a href="{{ route('tenant.users.index') }}" 
                    class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
                     清除
@@ -60,7 +54,7 @@
         </div>
         
         <!-- 進階篩選 -->
-        <details class="group">
+        <details class="group" {{ request()->hasAny(['is_active', 'show_resigned']) ? 'open' : '' }}>
             <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
                 <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
                 進階篩選
@@ -76,6 +70,17 @@
                         <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>停用</option>
                     </select>
                 </div>
+                <!-- 顯示離職 -->
+                @if($resignedCount > 0)
+                <div class="flex items-end">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="show_resigned" value="1"
+                               {{ $showResigned ? 'checked' : '' }}
+                               class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">顯示離職（{{ $resignedCount }}）</span>
+                    </label>
+                </div>
+                @endif
             </div>
         </details>
     </form>
