@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -64,6 +65,11 @@ class Company extends Model
     public function bankAccounts(): HasMany
     {
         return $this->hasMany(CompanyBankAccount::class)->orderBy('sort_order');
+    }
+
+    public function defaultBankAccount(): HasOne
+    {
+        return $this->hasOne(CompanyBankAccount::class)->where('is_default', true)->orderBy('sort_order');
     }
 
     /**

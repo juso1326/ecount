@@ -20,7 +20,7 @@ class PayableController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Payable::with(['project', 'company', 'responsibleUser', 'payeeUser', 'payeeCompany']);
+        $query = Payable::with(['project', 'company', 'responsibleUser', 'payeeUser', 'payeeUser.defaultBankAccount', 'payeeCompany', 'payeeCompany.defaultBankAccount']);
 
         // 帳務年度篩選（逾期/到期快篩時不限年度）
         $fiscalYear = $request->input('fiscal_year', date('Y'));
