@@ -134,6 +134,7 @@
                     </select>
                 </div>
             </div>
+        </div>
 
         <!-- 支出資訊區塊（給付對象為外製或已支出時顯示） -->
         <div id="expense_info_section" class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
