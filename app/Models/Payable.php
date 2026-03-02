@@ -133,10 +133,12 @@ class Payable extends Model
      */
     public function getPayeeNameAttribute(): string
     {
-        if ($this->payee_type === 'user' && $this->payeeUser) {
+        if (in_array($this->payee_type, ['user', 'member']) && $this->payeeUser) {
             return $this->payeeUser->name;
-        } elseif ($this->payee_type === 'company' && $this->company) {
-            return $this->company->name;
+        } elseif (in_array($this->payee_type, ['company', 'vendor']) && $this->payeeCompany) {
+            return $this->payeeCompany->name;
+        } elseif ($this->payee_type === 'expense') {
+            return $this->expense_company_name ?? '-';
         }
         return '-';
     }

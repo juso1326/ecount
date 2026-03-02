@@ -245,9 +245,9 @@ class FinancialReportController extends Controller
         $employeeSalaryTotal = $employeeSalaries->sum('amount');
         $employeeSalaryPaid = $employeeSalaries->sum('paid_amount');
         
-        // 2. 外包薪資/勞務（應付帳款中 payee_type = company，且 type 包含薪資/勞務相關）
+        // 2. 外包薪資/勞務（應付帳款中 payee_type = company/vendor，且 type 包含薪資/勞務相關）
         $vendorPayables = Payable::where('fiscal_year', $fiscalYear)
-            ->where('payee_type', 'company')
+            ->whereIn('payee_type', ['company', 'vendor'])
             ->whereNotNull('payee_company_id')
             ->where(function($q) {
                 $q->where('type', 'like', '%薪資%')
@@ -266,7 +266,7 @@ class FinancialReportController extends Controller
         // 3. 其他應付（排除薪資相關）
         $otherPayables = Payable::where('fiscal_year', $fiscalYear)
             ->where(function($q) {
-                $q->where('payee_type', 'company')
+                $q->whereIn('payee_type', ['company', 'vendor'])
                   ->where(function($q2) {
                       $q2->where('type', 'not like', '%薪資%')
                          ->where('type', 'not like', '%勞務%')
@@ -515,7 +515,7 @@ class FinancialReportController extends Controller
         
         // 查詢已付款的外包成本
         $paidOutsourcesQuery = Payable::where('fiscal_year', $fiscalYear)
-            ->where('payee_type', 'company')
+            ->whereIn('payee_type', ['company', 'vendor'])
             ->whereNotNull('payee_company_id')
             ->where(function($q) {
                 $q->where('type', 'like', '%薪資%')

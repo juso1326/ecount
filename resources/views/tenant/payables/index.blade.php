@@ -107,7 +107,7 @@
             <!-- 狀態 -->
             <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
                 <option value="">全部狀態</option>
-                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
+                <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>待付款</option>
                 <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
                 <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
                 <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>

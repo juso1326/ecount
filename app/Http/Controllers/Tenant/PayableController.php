@@ -67,7 +67,7 @@ class PayableController extends Controller
             if ($request->status === 'overdue') {
                 // 逾期篩選
                 $query->where('due_date', '<', now())
-                      ->whereIn('status', ['pending', 'partial']);
+                      ->whereIn('status', ['unpaid', 'partial']);
             } else {
                 $query->where('status', $request->status);
             }
@@ -78,7 +78,7 @@ class PayableController extends Controller
             $days = (int) $request->due_filter;
             $today = now();
             $query->whereBetween('due_date', [$today, $today->copy()->addDays($days)])
-                  ->whereIn('status', ['pending', 'partial']);
+                  ->whereIn('status', ['unpaid', 'partial']);
         }
 
         // 排序：逾期未付(due_date舊→新) → 今日/未來待付(due_date近→遠) → 已付清(paid_date新→舊)
@@ -103,13 +103,13 @@ class PayableController extends Controller
         // 付款提醒統計
         $today = now();
         $overduePayables = Payable::where('due_date', '<', $today)
-            ->whereIn('status', ['pending', 'partial'])
+            ->whereIn('status', ['unpaid', 'partial'])
             ->count();
         $dueSoon7Days = Payable::whereBetween('due_date', [$today, $today->copy()->addDays(7)])
-            ->whereIn('status', ['pending', 'partial'])
+            ->whereIn('status', ['unpaid', 'partial'])
             ->count();
         $dueSoon30Days = Payable::whereBetween('due_date', [$today, $today->copy()->addDays(30)])
-            ->whereIn('status', ['pending', 'partial'])
+            ->whereIn('status', ['unpaid', 'partial'])
             ->count();
 
         // 可用年度清單

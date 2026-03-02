@@ -103,8 +103,8 @@ class DashboardController extends Controller
             ->selectRaw('
                 SUM(amount) as total_payable,
                 SUM(paid_amount) as total_paid,
-                SUM(CASE WHEN payee_type = "user" THEN paid_amount ELSE 0 END) as employee_salary,
-                SUM(CASE WHEN payee_type = "company" AND (type LIKE "%薪資%" OR type LIKE "%勞務%" OR type LIKE "%外包%") THEN paid_amount ELSE 0 END) as outsource_cost
+                SUM(CASE WHEN payee_type IN ("user","member") THEN paid_amount ELSE 0 END) as employee_salary,
+                SUM(CASE WHEN payee_type IN ("company","vendor") AND (type LIKE "%薪資%" OR type LIKE "%勞務%" OR type LIKE "%外包%") THEN paid_amount ELSE 0 END) as outsource_cost
             ')
             ->first();
         
