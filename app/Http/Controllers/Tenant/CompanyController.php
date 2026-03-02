@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -64,8 +65,9 @@ class CompanyController extends Controller
     {
         // 產生下一個公司代碼
         $nextCode = $this->generateNextCode();
+        $companyTags = Tag::where('type', Tag::TYPE_COMPANY)->orderBy('name')->get();
         
-        return view('tenant.companies.create', compact('nextCode'));
+        return view('tenant.companies.create', compact('nextCode', 'companyTags'));
     }
 
     /**
@@ -140,6 +142,16 @@ class CompanyController extends Controller
 
         $company = Company::create($companyData);
 
+        // 同步標籤（含新建標籤）
+        $tagIds = array_filter((array) $request->input('tag_ids', []), fn($id) => is_numeric($id));
+        foreach ((array) $request->input('new_tags', []) as $tagName) {
+            if ($tagName = trim($tagName)) {
+                $tag = Tag::firstOrCreate(['name' => $tagName, 'type' => Tag::TYPE_COMPANY]);
+                $tagIds[] = $tag->id;
+            }
+        }
+        $company->tags()->sync($tagIds);
+
         // 處理銀行帳戶
         $defaultSet = false;
         foreach ($request->input('bank_accounts', []) as $i => $bank) {
@@ -199,8 +211,9 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        $company->load('contacts', 'bankAccounts');
-        return view('tenant.companies.edit', compact('company'));
+        $company->load('contacts', 'bankAccounts', 'tags');
+        $companyTags = Tag::where('type', Tag::TYPE_COMPANY)->orderBy('name')->get();
+        return view('tenant.companies.edit', compact('company', 'companyTags'));
     }
 
     /**
@@ -276,6 +289,16 @@ class CompanyController extends Controller
         }
 
         $company->update($companyData);
+
+        // 同步標籤（含新建標籤）
+        $tagIds = array_filter((array) $request->input('tag_ids', []), fn($id) => is_numeric($id));
+        foreach ((array) $request->input('new_tags', []) as $tagName) {
+            if ($tagName = trim($tagName)) {
+                $tag = Tag::firstOrCreate(['name' => $tagName, 'type' => Tag::TYPE_COMPANY]);
+                $tagIds[] = $tag->id;
+            }
+        }
+        $company->tags()->sync($tagIds);
 
         // 同步多筆銀行資訊
         $company->bankAccounts()->delete();

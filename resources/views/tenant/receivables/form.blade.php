@@ -26,7 +26,7 @@
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent select2-company">
                     <option value="">請選擇客戶</option>
                     @foreach($companies as $company)
-                        <option value="{{ $company->id }}" data-tax-id="{{ $company->tax_id ?? '' }}" {{ old('company_id', isset($receivable) ? $receivable->company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                        <option value="{{ $company->id }}" data-tax-id="{{ $company->tax_id ?? '' }}" {{ old('company_id', isset($receivable) ? $receivable->company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->short_name ?: $company->name }}</option>
                     @endforeach
                 </select>
             </div>

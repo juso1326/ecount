@@ -270,7 +270,15 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                <!-- 發票日期 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">發票日期</label>
+                    <input type="date" name="invoice_date"
+                           value="{{ old('invoice_date', isset($payable) ? ($payable->invoice_date ? $payable->invoice_date->format('Y-m-d') : '') : '') }}"
+                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
+                </div>
+
                 <!-- 預計付款日 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">預計付款日</label>

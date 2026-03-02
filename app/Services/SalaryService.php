@@ -57,7 +57,7 @@ class SalaryService
         return [
             'start' => $startDate,
             'end' => $endDate,
-            'label' => $startDate->format('Y/m/d') . ' ~ ' . $endDate->format('Y/m/d'),
+            'label' => format_date($startDate) . ' ~ ' . format_date($endDate),
             'closing_day' => $closingDay,
             'year' => $year,
             'month' => $month,

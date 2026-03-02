@@ -298,6 +298,18 @@
                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $company->note) }}</textarea>
         </div>
 
+        <!-- 標籤 -->
+        <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">標籤</label>
+            <select name="tag_ids[]" id="tag_ids" multiple
+                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3">
+                @foreach($companyTags as $tag)
+                    <option value="{{ $tag->id }}" {{ $company->tags->contains($tag->id) ? 'selected' : '' }}>{{ $tag->name }}</option>
+                @endforeach
+            </select>
+            <p class="mt-1 text-xs text-gray-400">可選擇現有標籤，或直接輸入新標籤名稱後按 Enter 建立</p>
+        </div>
+
         <div class="mt-6 flex justify-end space-x-3">
             <a href="{{ route('tenant.companies.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 font-bold py-2 px-4 rounded">
                 取消
@@ -308,4 +320,26 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    $('#tag_ids').select2({
+        placeholder: '選擇或輸入標籤',
+        tags: true,
+        allowClear: true,
+        width: '100%',
+        createTag: function(params) {
+            return { id: 'new:' + params.term, text: params.term + ' (新增)', newTag: true };
+        }
+    }).on('select2:select', function(e) {
+        if (e.params.data.newTag) {
+            $(this).find('option[value="' + e.params.data.id + '"]').remove();
+            var hidden = $('<input type="hidden" name="new_tags[]">').val(e.params.data.text.replace(' (新增)', ''));
+            $(this).closest('form').append(hidden);
+        }
+    });
+});
+</script>
+@endpush
 @endsection
