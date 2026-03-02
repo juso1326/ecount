@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payable;
+use App\Models\PayablePayment;
 use App\Models\Project;
 use App\Models\Company;
 use App\Models\User;
@@ -80,10 +81,22 @@ class PayableController extends Controller
                   ->whereIn('status', ['pending', 'partial']);
         }
 
-        // 排序
-        $orderBy = $request->input('order_by', 'payment_date');
-        $orderDir = $request->input('order_dir', 'desc');
-        $query->orderBy($orderBy, $orderDir);
+        // 排序：逾期未付(due_date舊→新) → 今日/未來待付(due_date近→遠) → 已付清(paid_date新→舊)
+        if (!$request->filled('order_by')) {
+            $query->orderByRaw("
+                CASE
+                    WHEN status NOT IN ('paid') AND due_date < CURDATE() THEN 0
+                    WHEN status NOT IN ('paid') AND (due_date IS NULL OR due_date >= CURDATE()) THEN 1
+                    ELSE 2
+                END ASC,
+                CASE WHEN status NOT IN ('paid') THEN due_date ELSE NULL END ASC,
+                CASE WHEN status = 'paid' THEN paid_date ELSE NULL END DESC
+            ");
+        } else {
+            $orderBy = $request->input('order_by');
+            $orderDir = $request->input('order_dir', 'desc');
+            $query->orderBy($orderBy, $orderDir);
+        }
 
         $payables = $query->paginate(15);
 
@@ -490,5 +503,46 @@ class PayableController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * 批次確認支付（全額）
+     */
+    public function batchPay(Request $request)
+    {
+        $request->validate([
+            'ids'            => 'required|array|min:1',
+            'ids.*'          => 'integer|exists:payables,id',
+            'payment_date'   => 'required|date',
+            'payment_method' => 'nullable|string|max:100',
+            'note'           => 'nullable|string|max:255',
+        ]);
+
+        $payables = Payable::whereIn('id', $request->ids)
+                           ->whereNotIn('status', ['paid'])
+                           ->get();
+
+        DB::transaction(function () use ($payables, $request) {
+            foreach ($payables as $payable) {
+                $remaining = $payable->remaining_amount ?? $payable->amount;
+                if ($remaining <= 0) continue;
+
+                PayablePayment::create([
+                    'payable_id'     => $payable->id,
+                    'payment_date'   => $request->payment_date,
+                    'amount'         => $remaining,
+                    'payment_method' => $request->payment_method,
+                    'note'           => $request->note,
+                ]);
+
+                $payable->update([
+                    'paid_amount' => $payable->amount,
+                    'paid_date'   => $request->payment_date,
+                    'status'      => 'paid',
+                ]);
+            }
+        });
+
+        return response()->json(['success' => true, 'message' => '批次支付完成']);
     }
 }

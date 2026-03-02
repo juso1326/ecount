@@ -301,7 +301,12 @@
                         </div>
                         <div class="flex-1">
                             @if($logoPath)
-                            <img src="/storage/{{ $logoPath }}" alt="Logo" class="h-12 mb-2 rounded">
+                            <div class="flex items-center gap-3 mb-2">
+                                <img src="/storage/{{ $logoPath }}" alt="Logo" class="h-12 rounded">
+                                <button type="submit" name="_delete_logo" value="1"
+                                        class="text-xs text-red-500 hover:text-red-700 underline"
+                                        onclick="return confirm('確定要刪除 Logo 嗎？')">刪除</button>
+                            </div>
                             @endif
                             <label class="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-sm text-gray-500 dark:text-gray-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

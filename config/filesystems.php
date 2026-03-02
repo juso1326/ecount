@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        // Central public disk — not overridden by tenancy bootstrapper (uses absolute path)
+        'central_public' => [
+            'driver' => 'local',
+            'root' => base_path('storage/app/public'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

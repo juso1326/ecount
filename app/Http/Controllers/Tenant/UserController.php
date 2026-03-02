@@ -40,7 +40,7 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $users = $query->orderBy('id', 'asc')->paginate(15)->withQueryString();
         $showResigned = $request->boolean('show_resigned');
         $resignedCount = User::whereNotNull('resign_date')->where('resign_date', '<=', now())->count();
 

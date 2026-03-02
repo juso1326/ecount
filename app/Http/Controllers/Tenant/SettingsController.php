@@ -175,21 +175,38 @@ class SettingsController extends Controller
         TenantSetting::set('tax_rate_label',   $validated['tax_rate_label'] ?? 'Tax Rate',   'system', 'string');
         TenantSetting::set('tax_number_label', $validated['tax_number_label'] ?? 'Tax Number', 'system', 'string');
         TenantSetting::set('display_language',         $validated['display_language'] ?? 'zh_TW', 'system', 'string');
-        TenantSetting::set('display_name',             $validated['display_name'] ?? '',          'system', 'string');
+        TenantSetting::set('display_name',             !empty($validated['display_name']) ? $validated['display_name'] : TenantSetting::get('display_name', 'ECount'), 'system', 'string');
         TenantSetting::set('decimal_places',           $validated['decimal_places'] ?? 2,         'system', 'number');
         TenantSetting::set('use_thousand_separator',   isset($validated['use_thousand_separator']) && $validated['use_thousand_separator'] ? 'true' : 'false', 'system', 'boolean');
         TenantSetting::set('quotation_number_pattern', $validated['quotation_number_pattern'] ?? 'AAAYYYY0000', 'system', 'string');
 
-        // Logo upload
-        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+        // Logo delete
+        if ($request->input('_delete_logo')) {
             $old = TenantSetting::get('company_logo', '');
-            if ($old && \Illuminate\Support\Facades\Storage::disk('public')->exists($old)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($old);
+            if ($old && \Illuminate\Support\Facades\Storage::disk('central_public')->exists($old)) {
+                \Illuminate\Support\Facades\Storage::disk('central_public')->delete($old);
             }
-            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('logos');
-            $path = $request->file('logo')->store('logos', 'public');
-            if ($path === false) {
-                return back()->withErrors(['logo' => 'Logo 上傳失敗，請確認儲存目錄權限。'])->withInput();
+            TenantSetting::set('company_logo', '', 'system', 'string');
+            return redirect()->route('tenant.settings.system', ['tab' => 'general'])
+                ->with('success', 'Logo 已刪除');
+        }
+
+        // Logo upload
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+
+            if (!$file->isValid()) {
+                return back()->withErrors(['logo' => 'Logo 上傳失敗：' . $file->getErrorMessage()])->withInput();
+            }
+
+            $old = TenantSetting::get('company_logo', '');
+            if ($old && \Illuminate\Support\Facades\Storage::disk('central_public')->exists($old)) {
+                \Illuminate\Support\Facades\Storage::disk('central_public')->delete($old);
+            }
+            \Illuminate\Support\Facades\Storage::disk('central_public')->makeDirectory('logos');
+            $path = $file->store('logos', 'central_public');
+            if (!$path) {
+                return back()->withErrors(['logo' => 'Logo 儲存失敗，請確認 storage 目錄權限。'])->withInput();
             }
             TenantSetting::set('company_logo', $path, 'system', 'string');
         }

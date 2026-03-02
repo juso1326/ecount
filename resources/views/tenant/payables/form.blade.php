@@ -33,7 +33,7 @@
                             class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 select2-company">
                         <option value="">請選擇客戶</option>
                         @foreach($companies as $company)
-                            <option value="{{ $company->id }}" data-tax-id="{{ $company->tax_id ?? '' }}" {{ old('company_id', isset($payable) ? $payable->company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                            <option value="{{ $company->id }}" data-tax-id="{{ $company->tax_id ?? '' }}" {{ old('company_id', isset($payable) ? $payable->company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->short_name ?: $company->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -467,6 +467,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize Select2 for project dropdown
 $(document).ready(function() {
+    $('#company_id').select2({
+        placeholder: '請選擇客戶',
+        allowClear: true,
+        width: '100%'
+    });
+
     $('#project_id').select2({
         placeholder: '請選擇專案',
         allowClear: true,

@@ -252,11 +252,11 @@ class ReceivableController extends Controller
     public function update(Request $request, Receivable $receivable)
     {
         $validated = $request->validate([
-            'receipt_no' => 'required|string|max:50',
+            'receipt_no' => 'nullable|string|max:50',
             'project_id' => 'required|exists:projects,id',
             'company_id' => 'required|exists:companies,id',
             'responsible_user_id' => 'nullable|exists:users,id',
-            'receipt_date' => 'required|date',
+            'receipt_date' => 'nullable|date',
             'due_date' => 'nullable|date',
             'amount' => 'required|numeric|min:0',
             'amount_before_tax' => 'nullable|numeric|min:0',
@@ -279,6 +279,11 @@ class ReceivableController extends Controller
             if (isset($validated[$field]) && $validated[$field] === '') {
                 $validated[$field] = null;
             }
+        }
+
+        // 保留原有 receipt_no 若表單未提交
+        if (empty($validated['receipt_no'])) {
+            unset($validated['receipt_no']);
         }
 
         $receivable->update($validated);

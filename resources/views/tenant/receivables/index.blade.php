@@ -122,10 +122,10 @@
             </tr>
             @if($receivables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
-                <td colspan="12" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                <td colspan="10" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（{{ $receivables->total() }}筆）：
                 </td>
-                <td class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
+                <td class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100" colspan="2" >
                     NT$ {{ fmt_num($totalAmount) }}
                 </td>
                 <td></td>

@@ -81,82 +81,60 @@
 
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
-    <form method="GET" action="{{ route('tenant.payables.index') }}" class="space-y-4">
-        <!-- 智能搜尋框 -->
-        <div class="flex gap-2">
-            <div class="flex-1">
+    <form method="GET" action="{{ route('tenant.payables.index') }}">
+        <div class="flex flex-wrap gap-2 items-center">
+            <!-- 搜尋框 (半寬) -->
+            <div class="w-1/2 min-w-[200px]">
                 <input type="text" name="smart_search" value="{{ request('smart_search') }}" 
                        placeholder="🔍 聰明尋找：單號/專案/廠商/內容..." 
-                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent text-base">
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
             </div>
-            <button type="submit" 
-                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
-                搜尋
-            </button>
+            <!-- 年度 -->
+            <select name="fiscal_year" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                <option value="">全部年度</option>
+                @foreach($availableYears as $year)
+                    <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>{{ $year }} 年</option>
+                @endforeach
+            </select>
+            <!-- 類型 -->
+            <select name="type" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                <option value="">全部類型</option>
+                <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
+                <option value="expense" {{ request('type') === 'expense' ? 'selected' : '' }}>費用</option>
+                <option value="service" {{ request('type') === 'service' ? 'selected' : '' }}>服務</option>
+                <option value="other" {{ request('type') === 'other' ? 'selected' : '' }}>其他</option>
+            </select>
+            <!-- 狀態 -->
+            <select name="status" class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                <option value="">全部狀態</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
+                <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
+                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
+                <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
+            </select>
+            <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-5 rounded-lg whitespace-nowrap text-sm">搜尋</button>
             @if(request()->hasAny(['smart_search', 'type', 'status', 'fiscal_year']))
-                <a href="{{ route('tenant.payables.index') }}" 
-                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap">
-                    清除
-                </a>
+                <a href="{{ route('tenant.payables.index') }}" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-white font-medium py-2 px-4 rounded-lg whitespace-nowrap text-sm">清除</a>
             @endif
         </div>
-
-        <!-- 進階篩選 -->
-        <details class="group">
-            <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary">
-                <span class="inline-block group-open:rotate-90 transition-transform">▶</span>
-                進階篩選
-            </summary>
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                <!-- 年度選擇器 -->
-                <div>
-                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">帳務年度</label>
-                    <select name="fiscal_year" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                        <option value="">全部年度</option>
-                        @foreach($availableYears as $year)
-                            <option value="{{ $year }}" {{ request('fiscal_year', date('Y')) == $year ? 'selected' : '' }}>
-                                {{ $year }} 年
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- 類型篩選 -->
-                <div>
-                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">付款類型</label>
-                    <select name="type" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                        <option value="">全部類型</option>
-                        <option value="purchase" {{ request('type') === 'purchase' ? 'selected' : '' }}>採購</option>
-                        <option value="expense" {{ request('type') === 'expense' ? 'selected' : '' }}>費用</option>
-                        <option value="service" {{ request('type') === 'service' ? 'selected' : '' }}>服務</option>
-                        <option value="other" {{ request('type') === 'other' ? 'selected' : '' }}>其他</option>
-                    </select>
-                </div>
-
-                <!-- 狀態篩選 -->
-                <div>
-                    <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">付款狀態</label>
-                    <select name="status" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                        <option value="">全部狀態</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>待付款</option>
-                        <option value="partial" {{ request('status') === 'partial' ? 'selected' : '' }}>部分付款</option>
-                        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>已付款</option>
-                        <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>逾期</option>
-                    </select>
-                </div>
-            </div>
-        </details>
     </form>
 </div>
 
 <!-- 資料表格 -->
 
 {{-- ===== 應付總表 ===== --}}
+<!-- 批次付款工具列 -->
+<div id="batch-bar" class="hidden mb-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg px-4 py-2 flex items-center gap-3">
+    <span class="text-sm font-medium text-green-800 dark:text-green-200">已選 <span id="batch-count">0</span> 筆</span>
+    <button onclick="openBatchPayModal()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-1.5 rounded-lg">批次確認支付</button>
+    <button onclick="clearBatchSelection()" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400">取消選取</button>
+</div>
+
 <div id="view-summary" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
+                <th class="px-3 py-2 text-center" style="width:36px"><input type="checkbox" id="select-all" class="rounded border-gray-300" onchange="toggleAllPayables(this)"></th>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:40px">No.</th>
                 <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:70px">操作</th>
                 <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">日期</th>
@@ -175,6 +153,7 @@
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
+                <td></td>
                 <td colspan="8" class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
                     總計（{{ $payables->total() }}筆）：
                 </td>
@@ -188,6 +167,14 @@
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($payables as $index => $payable)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <td class="px-3 py-2 text-center">
+                        @if(!in_array($payable->status, ['paid']))
+                        <input type="checkbox" class="payable-checkbox rounded border-gray-300"
+                               value="{{ $payable->id }}"
+                               data-amount="{{ $payable->remaining_amount }}"
+                               onchange="updateBatchBar()">
+                        @endif
+                    </td>
                     <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-500 dark:text-gray-400">
                         {{ ($payables->currentPage() - 1) * $payables->perPage() + $index + 1 }}
                     </td>
@@ -263,7 +250,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="15" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400 text-sm">目前沒有應付帳款資料</td>
+                    <td colspan="16" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400 text-sm">目前沒有應付帳款資料</td>
                 </tr>
             @endforelse
         </tbody>
@@ -594,5 +581,101 @@ document.addEventListener('DOMContentLoaded', function() {
     const saved = localStorage.getItem('payableViewMode') || 'summary';
     applyPayableView(saved);
 });
+
+// ===== Batch payment =====
+function updateBatchBar() {
+    const checked = document.querySelectorAll('.payable-checkbox:checked');
+    const bar = document.getElementById('batch-bar');
+    document.getElementById('batch-count').textContent = checked.length;
+    bar.classList.toggle('hidden', checked.length === 0);
+}
+
+function toggleAllPayables(master) {
+    document.querySelectorAll('.payable-checkbox').forEach(cb => cb.checked = master.checked);
+    updateBatchBar();
+}
+
+function clearBatchSelection() {
+    document.querySelectorAll('.payable-checkbox').forEach(cb => cb.checked = false);
+    const all = document.getElementById('select-all');
+    if (all) all.checked = false;
+    updateBatchBar();
+}
+
+function openBatchPayModal() {
+    const ids = Array.from(document.querySelectorAll('.payable-checkbox:checked')).map(cb => cb.value);
+    if (!ids.length) return;
+    document.getElementById('bp-count').textContent = ids.length;
+    document.getElementById('batchPayModal').classList.remove('hidden');
+}
+
+function closeBatchPayModal() {
+    document.getElementById('batchPayModal').classList.add('hidden');
+}
+
+document.getElementById('batchPayModal').addEventListener('click', function(e) {
+    if (e.target === this) closeBatchPayModal();
+});
+
+document.getElementById('batchPayForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const ids = Array.from(document.querySelectorAll('.payable-checkbox:checked')).map(cb => cb.value);
+    const date = document.getElementById('bp_date').value;
+    const method = document.getElementById('bp_method').value;
+    const note = document.getElementById('bp_note').value;
+
+    fetch('{{ route("tenant.payables.batch-pay") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ ids, payment_date: date, payment_method: method, note })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            closeBatchPayModal();
+            clearBatchSelection();
+            location.reload();
+        } else {
+            alert(data.message || '操作失敗');
+        }
+    });
+});
 </script>
+
+<!-- 批次支付 Modal -->
+<div id="batchPayModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-24 px-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-[420px] max-w-full p-6 space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white">批次確認支付</h3>
+            <button onclick="closeBatchPayModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">已選 <strong id="bp-count" class="text-gray-800 dark:text-gray-200">0</strong> 筆，支付全額剩餘應付金額</p>
+        <form id="batchPayForm" class="space-y-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">支付日期 <span class="text-red-500">*</span></label>
+                <input type="date" id="bp_date" value="{{ date('Y-m-d') }}" required
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">付款方式</label>
+                <select id="bp_method" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇</option>
+                    @foreach($paymentMethods as $m)
+                        <option value="{{ $m->name }}">{{ $m->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">備註</label>
+                <input type="text" id="bp_note" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeBatchPayModal()" class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-lg">取消</button>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg">確認批次支付</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection

@@ -123,6 +123,7 @@ Route::middleware([
         Route::post('receivables/{receivable}/reset-payments', [\App\Http\Controllers\Tenant\ReceivableController::class, 'resetPayments'])->name('tenant.receivables.reset-payments');
 
         // 應付帳款管理（簡化路由）
+        Route::post('payables/batch-pay', [\App\Http\Controllers\Tenant\PayableController::class, 'batchPay'])->name('tenant.payables.batch-pay');
         Route::get('payables', [\App\Http\Controllers\Tenant\PayableController::class, 'index'])->name('tenant.payables.index');
         Route::get('payables/export', [\App\Http\Controllers\Tenant\PayableController::class, 'export'])->name('tenant.payables.export');
         Route::get('payables/create', [\App\Http\Controllers\Tenant\PayableController::class, 'create'])->name('tenant.payables.create');

@@ -298,68 +298,6 @@
                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('note', $company->note) }}</textarea>
         </div>
 
-        <!-- Logo -->
-        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div class="flex items-start justify-between gap-4">
-                <div class="w-40 flex-shrink-0">
-                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Company logo</p>
-                </div>
-                <div class="flex-1">
-                    <input type="hidden" name="_delete_logo" id="deleteLogo" value="0">
-
-                    {{-- 現有 Logo 預覽 --}}
-                    <div id="logoCurrentWrap" class="{{ $company->logo_path ? '' : 'hidden' }}">
-                        <img src="{{ $company->logo_path ? '/storage/'.$company->logo_path : '' }}"
-                             alt="Logo" id="logoPreview"
-                             class="h-12 mb-2 rounded">
-                        <button type="button" id="btnDeleteLogo"
-                                class="text-xs text-red-500 hover:text-red-700 mb-2">
-                            刪除
-                        </button>
-                    </div>
-
-                    {{-- 無圖片提示（無 logo 時顯示）--}}
-                    <p id="logoNoneText" class="{{ $company->logo_path ? 'hidden' : 'text-xs text-gray-400 mb-2' }}">無圖片</p>
-
-                    {{-- 上傳按鈕 --}}
-                    <label class="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-sm text-gray-500 dark:text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                        </svg>
-                        <span id="logoFileName">upload image</span>
-                        <input type="file" name="logo" id="logoInput" accept="image/*" class="hidden"
-                               onchange="handleLogoChange(this)">
-                    </label>
-                </div>
-            </div>
-        </div>
-        <script>
-        function handleLogoChange(input) {
-            const file = input.files[0];
-            document.getElementById('logoFileName').textContent = file ? file.name : 'upload image';
-            if (!file) return;
-            // 預覽新圖片
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                const img = document.getElementById('logoPreview');
-                img.src = ev.target.result;
-                document.getElementById('logoCurrentWrap').classList.remove('hidden');
-                document.getElementById('logoNoneText').classList.add('hidden');
-                document.getElementById('deleteLogo').value = '0';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        document.getElementById('btnDeleteLogo')?.addEventListener('click', function() {
-            document.getElementById('deleteLogo').value = '1';
-            document.getElementById('logoCurrentWrap').classList.add('hidden');
-            document.getElementById('logoNoneText').classList.remove('hidden');
-            document.getElementById('logoNoneText').className = 'text-xs text-gray-400 mb-2';
-            document.getElementById('logoInput').value = '';
-            document.getElementById('logoFileName').textContent = 'upload image';
-        });
-        </script>
-
         <div class="mt-6 flex justify-end space-x-3">
             <a href="{{ route('tenant.companies.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 font-bold py-2 px-4 rounded">
                 取消
