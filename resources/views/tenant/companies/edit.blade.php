@@ -291,6 +291,33 @@
         }
         </script>
 
+        <!-- Company Logo -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-start justify-between gap-4">
+                <div class="w-40 flex-shrink-0">
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Company logo</p>
+                </div>
+                <div class="flex-1">
+                    @if($company->logo_path)
+                    <div id="logoPreview" class="mb-2 flex items-center gap-3">
+                        <img src="/storage/{{ $company->logo_path }}" alt="Logo" class="h-12 rounded">
+                        <button type="button" onclick="deleteLogo()"
+                            class="text-xs text-red-500 hover:text-red-700 border border-red-300 rounded px-2 py-1">刪除</button>
+                    </div>
+                    @endif
+                    <input type="hidden" name="_delete_logo" id="_delete_logo" value="0">
+                    <label class="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-sm text-gray-500 dark:text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                        <span id="logoFileName">upload image</span>
+                        <input type="file" name="logo" accept="image/*" class="hidden"
+                            onchange="document.getElementById('logoFileName').textContent=this.files[0]?.name||'upload image'">
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <!-- 備註 -->
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">備註</label>
@@ -340,6 +367,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function deleteLogo() {
+    document.getElementById('_delete_logo').value = '1';
+    const preview = document.getElementById('logoPreview');
+    if (preview) preview.style.display = 'none';
+}
 </script>
 @endpush
 @endsection
