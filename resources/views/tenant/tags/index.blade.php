@@ -29,6 +29,10 @@
                 {{ $label }}
             </a>
         @endforeach
+        <a href="{{ route('tenant.expense-categories.index') }}" 
+           class="px-4 py-2 font-medium text-gray-600 dark:text-gray-400 hover:text-primary">
+            支出項目
+        </a>
     </div>
 </div>
 
