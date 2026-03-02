@@ -1,6 +1,6 @@
 @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-2">
-        <ul class="list-disc list-inside">
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <ul class="list-disc list-inside text-sm">
             @foreach($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
@@ -8,310 +8,271 @@
     </div>
 @endif
 
-<!-- 表單 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
-    <form action="{{ isset($payable) ? route('tenant.payables.update', $payable) : route('tenant.payables.store') }}" method="POST" class="p-6">
+    <form action="{{ isset($payable) ? route('tenant.payables.update', $payable) : route('tenant.payables.store') }}" method="POST" class="p-6 space-y-4">
         @csrf
         @if(isset($payable))
             @method('PUT')
         @endif
-        
-        <!-- 付款單號（隱藏，自動生成） -->
+
         <input type="hidden" name="payment_no" value="{{ old('payment_no', isset($payable) ? $payable->payment_no : $nextCode ?? '') }}">
-        
-        <!-- 類型（隱藏，預設為 expense） -->
         <input type="hidden" name="type" value="{{ old('type', isset($payable) ? $payable->type : 'expense') }}">
+        <input type="hidden" name="responsible_user_id" id="responsible_user_id"
+               value="{{ old('responsible_user_id', isset($payable) ? $payable->responsible_user_id : '') }}">
 
-<!-- 專案資訊區塊 -->
-        <div class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">專案</h3>
-            <div class="space-y-2">
-                <!-- 客戶 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">客戶</label>
-                    <select name="company_id" id="company_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 select2-company">
-                        <option value="">請選擇客戶</option>
-                        @foreach($companies as $company)
-                            <option value="{{ $company->id }}" data-tax-id="{{ $company->tax_id ?? '' }}" {{ old('company_id', isset($payable) ? $payable->company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->short_name ?: $company->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- 專案 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">專案</label>
-                    <select name="project_id" id="project_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 select2-project">
-                        <option value="">請選擇專案</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" data-company-id="{{ $project->company_id }}" data-manager-id="{{ $project->responsible_user_id }}" {{ old('project_id', isset($payable) ? $payable->project_id : '') == $project->id ? 'selected' : '' }}>{{ $project->code }} - {{ $project->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <!-- 負責人（隱藏，自動從專案帶入） -->
-                <input type="hidden" name="responsible_user_id" id="responsible_user_id" 
-                       value="{{ old('responsible_user_id', isset($payable) ? $payable->responsible_user_id : '') }}">
+        {{-- 第一行：客戶 + 專案 --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">客戶</label>
+                <select name="company_id" id="company_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇客戶</option>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}"
+                                {{ old('company_id', isset($payable) ? $payable->company_id : '') == $company->id ? 'selected' : '' }}>
+                            {{ $company->short_name ?: $company->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">專案</label>
+                <select name="project_id" id="project_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇專案</option>
+                    @foreach($projects as $project)
+                        <option value="{{ $project->id }}"
+                                data-company-id="{{ $project->company_id }}"
+                                data-manager-id="{{ $project->responsible_user_id }}"
+                                {{ old('project_id', isset($payable) ? $payable->project_id : '') == $project->id ? 'selected' : '' }}>
+                            {{ $project->code }} - {{ $project->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
-        <!-- 給付對象區塊 -->
-        <div class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">給付對象</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <!-- 對象類型 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <span class="text-red-500">*</span> 對象
-                    </label>
-                    <select name="payee_type" id="payee_type" required
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="">請選擇</option>
-                        <option value="member" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'member' ? 'selected' : '' }}>成員</option>
-                        <option value="vendor" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'vendor' ? 'selected' : '' }}>外包</option>
-                        <option value="expense" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'expense' ? 'selected' : '' }}>採購</option>
-                    </select>
-                </div>
+        <hr class="border-gray-200 dark:border-gray-700">
 
-                <!-- 成員選擇（payee_type = member 時顯示） -->
-                <div id="member_field" style="display: none;">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">成員</label>
-                    <select name="payee_user_id" id="payee_user_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="">請選擇成員</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('payee_user_id', isset($payable) ? $payable->payee_user_id : '') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- 廠商選擇（payee_type = vendor 時顯示） -->
-                <div id="vendor_field" style="display: none;">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">廠商</label>
-                    <select name="payee_company_id" id="payee_company_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="">請選擇廠商</option>
-                        @foreach($companies->where('is_outsource', true) as $company)
-                            <option value="{{ $company->id }}" {{ old('payee_company_id', isset($payable) ? $payable->payee_company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+        {{-- 第二行：對象類型 + 成員/廠商 --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <span class="text-red-500">*</span> 給付對象
+                </label>
+                <select name="payee_type" id="payee_type" required
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇</option>
+                    <option value="member" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'member' ? 'selected' : '' }}>成員</option>
+                    <option value="vendor" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'vendor' ? 'selected' : '' }}>外包</option>
+                    <option value="expense" {{ old('payee_type', isset($payable) ? $payable->payee_type : '') == 'expense' ? 'selected' : '' }}>採購</option>
+                </select>
             </div>
 
-            <!-- 採購欄位（payee_type = expense 時顯示） -->
-            <div id="expense_company_fields" style="display: none;" class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">公司名稱</label>
-                    <input type="text" name="expense_company_name" id="expense_company_name"
-                           value="{{ old('expense_company_name', isset($payable) ? $payable->expense_company_name : '') }}"
-                           placeholder="採購對象公司名稱"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">統一編號</label>
-                    <input type="text" name="expense_tax_id" id="expense_tax_id"
-                           value="{{ old('expense_tax_id', isset($payable) ? $payable->expense_tax_id : '') }}"
-                           placeholder="統編（選填）"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        <input type="checkbox" id="has_advance" onchange="toggleAdvanceUser()"
-                               {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') ? 'checked' : '' }}
-                               class="rounded text-primary mr-1">
-                        成員代墊
-                    </label>
-                    <select name="advance_user_id" id="advance_user_id"
-                            style="{{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') ? '' : 'display:none' }}"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
-                        <option value="">請選擇代墊成員</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') == $user->id ? 'selected' : '' }}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- 成員 --}}
+            <div id="member_field" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">成員</label>
+                <select name="payee_user_id" id="payee_user_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇成員</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ old('payee_user_id', isset($payable) ? $payable->payee_user_id : '') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- 廠商 --}}
+            <div id="vendor_field" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">廠商</label>
+                <select name="payee_company_id" id="payee_company_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇廠商</option>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}" {{ old('payee_company_id', isset($payable) ? $payable->payee_company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->short_name ?: $company->name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
-        <!-- 支出資訊區塊（給付對象為外製或已支出時顯示） -->
-        <div id="expense_info_section" class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">支出資訊</h3>
-            <div class="space-y-2">
-                <!-- 支出項目 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <span class="text-red-500">*</span> 支出項目
-                    </label>
-                    <select name="expense_category_id" id="expense_category_id"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="">請選擇支出項目</option>
-                        @foreach($expenseCategories as $category)
-                            @if($category->parent_id === null)
-                                <optgroup label="{{ $category->name }}">
-                                    @foreach($expenseCategories->where('parent_id', $category->id) as $subCategory)
-                                        <option value="{{ $subCategory->id }}" 
-                                                {{ old('expense_category_id', isset($payable) ? $payable->expense_category_id : '') == $subCategory->id ? 'selected' : '' }}>
-                                            {{ $subCategory->name }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- 內容說明 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <span class="text-red-500">*</span> 內容說明
-                    </label>
-                    <textarea name="content" id="expense_content" rows="2"
-                              class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">{{ old('content', isset($payable) ? $payable->content : '') }}</textarea>
-                </div>
-
-                <!-- 金額 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <span class="text-red-500">*</span> 金額
-                    </label>
-                    <input type="number" name="amount_before_tax" id="amount_before_tax" 
-                           value="{{ old('amount_before_tax', isset($payable) ? $payable->amount_before_tax : 0) }}" 
-                           step="any" min="0" required
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                </div>
-
-                <!-- 稅款設定 -->
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅款</label>
-                        <select name="tax_setting_id" id="tax_setting_id"
-                                class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                            <option value="" data-rate="0">無</option>
-                            @foreach($taxSettings as $tax)
-                                <option value="{{ $tax->id }}" 
-                                        data-rate="{{ $tax->rate }}"
-                                        {{ old('tax_setting_id', isset($payable) ? $payable->tax_setting_id : '') == $tax->id ? 'selected' : '' }}>
-                                    {{ $tax->name }} ({{ $tax->rate }}%)
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">稅額計算</label>
-                        <div class="flex gap-2 pt-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="tax_inclusive" id="tax_inclusive_0" value="0" 
-                                       {{ old('tax_inclusive', isset($payable) ? $payable->tax_inclusive : 0) == 0 ? 'checked' : '' }}
-                                       class="mr-2">
-                                <span>外加</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="tax_inclusive" id="tax_inclusive_1" value="1"
-                                       {{ old('tax_inclusive', isset($payable) ? $payable->tax_inclusive : 0) == 1 ? 'checked' : '' }}
-                                       class="mr-2">
-                                <span>內含</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 總計 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">總計</label>
-                    <input type="number" name="amount" id="amount" 
-                           value="{{ old('amount', isset($payable) ? $payable->amount : 0) }}" 
-                           step="any" min="0" readonly
-                           class="w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-4 py-2 font-bold text-lg">
-                    <input type="hidden" name="tax_amount" id="tax_amount" value="0">
-                </div>
-
-                <!-- 備註 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">備註</label>
-                    <textarea name="note" rows="2"
-                              class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">{{ old('note', isset($payable) ? $payable->note : '') }}</textarea>
-                </div>
+        {{-- 採購欄位 --}}
+        <div id="expense_company_fields" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">公司名稱</label>
+                <input type="text" name="expense_company_name" id="expense_company_name"
+                       value="{{ old('expense_company_name', isset($payable) ? $payable->expense_company_name : '') }}"
+                       placeholder="採購對象名稱"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">統一編號</label>
+                <input type="text" name="expense_tax_id" id="expense_tax_id"
+                       value="{{ old('expense_tax_id', isset($payable) ? $payable->expense_tax_id : '') }}"
+                       placeholder="統編（選填）"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 cursor-pointer">
+                    <input type="checkbox" id="has_advance" class="rounded text-primary"
+                           onchange="toggleAdvanceUser()"
+                           {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') ? 'checked' : '' }}>
+                    成員代墊
+                </label>
+                <select name="advance_user_id" id="advance_user_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') ? '' : 'hidden' }}">
+                    <option value="">請選擇代墊成員</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ old('advance_user_id', isset($payable) ? $payable->advance_user_id : '') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
-        <!-- 支出明細區塊 -->
-        <div class="mb-3">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">支出明細</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                <!-- 付款日期 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">付款日期</label>
-                    <input type="date" name="payment_date" id="payment_date"
-                           value="{{ old('payment_date', isset($payable) ? $payable->payment_date : now()->format('Y-m-d')) }}"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                </div>
+        <hr class="border-gray-200 dark:border-gray-700">
 
-                <!-- 帳務年度 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">帳務年度</label>
-                    <input type="number" name="fiscal_year" id="fiscal_year"
-                           value="{{ old('fiscal_year', isset($payable) ? $payable->fiscal_year : date('Y')) }}"
-                           min="2000" max="2100"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"
-                           placeholder="YYYY">
-                    <p class="text-xs text-gray-500 dark:text-gray-400">可手動調整年度</p>
-                </div>
-
-                <!-- 發票號碼 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">發票號碼</label>
-                    <input type="text" name="invoice_no"
-                           value="{{ old('invoice_no', isset($payable) ? $payable->invoice_no : '') }}"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2"
-                           placeholder="例如：AB12345678">
-                </div>
+        {{-- 支出項目 + 內容 --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">支出項目</label>
+                <select name="expense_category_id" id="expense_category_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇支出項目</option>
+                    @foreach($expenseCategories as $category)
+                        @if($category->parent_id === null)
+                            <optgroup label="{{ $category->name }}">
+                                @foreach($expenseCategories->where('parent_id', $category->id) as $sub)
+                                    <option value="{{ $sub->id }}" {{ old('expense_category_id', isset($payable) ? $payable->expense_category_id : '') == $sub->id ? 'selected' : '' }}>{{ $sub->name }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                    @endforeach
+                </select>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
-                <!-- 發票日期 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">發票日期</label>
-                    <input type="date" name="invoice_date"
-                           value="{{ old('invoice_date', isset($payable) ? ($payable->invoice_date ? $payable->invoice_date->format('Y-m-d') : '') : '') }}"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                </div>
-
-                <!-- 預計付款日 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">預計付款日</label>
-                    <input type="date" name="due_date"
-                           value="{{ old('due_date', isset($payable) ? $payable->due_date : '') }}"
-                           class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                </div>
-
-                <!-- 付款方式 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">付款方式</label>
-                    <select name="payment_method" id="payment_method"
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2">
-                        <option value="">請選擇付款方式</option>
-                        @foreach($paymentMethods as $method)
-                            <option value="{{ $method->name }}" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == $method->name ? 'selected' : '' }}>
-                                {{ $method->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <span class="text-red-500">*</span> 支付內容
+                </label>
+                <input type="text" name="content"
+                       value="{{ old('content', isset($payable) ? $payable->content : '') }}"
+                       required placeholder="輸入支付內容說明"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
             </div>
         </div>
 
-        <!-- 按鈕 -->
-        <div class="flex gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <button type="submit"
-                    class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
+        {{-- 金額 + 稅款 + 計算方式 + 總計 --}}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <span class="text-red-500">*</span> 未稅金額
+                </label>
+                <input type="number" name="amount_before_tax" id="amount_before_tax"
+                       value="{{ old('amount_before_tax', isset($payable) ? $payable->amount_before_tax : 0) }}"
+                       step="any" min="0" required
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">稅款</label>
+                <select name="tax_setting_id" id="tax_setting_id"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="" data-rate="0">無</option>
+                    @foreach($taxSettings as $tax)
+                        <option value="{{ $tax->id }}" data-rate="{{ $tax->rate }}"
+                                {{ old('tax_setting_id', isset($payable) ? $payable->tax_setting_id : '') == $tax->id ? 'selected' : '' }}>
+                            {{ $tax->name }} ({{ $tax->rate }}%)
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">稅額計算</label>
+                <div class="flex gap-4 py-2">
+                    <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+                        <input type="radio" name="tax_inclusive" value="0" class="text-primary"
+                               {{ old('tax_inclusive', isset($payable) ? $payable->tax_inclusive : 0) == 0 ? 'checked' : '' }}>
+                        外加
+                    </label>
+                    <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+                        <input type="radio" name="tax_inclusive" value="1" class="text-primary"
+                               {{ old('tax_inclusive', isset($payable) ? $payable->tax_inclusive : 0) == 1 ? 'checked' : '' }}>
+                        內含
+                    </label>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">應付總計</label>
+                <input type="number" name="amount" id="amount"
+                       value="{{ old('amount', isset($payable) ? $payable->amount : 0) }}"
+                       step="any" min="0" readonly
+                       class="w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-3 py-2 font-semibold text-sm">
+                <input type="hidden" name="tax_amount" id="tax_amount" value="{{ old('tax_amount', isset($payable) ? $payable->tax_amount : 0) }}">
+            </div>
+        </div>
+
+        <hr class="border-gray-200 dark:border-gray-700">
+
+        {{-- 付款方式 + 發票日期 + 發票號碼 --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">付款方式</label>
+                <select name="payment_method" id="payment_method"
+                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+                    <option value="">請選擇</option>
+                    @foreach($paymentMethods as $method)
+                        <option value="{{ $method->name }}" {{ old('payment_method', isset($payable) ? $payable->payment_method : '') == $method->name ? 'selected' : '' }}>{{ $method->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">發票日期</label>
+                <input type="date" name="invoice_date"
+                       value="{{ old('invoice_date', isset($payable) ? ($payable->invoice_date ? $payable->invoice_date->format('Y-m-d') : '') : '') }}"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">發票號碼</label>
+                <input type="text" name="invoice_no"
+                       value="{{ old('invoice_no', isset($payable) ? $payable->invoice_no : '') }}"
+                       placeholder="例如：AB12345678"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+        </div>
+
+        {{-- 預計付款日 + 付款日期 + 帳務年度 --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">預計付款日</label>
+                <input type="date" name="due_date"
+                       value="{{ old('due_date', isset($payable) ? $payable->due_date : '') }}"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">付款日期</label>
+                <input type="date" name="payment_date" id="payment_date"
+                       value="{{ old('payment_date', isset($payable) ? $payable->payment_date : now()->format('Y-m-d')) }}"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">帳務年度</label>
+                <input type="number" name="fiscal_year" id="fiscal_year"
+                       value="{{ old('fiscal_year', isset($payable) ? $payable->fiscal_year : date('Y')) }}"
+                       min="2000" max="2100" placeholder="YYYY"
+                       class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">
+            </div>
+        </div>
+
+        {{-- 備註 --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">備註</label>
+            <textarea name="note" rows="2"
+                      class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm">{{ old('note', isset($payable) ? $payable->note : '') }}</textarea>
+        </div>
+
+        {{-- 按鈕 --}}
+        <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button type="submit" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg">
                 {{ isset($payable) ? '更新' : '新增' }}
             </button>
             <a href="{{ route('tenant.payables.index') }}"
-               class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
+               class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium py-2 px-6 rounded-lg">
                 取消
             </a>
         </div>
@@ -320,222 +281,89 @@
 
 @push('scripts')
 <script>
-// 客戶變更時篩選專案
-document.getElementById('company_id').addEventListener('change', function() {
-    const companyId = this.value;
-    const projectSelect = document.getElementById('project_id');
-    const projectOptions = projectSelect.querySelectorAll('option');
-    
-    projectOptions.forEach(option => {
-        if (option.value === '') {
-            option.style.display = 'block';
-            return;
-        }
-        
-        const optionCompanyId = option.getAttribute('data-company-id');
-        if (!companyId || optionCompanyId === companyId) {
-            option.style.display = 'block';
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Select2 ──────────────────────────────────────────────────────────
+    $('#company_id, #project_id, #payee_user_id, #payee_company_id').select2({ allowClear: true, width: '100%' });
+
+    // ── 給付對象切換 ──────────────────────────────────────────────────────
+    function updatePayeeFields(type) {
+        document.getElementById('member_field').classList.toggle('hidden', type !== 'member');
+        document.getElementById('vendor_field').classList.toggle('hidden', type !== 'vendor');
+        const expFields = document.getElementById('expense_company_fields');
+        if (type === 'expense') {
+            expFields.classList.remove('hidden');
+            expFields.style.display = 'grid';
         } else {
-            option.style.display = 'none';
+            expFields.classList.add('hidden');
+            expFields.style.display = '';
         }
+    }
+
+    document.getElementById('payee_type').addEventListener('change', function () {
+        updatePayeeFields(this.value);
     });
-    
-    projectSelect.value = '';
-    document.getElementById('responsible_user_id').value = '';
-});
 
-// 專案變更時更新負責人
-document.getElementById('project_id').addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const managerId = selectedOption.getAttribute('data-manager-id');
-    
-    if (managerId) {
-        // 從 users 陣列找出對應的負責人名稱
-        const users = @json($users);
-        const manager = users.find(u => u.id == managerId);
-        
-        if (manager) {
-            document.getElementById('manager_name').value = manager.name;
-            document.getElementById('responsible_user_id').value = manager.id;
+    // 初始化
+    updatePayeeFields(document.getElementById('payee_type').value);
+
+    // ── 客戶變更篩選專案 ──────────────────────────────────────────────────
+    $('#company_id').on('change', function () {
+        const companyId = $(this).val();
+        $('#project_id option').each(function () {
+            const opt = $(this);
+            const optCo = opt.attr('data-company-id');
+            opt.prop('disabled', companyId && opt.val() && optCo !== companyId);
+        });
+        $('#project_id').val('').trigger('change.select2');
+        $('#responsible_user_id').val('');
+    });
+
+    // ── 專案變更帶入負責人 ────────────────────────────────────────────────
+    $('#project_id').on('change', function () {
+        const managerId = $(this).find(':selected').attr('data-manager-id');
+        $('#responsible_user_id').val(managerId || '');
+    });
+
+    // ── 稅額計算 ──────────────────────────────────────────────────────────
+    function calculateTax() {
+        const before = parseFloat(document.getElementById('amount_before_tax').value) || 0;
+        const taxSel = document.getElementById('tax_setting_id');
+        const rate = parseFloat(taxSel.options[taxSel.selectedIndex].getAttribute('data-rate')) || 0;
+        const inclusive = document.querySelector('input[name="tax_inclusive"]:checked').value === '1';
+
+        let tax = 0, total = 0;
+        if (inclusive) {
+            total = before;
+            tax   = Math.round(before * rate / (100 + rate) * 100) / 100;
+        } else {
+            tax   = Math.round(before * rate / 100 * 100) / 100;
+            total = before + tax;
         }
-    } else {
-        document.getElementById('manager_name').value = '請先選擇專案';
-        document.getElementById('responsible_user_id').value = '';
+        document.getElementById('tax_amount').value = tax;
+        document.getElementById('amount').value = total;
     }
-});
 
-// 稅額計算
-function calculateTax() {
-    const amountBeforeTax = parseFloat(document.getElementById('amount_before_tax').value) || 0;
-    const taxSelect = document.getElementById('tax_setting_id');
-    const taxRate = parseFloat(taxSelect.options[taxSelect.selectedIndex].getAttribute('data-rate')) || 0;
-    const taxInclusive = document.querySelector('input[name="tax_inclusive"]:checked').value == '1';
-    
-    let taxAmount = 0;
-    let totalAmount = 0;
-    
-    if (taxInclusive) {
-        totalAmount = amountBeforeTax;
-        taxAmount = Math.round(amountBeforeTax * taxRate / (100 + taxRate));
-    } else {
-        taxAmount = Math.round(amountBeforeTax * taxRate / 100);
-        totalAmount = amountBeforeTax + taxAmount;
-    }
-    
-    document.getElementById('tax_amount').value = taxAmount;
-    document.getElementById('amount').value = totalAmount;
-}
+    document.getElementById('amount_before_tax').addEventListener('input', calculateTax);
+    document.getElementById('tax_setting_id').addEventListener('change', calculateTax);
+    document.querySelectorAll('input[name="tax_inclusive"]').forEach(r => r.addEventListener('change', calculateTax));
 
-document.getElementById('amount_before_tax').addEventListener('input', calculateTax);
-document.getElementById('tax_setting_id').addEventListener('change', calculateTax);
-document.querySelectorAll('input[name="tax_inclusive"]').forEach(radio => {
-    radio.addEventListener('change', calculateTax);
-});
-
-// 日期變更時自動更新年度
-document.getElementById('payment_date').addEventListener('change', function() {
-    const dateValue = this.value;
-    if (dateValue) {
-        const year = dateValue.split('-')[0];
-        document.getElementById('fiscal_year').value = year;
-    }
-});
-
-// 編輯模式：不重新計算稅額（保留原有金額）
-// 新增模式：執行計算
-document.addEventListener('DOMContentLoaded', function() {
     @if(!isset($payable))
     calculateTax();
     @endif
-});
 
-// 給付對象類型切換
-document.getElementById('payee_type').addEventListener('change', function() {
-    const payeeType = this.value;
-    const memberField = document.getElementById('member_field');
-    const vendorField = document.getElementById('vendor_field');
-    const expenseCompanyFields = document.getElementById('expense_company_fields');
-    const expenseSection = document.getElementById('expense_info_section');
-    const memberSelect = document.getElementById('payee_user_id');
-    const vendorSelect = document.getElementById('payee_company_id');
-    const expenseCategorySelect = document.getElementById('expense_category_id');
-    const expenseContent = document.getElementById('expense_content');
-    
-    memberField.style.display = 'none';
-    vendorField.style.display = 'none';
-    expenseCompanyFields.style.display = 'none';
-    memberSelect.value = '';
-    vendorSelect.value = '';
-    
-    if (payeeType === 'member') {
-        memberField.style.display = 'block';
-        expenseSection.style.display = 'none';
-        expenseCategorySelect.removeAttribute('required');
-        expenseContent.removeAttribute('required');
-    } else if (payeeType === 'vendor') {
-        vendorField.style.display = 'block';
-        expenseSection.style.display = 'block';
-        expenseCategorySelect.setAttribute('required', 'required');
-        expenseContent.setAttribute('required', 'required');
-    } else if (payeeType === 'expense') {
-        expenseCompanyFields.style.display = 'grid';
-        expenseSection.style.display = 'block';
-        expenseCategorySelect.setAttribute('required', 'required');
-        expenseContent.setAttribute('required', 'required');
-    }
+    // ── 付款日期 → 帳務年度 ───────────────────────────────────────────────
+    document.getElementById('payment_date').addEventListener('change', function () {
+        const y = this.value.split('-')[0];
+        if (y) document.getElementById('fiscal_year').value = y;
+    });
 });
 
 function toggleAdvanceUser() {
+    const sel = document.getElementById('advance_user_id');
     const checked = document.getElementById('has_advance').checked;
-    const select = document.getElementById('advance_user_id');
-    select.style.display = checked ? 'block' : 'none';
-    if (!checked) select.value = '';
+    sel.classList.toggle('hidden', !checked);
+    if (!checked) sel.value = '';
 }
-
-// 頁面載入時根據已選值顯示對應欄位
-document.addEventListener('DOMContentLoaded', function() {
-    const payeeType = document.getElementById('payee_type').value;
-    const expenseSection = document.getElementById('expense_info_section');
-    const expenseCategorySelect = document.getElementById('expense_category_id');
-    const expenseContent = document.getElementById('expense_content');
-    const expenseCompanyFields = document.getElementById('expense_company_fields');
-    
-    if (payeeType === 'member') {
-        document.getElementById('member_field').style.display = 'block';
-        expenseSection.style.display = 'none';
-        expenseCategorySelect.removeAttribute('required');
-        expenseContent.removeAttribute('required');
-    } else if (payeeType === 'vendor') {
-        document.getElementById('vendor_field').style.display = 'block';
-        expenseSection.style.display = 'block';
-    } else if (payeeType === 'expense') {
-        expenseCompanyFields.style.display = 'grid';
-        expenseSection.style.display = 'block';
-    }
-});
-
-// Initialize Select2 for project dropdown
-$(document).ready(function() {
-    $('#company_id').select2({
-        placeholder: '請選擇客戶',
-        allowClear: true,
-        width: '100%'
-    });
-
-    $('#project_id').select2({
-        placeholder: '請選擇專案',
-        allowClear: true,
-        width: '100%'
-    });
-    
-    // Initialize Select2 for vendor dropdown
-    $('#payee_company_id').select2({
-        placeholder: '請選擇廠商',
-        allowClear: true,
-        width: '100%'
-    });
-    
-    // Initialize Select2 for member dropdown
-    $('#payee_user_id').select2({
-        placeholder: '請選擇成員',
-        allowClear: true,
-        width: '100%'
-    });
-    
-    // Re-bind change event after Select2 initialization
-    $('#project_id').on('change', function() {
-        const selectedOption = $(this).find(':selected');
-        const managerId = selectedOption.attr('data-manager-id');
-        
-        if (managerId) {
-            $('#responsible_user_id').val(managerId);
-        } else {
-            $('#responsible_user_id').val('');
-        }
-    });
-    
-    // Update company filter to work with Select2
-    $('#company_id').on('change', function() {
-        const companyId = $(this).val();
-        
-        // Clear selection
-        $('#project_id').val('').trigger('change');
-        $('#responsible_user_id').val('');
-        
-        // Filter options
-        $('#project_id option').each(function() {
-            const optionCompanyId = $(this).attr('data-company-id');
-            if (!$(this).val() || !companyId || optionCompanyId === companyId) {
-                $(this).prop('disabled', false);
-            } else {
-                $(this).prop('disabled', true);
-            }
-        });
-        
-        // Refresh Select2 to reflect disabled options
-        $('#project_id').trigger('change.select2');
-    });
-});
-
 </script>
 @endpush
