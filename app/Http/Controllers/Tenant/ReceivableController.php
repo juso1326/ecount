@@ -283,6 +283,11 @@ class ReceivableController extends Controller
 
         $receivable->update($validated);
 
+        if ($request->input('from_project')) {
+            return redirect()->route('tenant.projects.show', $receivable->project_id)
+                ->with('success', '應收帳款更新成功');
+        }
+
         return redirect()->route('tenant.receivables.index')
             ->with('success', '應收帳款更新成功');
     }

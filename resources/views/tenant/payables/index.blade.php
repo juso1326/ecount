@@ -79,12 +79,6 @@
 </div>
 @endif
 
-@if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded mb-4">
-        {{ session('success') }}
-    </div>
-@endif
-
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
     <form method="GET" action="{{ route('tenant.payables.index') }}" class="space-y-4">
@@ -185,7 +179,7 @@
                     總計（{{ $payables->total() }}筆）：
                 </td>
                 <td class="px-3 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400" colspan="2">
-                    NT$ {{ number_format($totalAmount, 0) }}
+                    NT$ {{ fmt_num($totalAmount) }}
                 </td>
                 <td colspan="4"></td>
             </tr>
@@ -241,7 +235,7 @@
                         @endif
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right font-medium text-red-600 dark:text-red-400">
-                        NT$ {{ number_format($payable->amount, 0) }}
+                        NT$ {{ fmt_num($payable->amount) }}
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-center">
                         @if($payable->status === 'paid')
@@ -302,7 +296,7 @@
                     總計（{{ $payables->total() }}筆）：
                 </td>
                 <td class="px-3 py-2 text-right text-sm font-bold text-red-600 dark:text-red-400" colspan="2" >
-                    NT$ {{ number_format($totalAmount, 0) }}
+                    NT$ {{ fmt_num($totalAmount) }}
                 </td>
                 <td colspan="6"></td>
             </tr>
@@ -356,7 +350,7 @@
                         <div class="truncate max-w-[180px]" title="{{ $payable->content }}">{{ Str::limit($payable->content ?? '-', 30) }}</div>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right font-medium text-red-600 dark:text-red-400">
-                        NT$ {{ number_format($payable->amount, 0) }}
+                        NT$ {{ fmt_num($payable->amount) }}
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                         @date($payable->due_date)

@@ -61,9 +61,7 @@
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary @error('company_id') border-red-500 @enderror">
                     <option value="">請選擇</option>
                     @foreach($companies as $company)
-                        <option value="{{ $company->id }}" {{ old('company_id', $project->company_id ?? '') == $company->id ? 'selected' : '' }}>
-                            {{ $company->name }}
-                        </option>
+                        <option value="{{ $company->id }}" {{ old('company_id', $project->company_id ?? '') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
                     @endforeach
                 </select>
                 @error('company_id')
@@ -93,9 +91,7 @@
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary">
                     <option value="">請選擇</option>
                     @foreach($managers as $manager)
-                        <option value="{{ $manager->id }}" {{ old('manager_id', $project->manager_id ?? auth()->id()) == $manager->id ? 'selected' : '' }}>
-                            {{ $manager->name }}
-                        </option>
+                        <option value="{{ $manager->id }}" {{ old('manager_id', $project->manager_id ?? auth()->id()) == $manager->id ? 'selected' : '' }}>{{ $manager->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -107,9 +103,7 @@
                     class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-primary focus:border-primary">
                     @php $currentStatus = old('status', $project->status ?? $defaultStatus ?? 'in_progress') @endphp
                     @foreach($projectStatuses ?? [] as $ps)
-                        <option value="{{ $ps['value'] }}" {{ $currentStatus === $ps['value'] ? 'selected' : '' }}>
-                            {{ $ps['label'] }}
-                        </option>
+                        <option value="{{ $ps['value'] }}" {{ $currentStatus === $ps['value'] ? 'selected' : '' }}>{{ $ps['label'] }}</option>
                     @endforeach
                 </select>
             </div>
@@ -127,17 +121,12 @@
 </div>
 
 @push('scripts')
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<!-- Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script>
 $(document).ready(function() {
     // 客戶選擇 Select2
     $('#company_id').select2({
         placeholder: '請選擇客戶',
-        allowClear: false,
+        allowClear: true,
         width: '100%'
     });
 

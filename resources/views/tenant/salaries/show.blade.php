@@ -47,25 +47,25 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">基本薪資</div>
         <div class="text-2xl font-bold text-gray-900 dark:text-white">
-            ${{ number_format($salary['base_salary'], 0) }}
+            ${{ fmt_num($salary['base_salary']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">加項</div>
         <div class="text-2xl font-bold text-green-600">
-            +${{ number_format($salary['additions'], 0) }}
+            +${{ fmt_num($salary['additions']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">扣項</div>
         <div class="text-2xl font-bold text-red-600">
-            -${{ number_format($salary['deductions'], 0) }}
+            -${{ fmt_num($salary['deductions']) }}
         </div>
     </div>
     <div class="bg-blue-50 dark:bg-blue-900 shadow-sm rounded-lg border border-blue-200 dark:border-blue-700 p-4">
         <div class="text-sm text-blue-600 dark:text-blue-300">總計</div>
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-300">
-            ${{ number_format($salary['total'], 0) }}
+            ${{ fmt_num($salary['total']) }}
         </div>
     </div>
 </div>
@@ -100,7 +100,7 @@
                     {{ $item->content ?? '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
-                    ${{ number_format($item->amount, 0) }}
+                    ${{ fmt_num($item->amount) }}
                 </td>
                 @if(!$isPaid && !$item->is_salary_paid)
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
@@ -205,7 +205,7 @@
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="text-lg font-semibold {{ $adj->type === 'add' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $adj->type === 'add' ? '+' : '-' }}${{ number_format($adj->amount, 0) }}
+                                {{ $adj->type === 'add' ? '+' : '-' }}${{ fmt_num($adj->amount) }}
                             </div>
                             @if(count($effectiveMonths) > 0)
                             <button onclick="toggleExclusionManager({{ $adj->id }})" 
@@ -298,7 +298,7 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="text-lg font-semibold {{ $adj->type === 'add' ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $adj->type === 'add' ? '+' : '-' }}${{ number_format($adj->amount, 0) }}
+                            {{ $adj->type === 'add' ? '+' : '-' }}${{ fmt_num($adj->amount) }}
                         </div>
                         @if(!$isPaid)
                         <div class="flex gap-2">
@@ -345,7 +345,7 @@
                 <div class="mb-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">應付總額</label>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                        ${{ number_format($salary['total'], 0) }}
+                        ${{ fmt_num($salary['total']) }}
                     </div>
                 </div>
                 

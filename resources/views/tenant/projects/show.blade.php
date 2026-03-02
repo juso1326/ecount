@@ -115,12 +115,12 @@
 
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400">預算金額</label>
-                    <p class="mt-0.5 text-gray-900 dark:text-white">NT$ {{ number_format($project->budget, 0) }}</p>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">NT$ {{ fmt_num($project->budget) }}</p>
                 </div>
 
                 <div>
                     <label class="text-xs font-medium text-gray-500 dark:text-gray-400">實際成本</label>
-                    <p class="mt-0.5 text-gray-900 dark:text-white">NT$ {{ number_format($project->actual_cost, 0) }}</p>
+                    <p class="mt-0.5 text-gray-900 dark:text-white">NT$ {{ fmt_num($project->actual_cost) }}</p>
                 </div>
             </div>
         </div>
@@ -160,7 +160,7 @@
                 
                 <div class="mb-3">
                     <select name="tags[]" id="projectTags" multiple
-                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg">
+                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg select2">
                         @foreach(\App\Models\Tag::ofType('project')->orderBy('name')->get() as $tag)
                             <option value="{{ $tag->id }}" 
                                     {{ $project->tags->contains($tag->id) ? 'selected' : '' }}>
@@ -240,9 +240,9 @@
         <h2 class="text-base font-semibold text-gray-900 dark:text-white shrink-0">應收帳款</h2>
         @if($receivables->count() > 0)
         <div class="flex items-center gap-4 text-sm flex-1">
-            <span class="text-gray-500 dark:text-gray-400">應收總額 <span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalReceivable, 0) }}</span></span>
-            <span class="text-gray-500 dark:text-gray-400">已收 <span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalReceived, 0) }}</span></span>
-            <span class="text-gray-500 dark:text-gray-400">未收 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalRemaining, 0) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">應收總額 <span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ fmt_num($totalReceivable) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">已收 <span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ fmt_num($totalReceived) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">未收 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ fmt_num($totalRemaining) }}</span></span>
         </div>
         @endif
         <button onclick="document.getElementById('addReceivableModal').classList.remove('hidden')"
@@ -272,17 +272,21 @@
                     @php $net = ($receivable->received_amount ?? 0) - ($receivable->withholding_tax ?? 0); @endphp
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                         <td class="px-2 py-2 text-center whitespace-nowrap">
-                            <a href="{{ route('tenant.receivables.edit', $receivable) }}" class="text-blue-500 hover:text-blue-700 dark:text-blue-400">編輯</a>
+                            <button type="button" onclick="openEditReceivableModal({{ $receivable->id }})" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 text-xs">編輯</button>
+                            <form method="POST" action="{{ route('tenant.receivables.destroy', $receivable) }}" class="inline" onsubmit="return confirm('確定刪除此應收帳款？')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-red-400 hover:text-red-600 dark:text-red-400 text-xs ml-1">刪除</button>
+                            </form>
                         </td>
                         <td class="px-3 py-2 text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ format_date($receivable->receipt_date) }}</td>
                         <td class="px-3 py-2 text-gray-700 dark:text-gray-300 max-w-xs truncate">{{ $receivable->content ?: '—' }}</td>
                         <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $receivable->invoice_no ?: '—' }}</td>
-                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">${{ number_format($receivable->amount_before_tax ?? 0, 0) }}</td>
-                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($receivable->amount, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">${{ fmt_num($receivable->amount_before_tax ?? 0) }}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">${{ fmt_num($receivable->amount) }}</td>
                         <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $receivable->paid_date ? format_date($receivable->paid_date) : '—' }}</td>
-                        <td class="px-3 py-2 text-right text-green-600 dark:text-green-400 whitespace-nowrap">${{ number_format($receivable->received_amount ?? 0, 0) }}</td>
-                        <td class="px-3 py-2 text-right text-orange-500 dark:text-orange-400 whitespace-nowrap">${{ number_format($receivable->withholding_tax ?? 0, 0) }}</td>
-                        <td class="px-3 py-2 text-right font-semibold whitespace-nowrap {{ $net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400' }}">${{ number_format($net, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-green-600 dark:text-green-400 whitespace-nowrap">${{ fmt_num($receivable->received_amount ?? 0) }}</td>
+                        <td class="px-3 py-2 text-right text-orange-500 dark:text-orange-400 whitespace-nowrap">${{ fmt_num($receivable->withholding_tax ?? 0) }}</td>
+                        <td class="px-3 py-2 text-right font-semibold whitespace-nowrap {{ $net >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400' }}">${{ fmt_num($net) }}</td>
                         <td class="px-3 py-2 text-center whitespace-nowrap">
                             @if($receivable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">已收</span>
                             @elseif($receivable->status === 'partial') <span class="px-1.5 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-800">部分</span>
@@ -313,9 +317,9 @@
         <h2 class="text-base font-semibold text-gray-900 dark:text-white shrink-0">應付帳款</h2>
         @if($payables->count() > 0)
         <div class="flex items-center gap-4 text-sm flex-1">
-            <span class="text-gray-500 dark:text-gray-400">應付總額 <span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ number_format($totalPayable, 0) }}</span></span>
-            <span class="text-gray-500 dark:text-gray-400">已付 <span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ number_format($totalPaid, 0) }}</span></span>
-            <span class="text-gray-500 dark:text-gray-400">未付 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ number_format($totalUnpaid, 0) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">應付總額 <span class="text-blue-600 dark:text-blue-400 font-semibold">NT$ {{ fmt_num($totalPayable) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">已付 <span class="text-green-600 dark:text-green-400 font-semibold">NT$ {{ fmt_num($totalPaid) }}</span></span>
+            <span class="text-gray-500 dark:text-gray-400">未付 <span class="text-orange-600 dark:text-orange-400 font-semibold">NT$ {{ fmt_num($totalUnpaid) }}</span></span>
         </div>
         @endif
         <button onclick="openAddPayableModal()"
@@ -375,13 +379,13 @@
                         </td>
                         <td class="px-3 py-2 text-gray-700 dark:text-gray-300 whitespace-nowrap">{{ $payeeName }}</td>
                         <td class="px-3 py-2 text-gray-700 dark:text-gray-300 max-w-xs truncate">{{ $payable->content ?: '—' }}</td>
-                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">${{ number_format($payable->amount, 0) }}</td>
+                        <td class="px-3 py-2 text-right font-semibold text-gray-900 dark:text-white whitespace-nowrap">${{ fmt_num($payable->amount) }}</td>
                         <td class="px-3 py-2 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $ratio }}%</td>
                         <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->paid_date ? format_date($payable->paid_date) : '—' }}</td>
                         <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->invoice_date ? format_date($payable->invoice_date) : '—' }}</td>
                         <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $payable->invoice_no ?: '—' }}</td>
-                        <td class="px-3 py-2 text-right text-orange-500 dark:text-orange-400 whitespace-nowrap">${{ number_format($payable->deduction ?? 0, 0) }}</td>
-                        <td class="px-3 py-2 text-right text-green-600 dark:text-green-400 whitespace-nowrap">${{ number_format($payable->paid_amount ?? 0, 0) }}</td>
+                        <td class="px-3 py-2 text-right text-orange-500 dark:text-orange-400 whitespace-nowrap">${{ fmt_num($payable->deduction ?? 0) }}</td>
+                        <td class="px-3 py-2 text-right text-green-600 dark:text-green-400 whitespace-nowrap">${{ fmt_num($payable->paid_amount ?? 0) }}</td>
                         <td class="px-3 py-2 text-center whitespace-nowrap">
                             @if($payable->status === 'paid') <span class="px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800">已付</span>
                             @elseif($payable->status === 'partial') <span class="px-1.5 py-0.5 rounded-full text-xs bg-yellow-100 text-yellow-800">部分</span>
@@ -1098,15 +1102,13 @@ function openAddPayableModal() {
     }, 10);
 }
 
-// 初始化專案標籤 Select2
-$(document).ready(function() {
-
+// 初始化專案標籤 Select2（DOMContentLoaded 時 jQuery 已載入）
+document.addEventListener('DOMContentLoaded', function() {
     $('#projectTags').select2({
         placeholder: '選擇標籤',
         allowClear: true,
         width: '100%',
-        closeOnSelect: false,
-        theme: 'default'
+        closeOnSelect: false
     });
 
     // 新增成員 modal：開啟時再初始化兩個 select2，避免 hidden 元素寬度為 0

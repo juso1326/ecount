@@ -152,10 +152,10 @@ function toggleCustomDate(mode) {
             <!-- 本頁總計 -->
             <tr class="bg-blue-50 dark:bg-blue-900/30 border-t border-gray-200 dark:border-gray-500 font-semibold">
                 <th colspan="7" class="px-3 py-2 text-right text-xs text-gray-600 dark:text-gray-200">搜尋結果總計</th>
-                <th class="px-3 py-2 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">NT$ {{ number_format($totals['total_receivable'] ?? 0, 0) }}</th>
-                <th class="px-3 py-2 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">NT$ {{ number_format($totals['withholding_tax'] ?? 0, 0) }}</th>
-                <th class="px-3 py-2 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">NT$ {{ number_format($totals['total_payable'] ?? 0, 0) }}</th>
-                <th class="px-3 py-2 text-right text-xs whitespace-nowrap {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">NT$ {{ number_format($totals['accumulated_income'] ?? 0, 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs text-gray-900 dark:text-white whitespace-nowrap">NT$ {{ fmt_num($totals['total_receivable'] ?? 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs text-orange-600 dark:text-orange-400 whitespace-nowrap">NT$ {{ fmt_num($totals['withholding_tax'] ?? 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs text-red-600 dark:text-red-400 whitespace-nowrap">NT$ {{ fmt_num($totals['total_payable'] ?? 0) }}</th>
+                <th class="px-3 py-2 text-right text-xs whitespace-nowrap {{ ($totals['accumulated_income'] ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">NT$ {{ fmt_num($totals['accumulated_income'] ?? 0) }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -217,20 +217,20 @@ function toggleCustomDate(mode) {
                 </td>
                 <!-- 總額 (應收總額) -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white font-medium">
-                    ${{ number_format($project->total_receivable ?? 0, 0) }}
+                    ${{ fmt_num($project->total_receivable ?? 0) }}
                 </td>
                 <!-- 扣繳 -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
-                    ${{ number_format($project->withholding_tax ?? 0, 0) }}
+                    ${{ fmt_num($project->withholding_tax ?? 0) }}
                 </td>
                 <!-- 專案支出 (應付總額) -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                    ${{ number_format($project->total_payable ?? 0, 0) }}
+                    ${{ fmt_num($project->total_payable ?? 0) }}
                 </td>
                 <!-- 累計 (已收 - 已付) -->
                 <td class="px-3 py-2 whitespace-nowrap text-sm text-right font-medium 
                     {{ ($project->accumulated_income ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                    ${{ number_format($project->accumulated_income ?? 0, 0) }}
+                    ${{ fmt_num($project->accumulated_income ?? 0) }}
                 </td>
                 <!-- 狀態 -->
                 <td class="px-3 py-2 whitespace-nowrap text-xs text-center">

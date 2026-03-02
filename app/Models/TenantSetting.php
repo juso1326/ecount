@@ -64,7 +64,7 @@ class TenantSetting extends Model
         if ($setting->type === 'json' && is_array($value)) {
             $value = json_encode($value);
         } elseif ($setting->type === 'boolean') {
-            $value = $value ? 'true' : 'false';
+            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
         }
 
         $setting->value = $value;

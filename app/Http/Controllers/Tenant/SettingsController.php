@@ -110,14 +110,16 @@ class SettingsController extends Controller
         $displayLang      = TenantSetting::get('display_language', 'zh_TW');
         $displayName      = TenantSetting::get('display_name', '');
         $decimalPlaces    = TenantSetting::get('decimal_places', 2);
-        $useThousandSep   = TenantSetting::get('use_thousand_separator', true);
+        $useThousandSeparator = filter_var(TenantSetting::get('use_thousand_separator', 'true'), FILTER_VALIDATE_BOOLEAN);
         $quotationPattern = TenantSetting::get('quotation_number_pattern', 'AAAYYYY0000');
 
-        // Build example from pattern
+        // Build example from pattern (replace zeros BEFORE year to avoid matching zeros in year digits)
+        $zeroCount = strlen(preg_replace('/[^0]/', '', $quotationPattern));
+        $paddedNum = str_pad('1', max($zeroCount, 1), '0', STR_PAD_LEFT);
         $quotationExample = preg_replace('/A+/', 'REB', $quotationPattern);
-        $quotationExample = preg_replace('/Y+/', date('Y'), $quotationExample);
-        $quotationExample = preg_replace('/0+/', str_pad('1', strlen(preg_replace('/[^0]/', '', $quotationPattern)), '0', STR_PAD_LEFT), $quotationExample);
-        $useThousandSeparator = (bool)$useThousandSep;
+        $quotationExample = preg_replace('/0+/', $paddedNum, $quotationExample);
+        $quotationExample = preg_replace('/Y{4}/', date('Y'), $quotationExample);
+        $quotationExample = preg_replace('/Y+/', date('y'), $quotationExample);
         $subPlan       = TenantSetting::get('subscription_plan', '個人版');
         $subExpires    = TenantSetting::get('subscription_expires', '');
         $logoPath      = TenantSetting::get('company_logo', '');

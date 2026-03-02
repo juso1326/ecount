@@ -12,27 +12,27 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">應收總額</div>
         <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-            NT$ {{ number_format($arSummary['total'], 0) }}
+            NT$ {{ fmt_num($arSummary['total']) }}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            已收: NT$ {{ number_format($arSummary['received'], 0) }} | 
-            未收: NT$ {{ number_format($arSummary['outstanding'], 0) }}
+            已收: NT$ {{ fmt_num($arSummary['received']) }} | 
+            未收: NT$ {{ fmt_num($arSummary['outstanding']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">應付總額</div>
         <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-            NT$ {{ number_format($apSummary['total'], 0) }}
+            NT$ {{ fmt_num($apSummary['total']) }}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            已付: NT$ {{ number_format($apSummary['paid'], 0) }} | 
-            未付: NT$ {{ number_format($apSummary['outstanding'], 0) }}
+            已付: NT$ {{ fmt_num($apSummary['paid']) }} | 
+            未付: NT$ {{ fmt_num($apSummary['outstanding']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">淨現金流</div>
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            NT$ {{ number_format($arSummary['outstanding'] - $apSummary['outstanding'], 0) }}
+            NT$ {{ fmt_num($arSummary['outstanding'] - $apSummary['outstanding']) }}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
             應收減應付差額
@@ -61,7 +61,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $aging['period'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            NT$ {{ number_format($aging['amount'], 0) }}
+                            NT$ {{ fmt_num($aging['amount']) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-400">
                             {{ $aging['percentage'] }}%
@@ -92,7 +92,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $aging['period'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            NT$ {{ number_format($aging['amount'], 0) }}
+                            NT$ {{ fmt_num($aging['amount']) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-400">
                             {{ $aging['percentage'] }}%
@@ -129,13 +129,13 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $project->code }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $project->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        NT$ {{ number_format($project->total_amount, 0) }}
+                        NT$ {{ fmt_num($project->total_amount) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        NT$ {{ number_format($project->received_amount, 0) }}
+                        NT$ {{ fmt_num($project->received_amount) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                        NT$ {{ number_format($project->outstanding_amount, 0) }}
+                        NT$ {{ fmt_num($project->outstanding_amount) }}
                     </td>
                 </tr>
                 @endforeach

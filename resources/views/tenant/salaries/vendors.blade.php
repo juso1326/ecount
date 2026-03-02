@@ -13,6 +13,12 @@
     </a>
 </div>
 
+@if(session('success'))
+<div class="mb-4 px-4 py-3 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 text-sm">
+    {{ session('success') }}
+</div>
+@endif
+
 <!-- 月份選擇與導航 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
     <div class="flex items-center justify-between">
@@ -48,6 +54,9 @@
             </svg>
         </a>
     </div>
+    @if(!empty($period['label']))
+    <div class="mt-2 text-center text-xs text-gray-400 dark:text-gray-500">{{ $period['label'] }}</div>
+    @endif
 </div>
 
 <!-- 統計摘要 -->
@@ -55,19 +64,19 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">總支付金額</div>
         <div class="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-            ${{ number_format($total, 0) }}
+            ${{ fmt_num($total) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">已撥款</div>
         <div class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
-            ${{ number_format($paid_total, 0) }}
+            ${{ fmt_num($paid_total) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div class="text-sm text-gray-500 dark:text-gray-400">未撥款</div>
         <div class="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
-            ${{ number_format($unpaid_total, 0) }}
+            ${{ fmt_num($unpaid_total) }}
         </div>
     </div>
 </div>
@@ -89,11 +98,11 @@
                 </div>
                 <div class="text-right">
                     <div class="text-lg font-bold text-gray-900 dark:text-white">
-                        ${{ number_format($data['total'], 0) }}
+                        ${{ fmt_num($data['total']) }}
                     </div>
                     <div class="text-sm text-gray-500 dark:text-gray-400">
-                        已付：${{ number_format($data['paid_total'], 0) }} | 
-                        未付：${{ number_format($data['unpaid_total'], 0) }}
+                        已付：${{ fmt_num($data['paid_total']) }} | 
+                        未付：${{ fmt_num($data['unpaid_total']) }}
                     </div>
                 </div>
             </div>
@@ -125,7 +134,7 @@
                             {{ $payment->content }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($payment->amount, 0) }}
+                            ${{ fmt_num($payment->amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
                             @if($payment->is_salary_paid)
@@ -144,9 +153,14 @@
                                     {{ format_date($payment->salary_paid_at) }}
                                 </span>
                             @else
-                                <button class="text-primary hover:text-primary-dark">
-                                    確認撥款
-                                </button>
+                                <form method="POST" action="{{ route('tenant.salaries.vendors.confirm', $payment) }}" onsubmit="return confirm('確認撥款？')">
+                                    @csrf
+                                    <input type="hidden" name="year" value="{{ $year }}">
+                                    <input type="hidden" name="month" value="{{ $month }}">
+                                    <button type="submit" class="text-primary hover:text-primary-dark font-medium">
+                                        確認撥款
+                                    </button>
+                                </form>
                             @endif
                         </td>
                     </tr>

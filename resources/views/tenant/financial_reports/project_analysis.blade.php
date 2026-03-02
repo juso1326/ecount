@@ -61,10 +61,10 @@
                             應收總額
                         </dt>
                         <dd class="text-xl font-bold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['total_receivable'], 2) }}
+                            ${{ fmt_num($summary['total_receivable']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            已收：${{ number_format($summary['total_received'], 2) }}
+                            已收：${{ fmt_num($summary['total_received']) }}
                         </dd>
                     </dl>
                 </div>
@@ -87,10 +87,10 @@
                             應付總額
                         </dt>
                         <dd class="text-xl font-bold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['total_payable'], 2) }}
+                            ${{ fmt_num($summary['total_payable']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            已付：${{ number_format($summary['total_paid'], 2) }}
+                            已付：${{ fmt_num($summary['total_paid']) }}
                         </dd>
                     </dl>
                 </div>
@@ -139,7 +139,7 @@
                             淨利潤
                         </dt>
                         <dd class="text-2xl font-bold {{ $summary['profit'] >= 0 ? 'text-white' : 'text-red-200' }}">
-                            ${{ number_format($summary['profit'], 2) }}
+                            ${{ fmt_num($summary['profit']) }}
                         </dd>
                         <dd class="text-xs text-white/80 mt-1">
                             毛利率：{{ number_format($summary['profit_margin'], 1) }}%
@@ -184,16 +184,16 @@
                         {{ $data['name'] }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        ${{ number_format($data['total_receivable'], 2) }}
+                        ${{ fmt_num($data['total_receivable']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        ${{ number_format($data['total_received'], 2) }}
+                        ${{ fmt_num($data['total_received']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        ${{ number_format($data['total_payable'], 2) }}
+                        ${{ fmt_num($data['total_payable']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                        ${{ number_format($data['total_paid'], 2) }}
+                        ${{ fmt_num($data['total_paid']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                         <span class="font-semibold {{ $data['cost_ratio'] > 80 ? 'text-red-600' : ($data['cost_ratio'] > 60 ? 'text-orange-600' : 'text-green-600') }}">
@@ -201,7 +201,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold {{ $data['profit'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
-                        ${{ number_format($data['profit'], 2) }}
+                        ${{ fmt_num($data['profit']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                         <span class="font-semibold {{ $data['profit_margin'] >= 20 ? 'text-green-600' : ($data['profit_margin'] >= 0 ? 'text-orange-600' : 'text-red-600') }}">

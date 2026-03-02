@@ -30,6 +30,15 @@
                 基本資訊
             </h2>
             
+            @if($company->logo_path)
+            <div class="mb-4">
+                <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Company logo</label>
+                <div class="mt-1">
+                    <img src="/storage/{{ $company->logo_path }}" alt="Logo" class="h-12 rounded">
+                </div>
+            </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <label class="text-sm font-medium text-gray-500 dark:text-gray-400">公司代碼</label>
@@ -207,7 +216,7 @@
                         
                         <div class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
                             <p>代碼：{{ $project->code }}</p>
-                            <p>預算：{{ number_format($project->budget, 0) }}</p>
+                            <p>預算：{{ fmt_num($project->budget) }}</p>
                             @if($project->manager)
                                 <p>負責人：{{ $project->manager->name }}</p>
                             @endif

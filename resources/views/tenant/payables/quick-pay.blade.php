@@ -46,9 +46,9 @@
         </li>
         <li><strong>專案名稱：</strong>{{ $payable->project->name ?? '-' }}</li>
         <li><strong>內容：</strong>{{ $payable->content ?? '-' }}</li>
-        <li><strong>總金額：</strong>NT$ {{ number_format($payable->amount, 0) }}</li>
-        <li><strong>已給付：</strong>NT$ {{ number_format($totalPaid, 0) }}</li>
-        <li><strong>剩餘應付：</strong>NT$ {{ number_format($remainingAmount, 0) }}</li>
+        <li><strong>總金額：</strong>NT$ {{ fmt_num($payable->amount) }}</li>
+        <li><strong>已給付：</strong>NT$ {{ fmt_num($totalPaid) }}</li>
+        <li><strong>剩餘應付：</strong>NT$ {{ fmt_num($remainingAmount) }}</li>
     </ul>
 </div>
 
@@ -78,7 +78,7 @@
                                 @date($payment->payment_date)
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                                NT$ {{ number_format($payment->amount, 0) }}
+                                NT$ {{ fmt_num($payment->amount) }}
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                 {{ $payment->payment_method ?? '-' }}
@@ -131,7 +131,7 @@
                     剩餘應付
                 </label>
                 <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg">
-                    NT$ {{ number_format($remainingAmount, 0) }}
+                    NT$ {{ fmt_num($remainingAmount) }}
                 </div>
             </div>
             

@@ -66,8 +66,9 @@ class UserController extends Controller
     {
         $supervisors = User::where('is_active', true)->orderBy('name')->get();
         $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
+        $currentRole = '一般員工';
         
-        return view('tenant.users.create', compact('supervisors', 'roles'));
+        return view('tenant.users.create', compact('supervisors', 'roles', 'currentRole'));
     }
 
     /**

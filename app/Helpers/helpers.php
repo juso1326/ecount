@@ -92,6 +92,35 @@ if (!function_exists('format_date')) {
     }
 }
 
+if (!function_exists('fmt_num')) {
+    /**
+     * 格式化數字（使用系統小數點位數及千位分隔符設定）
+     */
+    function fmt_num(float|int|null $value, ?int $decimals = null): string
+    {
+        static $dp = null;
+        static $thousandSep = null;
+        if ($decimals === null) {
+            if ($dp === null) {
+                try {
+                    $dp = (int)\App\Models\TenantSetting::get('decimal_places', 0);
+                } catch (\Exception $e) {
+                    $dp = 0;
+                }
+            }
+            $decimals = $dp;
+        }
+        if ($thousandSep === null) {
+            try {
+                $thousandSep = filter_var(\App\Models\TenantSetting::get('use_thousand_separator', 'true'), FILTER_VALIDATE_BOOLEAN);
+            } catch (\Exception $e) {
+                $thousandSep = true;
+            }
+        }
+        return number_format((float)($value ?? 0), $decimals, '.', $thousandSep ? ',' : '');
+    }
+}
+
 if (!function_exists('format_datetime')) {
     /**
      * 格式化日期時間顯示（使用系統設定格式）

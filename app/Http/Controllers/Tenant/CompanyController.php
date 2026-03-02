@@ -270,6 +270,9 @@ class CompanyController extends Controller
                 }
                 $companyData['logo_path'] = $path;
             }
+        } elseif ($request->input('_delete_logo') == '1' && $company->logo_path) {
+            Storage::disk('public')->delete($company->logo_path);
+            $companyData['logo_path'] = null;
         }
 
         $company->update($companyData);

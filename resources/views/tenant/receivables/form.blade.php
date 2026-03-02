@@ -26,11 +26,7 @@
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent select2-company">
                     <option value="">請選擇客戶</option>
                     @foreach($companies as $company)
-                        <option value="{{ $company->id }}" 
-                                data-tax-id="{{ $company->tax_id ?? '' }}"
-                                {{ old('company_id', isset($receivable) ? $receivable->company_id : '') == $company->id ? 'selected' : '' }}>
-                            {{ $company->name }}
-                        </option>
+                        <option value="{{ $company->id }}" data-tax-id="{{ $company->tax_id ?? '' }}" {{ old('company_id', isset($receivable) ? $receivable->company_id : '') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -50,12 +46,7 @@
                         class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent select2-project">
                     <option value="">請選擇專案</option>
                     @foreach($projects as $project)
-                        <option value="{{ $project->id }}" 
-                                data-company-id="{{ $project->company_id }}"
-                                data-manager-id="{{ $project->manager_id }}"
-                                {{ old('project_id', isset($receivable) ? $receivable->project_id : '') == $project->id ? 'selected' : '' }}>
-                            {{ $project->code }} - {{ $project->name }}
-                        </option>
+                        <option value="{{ $project->id }}" data-company-id="{{ $project->company_id }}" data-manager-id="{{ $project->manager_id }}" {{ old('project_id', isset($receivable) ? $receivable->project_id : '') == $project->id ? 'selected' : '' }}>{{ $project->code }} - {{ $project->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -74,8 +65,8 @@
                     <span class="text-red-500">*</span> 金額
                 </label>
                 <input type="number" name="amount_before_tax" id="amount_before_tax" 
-                       value="{{ old('amount_before_tax', isset($receivable) ? (int)$receivable->amount_before_tax : 0) }}" 
-                       step="1" min="0" required
+                       value="{{ old('amount_before_tax', isset($receivable) ? $receivable->amount_before_tax : 0) }}" 
+                       step="any" min="0" required
                        class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
             </div>
 
@@ -119,8 +110,8 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">總計</label>
                 <input type="number" name="amount" id="amount" 
-                       value="{{ old('amount', isset($receivable) ? (int)$receivable->amount : 0) }}" 
-                       step="1" min="0" readonly
+                       value="{{ old('amount', isset($receivable) ? $receivable->amount : 0) }}" 
+                       step="any" min="0" readonly
                        class="w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-4 py-2 font-bold text-lg">
                 <input type="hidden" name="tax_amount" id="tax_amount" value="0">
             </div>

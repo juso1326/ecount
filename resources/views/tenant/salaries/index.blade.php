@@ -68,20 +68,20 @@
     </div>
     <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white shadow-lg">
         <div class="text-sm opacity-90">基本薪資</div>
-        <div class="text-3xl font-bold mt-1">${{ number_format(collect($salaries)->sum('base_salary'), 0) }}</div>
+        <div class="text-3xl font-bold mt-1">${{ fmt_num(collect($salaries)->sum('base_salary')) }}</div>
         <div class="text-xs opacity-75 mt-1">元</div>
     </div>
     <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-4 text-white shadow-lg">
         <div class="text-sm opacity-90">加扣項</div>
-        <div class="text-3xl font-bold mt-1">${{ number_format(collect($salaries)->sum('additions') - collect($salaries)->sum('deductions'), 0) }}</div>
+        <div class="text-3xl font-bold mt-1">${{ fmt_num(collect($salaries)->sum('additions') - collect($salaries)->sum('deductions')) }}</div>
         <div class="text-xs opacity-75 mt-1">
-            <span class="text-green-200">+${{ number_format(collect($salaries)->sum('additions'), 0) }}</span> / 
-            <span class="text-red-200">-${{ number_format(collect($salaries)->sum('deductions'), 0) }}</span>
+            <span class="text-green-200">+${{ fmt_num(collect($salaries)->sum('additions')) }}</span> / 
+            <span class="text-red-200">-${{ fmt_num(collect($salaries)->sum('deductions')) }}</span>
         </div>
     </div>
     <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-4 text-white shadow-lg">
         <div class="text-sm opacity-90">薪資總額</div>
-        <div class="text-3xl font-bold mt-1">${{ number_format($total, 0) }}</div>
+        <div class="text-3xl font-bold mt-1">${{ fmt_num($total) }}</div>
         <div class="text-xs opacity-75 mt-1">元</div>
     </div>
 </div>
@@ -116,24 +116,24 @@
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">
-                    <div class="text-sm font-semibold text-gray-900 dark:text-white">${{ number_format($salary['base_salary'], 0) }}</div>
+                    <div class="text-sm font-semibold text-gray-900 dark:text-white">${{ fmt_num($salary['base_salary']) }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">
                     @if($salary['additions'] > 0)
-                        <div class="text-sm font-semibold text-green-600">+${{ number_format($salary['additions'], 0) }}</div>
+                        <div class="text-sm font-semibold text-green-600">+${{ fmt_num($salary['additions']) }}</div>
                     @else
                         <div class="text-sm text-gray-400">-</div>
                     @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">
                     @if($salary['deductions'] > 0)
-                        <div class="text-sm font-semibold text-red-600">-${{ number_format($salary['deductions'], 0) }}</div>
+                        <div class="text-sm font-semibold text-red-600">-${{ fmt_num($salary['deductions']) }}</div>
                     @else
                         <div class="text-sm text-gray-400">-</div>
                     @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right">
-                    <div class="text-base font-bold text-blue-600">${{ number_format($salary['total'], 0) }}</div>
+                    <div class="text-base font-bold text-blue-600">${{ fmt_num($salary['total']) }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
                     @if($salary['items']->where('is_salary_paid', true)->count() > 0)
@@ -186,24 +186,24 @@
                     </div>
                 </td>
                 <td class="px-6 py-4 text-right text-sm font-bold text-gray-900 dark:text-white">
-                    ${{ number_format(collect($salaries)->sum('base_salary'), 0) }}
+                    ${{ fmt_num(collect($salaries)->sum('base_salary')) }}
                 </td>
                 <td class="px-6 py-4 text-right text-sm font-bold text-green-600">
                     @if(collect($salaries)->sum('additions') > 0)
-                        +${{ number_format(collect($salaries)->sum('additions'), 0) }}
+                        +${{ fmt_num(collect($salaries)->sum('additions')) }}
                     @else
                         -
                     @endif
                 </td>
                 <td class="px-6 py-4 text-right text-sm font-bold text-red-600">
                     @if(collect($salaries)->sum('deductions') > 0)
-                        -${{ number_format(collect($salaries)->sum('deductions'), 0) }}
+                        -${{ fmt_num(collect($salaries)->sum('deductions')) }}
                     @else
                         -
                     @endif
                 </td>
                 <td class="px-6 py-4 text-right">
-                    <div class="text-lg font-bold text-blue-600">${{ number_format($total, 0) }}</div>
+                    <div class="text-lg font-bold text-blue-600">${{ fmt_num($total) }}</div>
                 </td>
                 <td colspan="2"></td>
             </tr>

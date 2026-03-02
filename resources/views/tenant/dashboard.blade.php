@@ -107,15 +107,15 @@
                 </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                ${{ number_format($financialStats['total_receivable'], 0) }}
+                ${{ fmt_num($financialStats['total_receivable']) }}
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                已收：${{ number_format($financialStats['total_received'], 0) }}
+                已收：${{ fmt_num($financialStats['total_received']) }}
             </p>
             @if($financialStats['unpaid_receivables'] > 0)
             <a href="{{ route('tenant.reports.ar-ap-analysis') }}" 
                class="text-xs text-yellow-600 dark:text-yellow-400 hover:underline mt-1 block">
-                未收：${{ number_format($financialStats['unpaid_receivables'], 0) }}（{{ $financialStats['unpaid_count'] }} 筆）
+                未收：${{ fmt_num($financialStats['unpaid_receivables']) }}（{{ $financialStats['unpaid_count'] }} 筆）
             </a>
             @endif
         </div>
@@ -129,14 +129,14 @@
                 </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                ${{ number_format($financialStats['total_payable'], 0) }}
+                ${{ fmt_num($financialStats['total_payable']) }}
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                已付：${{ number_format($financialStats['total_paid'], 0) }}
+                已付：${{ fmt_num($financialStats['total_paid']) }}
             </p>
             @if($financialStats['unpaid_payables'] > 0)
             <p class="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                未付：${{ number_format($financialStats['unpaid_payables'], 0) }}
+                未付：${{ fmt_num($financialStats['unpaid_payables']) }}
             </p>
             @endif
         </div>
@@ -150,7 +150,7 @@
                 </svg>
             </div>
             <div class="text-2xl font-bold {{ $financialStats['net_income'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
-                ${{ number_format($financialStats['net_income'], 0) }}
+                ${{ fmt_num($financialStats['net_income']) }}
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
                 毛利率：{{ number_format($financialStats['profit_margin'], 1) }}%
@@ -170,14 +170,14 @@
                 </svg>
             </div>
             <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                ${{ number_format($financialStats['total_paid'], 0) }}
+                ${{ fmt_num($financialStats['total_paid']) }}
             </div>
             <div class="mt-2 space-y-1 text-xs">
                 <p class="text-blue-600 dark:text-blue-400">
-                    員工：${{ number_format($financialStats['employee_salary'], 0) }}
+                    員工：${{ fmt_num($financialStats['employee_salary']) }}
                 </p>
                 <p class="text-purple-600 dark:text-purple-400">
-                    外包：${{ number_format($financialStats['outsource_cost'], 0) }}
+                    外包：${{ fmt_num($financialStats['outsource_cost']) }}
                 </p>
             </div>
             <a href="{{ route('tenant.reports.payroll-labor', ['year' => $fiscalYear]) }}" 
@@ -368,13 +368,13 @@
                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $data['project']->code }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        ${{ number_format($data['total_received'], 0) }}
+                        ${{ fmt_num($data['total_received']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                        ${{ number_format($data['total_paid'], 0) }}
+                        ${{ fmt_num($data['total_paid']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold {{ $data['profit'] >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400' }}">
-                        ${{ number_format($data['profit'], 0) }}
+                        ${{ fmt_num($data['profit']) }}
                     </td>
                 </tr>
                 @endforeach

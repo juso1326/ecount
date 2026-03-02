@@ -39,6 +39,10 @@
 
     {{-- Brand --}}
     <div style="text-align:center; margin-bottom:2rem;">
+        @if($logoPath)
+        <img src="/storage/{{ $logoPath }}" alt="Logo"
+             style="height:52px; width:auto; margin:0 auto .875rem; border-radius:10px; display:block; object-fit:contain;">
+        @else
         <div style="display:inline-flex; align-items:center; justify-content:center;
                     width:52px; height:52px; border-radius:14px;
                     background:linear-gradient(135deg,#2563eb,#1d4ed8);
@@ -48,7 +52,8 @@
                 <polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
         </div>
-        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">ECount 企業管理系統</h1>
+        @endif
+        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">{{ $displayName ?: 'ECount 企業管理系統' }}</h1>
         <p style="font-size:.8125rem; color:#64748b; margin:0;">請登入您的帳號</p>
     </div>
 

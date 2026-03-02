@@ -35,12 +35,6 @@
     </div>
 </div>
 
-@if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded mb-4">
-        {{ session('success') }}
-    </div>
-@endif
-
 <!-- 搜尋與篩選 -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-2">
     <form method="GET" action="{{ route('tenant.receivables.index') }}" class="space-y-4">
@@ -132,14 +126,14 @@
                     總計（{{ $receivables->total() }}筆）：
                 </td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-gray-900 dark:text-gray-100">
-                    NT$ {{ number_format($totalAmount, $decimalPlaces) }}
+                    NT$ {{ fmt_num($totalAmount) }}
                 </td>
                 <td></td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-green-600 dark:text-green-400">
-                    NT$ {{ number_format($totalReceived, $decimalPlaces) }}
+                    NT$ {{ fmt_num($totalReceived) }}
                 </td>
                 <td class="px-4 py-2 text-right text-sm font-bold text-orange-600 dark:text-orange-400">
-                    NT$ {{ number_format($totalWithholding, $decimalPlaces) }}
+                    NT$ {{ fmt_num($totalWithholding) }}
                 </td>
                 <td></td>
             </tr>
@@ -205,15 +199,15 @@
                     </td>
                     <!-- 未稅額 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-gray-100">
-                        NT$ {{ number_format($receivable->amount_before_tax ?? 0, $decimalPlaces) }}
+                        NT$ {{ fmt_num($receivable->amount_before_tax ?? 0) }}
                     </td>
                     <!-- 稅 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-400">
-                        NT$ {{ number_format($receivable->tax_amount ?? 0, $decimalPlaces) }}
+                        NT$ {{ fmt_num($receivable->tax_amount ?? 0) }}
                     </td>
                     <!-- 應收 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-gray-900 dark:text-gray-100 font-medium">
-                        NT$ {{ number_format($receivable->amount, $decimalPlaces) }}
+                        NT$ {{ fmt_num($receivable->amount) }}
                     </td>
                     <!-- 入帳日 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -221,11 +215,11 @@
                     </td>
                     <!-- 實收 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400 font-medium">
-                        NT$ {{ number_format($receivable->received_amount ?? 0, $decimalPlaces) }}
+                        NT$ {{ fmt_num($receivable->received_amount ?? 0) }}
                     </td>
                     <!-- 扣繳 -->
                     <td class="px-3 py-2 whitespace-nowrap text-sm text-right text-orange-600 dark:text-orange-400">
-                        NT$ {{ number_format($receivable->withholding_tax ?? 0, $decimalPlaces) }}
+                        NT$ {{ fmt_num($receivable->withholding_tax ?? 0) }}
                     </td>
                     <!-- 狀態 -->
                     <td class="px-3 py-2 whitespace-nowrap text-center">
@@ -295,7 +289,7 @@
                         收款金額 <span class="text-red-500">*</span>
                     </label>
                     <input type="number" name="amount" id="amount" required
-                           min="0" step="1"
+                           min="0" step="{{ $decimalPlaces > 0 ? '0.' . str_repeat('0', $decimalPlaces - 1) . '1' : '1' }}"
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         未收金額：NT$ <span id="remainingAmount">0</span>
@@ -356,7 +350,7 @@ let _currentReceivableId = null;
 function openQuickReceiveModal(receivableId, remainingAmount, receiptNo, projectName, taxId, companyName, content, totalAmount) {
     _currentReceivableId = receivableId;
     document.getElementById('receivableId').value = receivableId;
-    document.getElementById('amount').value = remainingAmount;
+    document.getElementById('amount').value = Number(remainingAmount).toFixed(window._decimalPlaces);
     document.getElementById('remainingAmount').textContent = fmtNum(remainingAmount);
     document.getElementById('modalReceiptNo').textContent = receiptNo;
 
@@ -446,7 +440,7 @@ function closeQuickReceiveModal() {
 document.getElementById('amount').addEventListener('input', function() {
     const remaining = parseFloat(document.getElementById('remainingAmount').textContent.replace(/,/g, ''));
     const amount = parseFloat(this.value);
-    if (amount > remaining) { this.value = remaining; }
+    if (amount > remaining) { this.value = Number(remaining).toFixed(window._decimalPlaces); }
 });
 
 // 點擊 modal 外部關閉

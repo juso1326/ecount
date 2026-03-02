@@ -61,7 +61,7 @@
                             已付外包成本
                         </dt>
                         <dd class="text-2xl font-bold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['total_paid_outsource'], 2) }}
+                            ${{ fmt_num($summary['total_paid_outsource']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {{ $summary['total_projects'] }} 個專案
@@ -87,7 +87,7 @@
                             已回收金額
                         </dt>
                         <dd class="text-2xl font-bold text-green-600 dark:text-green-400">
-                            ${{ number_format($summary['total_received'], 2) }}
+                            ${{ fmt_num($summary['total_received']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             回收率：{{ number_format($summary['overall_recovery_rate'], 1) }}%
@@ -113,10 +113,10 @@
                             未回收成本
                         </dt>
                         <dd class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                            ${{ number_format($summary['total_cost_not_recovered'], 2) }}
+                            ${{ fmt_num($summary['total_cost_not_recovered']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            未收：${{ number_format($summary['total_unpaid_receivable'], 2) }}
+                            未收：${{ fmt_num($summary['total_unpaid_receivable']) }}
                         </dd>
                     </dl>
                 </div>
@@ -180,13 +180,13 @@
                         <div class="text-gray-500 dark:text-gray-400 text-xs">{{ $data['project']->name }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-purple-600 dark:text-purple-400">
-                        ${{ number_format($data['paid_outsource'], 2) }}
+                        ${{ fmt_num($data['paid_outsource']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        ${{ number_format($data['total_receivable'], 2) }}
+                        ${{ fmt_num($data['total_receivable']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        ${{ number_format($data['total_received'], 2) }}
+                        ${{ fmt_num($data['total_received']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                         <span class="font-semibold {{ $data['recovery_rate'] >= 100 ? 'text-green-600' : ($data['recovery_rate'] >= 50 ? 'text-orange-600' : 'text-red-600') }}">
@@ -194,7 +194,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold {{ $data['cost_not_recovered'] > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-500' }}">
-                        ${{ number_format($data['cost_not_recovered'], 2) }}
+                        ${{ fmt_num($data['cost_not_recovered']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                         @if($data['has_invoice'])
@@ -203,7 +203,7 @@
                             </span>
                             @if($data['unpaid_receivable'] > 0)
                                 <div class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                                    未收：${{ number_format($data['unpaid_receivable'], 2) }}
+                                    未收：${{ fmt_num($data['unpaid_receivable']) }}
                                 </div>
                             @endif
                         @elseif($data['uninvoiced_amount'] > 0)
@@ -211,7 +211,7 @@
                                 未開發票
                             </span>
                             <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                ${{ number_format($data['uninvoiced_amount'], 2) }}
+                                ${{ fmt_num($data['uninvoiced_amount']) }}
                             </div>
                         @else
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300">

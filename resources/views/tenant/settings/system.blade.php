@@ -3,12 +3,6 @@
 @section('page-title', '系統設定')
 
 @section('content')
-@if(session('success'))
-<div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg text-sm">
-    {{ session('success') }}
-</div>
-@endif
-
 @if($errors->any())
 <div class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
     <ul class="list-disc list-inside space-y-0.5">
@@ -249,6 +243,7 @@
                                 placeholder="AAAYYYY0000"
                                 oninput="updateQtnExample()"
                                 class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono">
+                            <p id="qtnError" class="hidden text-xs text-red-500">⚠ 規則必須包含 <code>0</code> 流水號區段（如 0000）</p>
                             <p class="text-xs text-gray-400">
                                 規則：<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">AAA</code>=前綴字母
                                 　<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">YYYY</code>=年份
@@ -353,8 +348,8 @@
         <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3" id="renameTitle">Rename</h3>
         <input type="text" id="renameInput" class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm mb-4">
         <div class="flex justify-end gap-2">
-            <button onclick="closeRename()" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300">取消</button>
-            <button onclick="applyRename()" class="px-3 py-1.5 text-sm bg-primary text-white rounded-lg">確認</button>
+            <button type="button" onclick="closeRename()" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300">取消</button>
+            <button type="button" onclick="applyRename()" class="px-3 py-1.5 text-sm bg-primary text-white rounded-lg">確認</button>
         </div>
     </div>
 </div>
@@ -365,10 +360,24 @@ let activeRenameTarget = null;
 function updateQtnExample() {
     const pattern = document.getElementById('qtnPattern').value || 'AAAYYYY0000';
     const year = new Date().getFullYear();
-    let ex = pattern.replace(/A+/g, 'REB').replace(/Y{4}/g, year).replace(/Y+/g, String(year).slice(-2));
     const zeros = (pattern.match(/0+/) || ['0000'])[0].length;
-    ex = ex.replace(/0+/g, '0'.repeat(zeros - 1) + '1');
+    const padded = '0'.repeat(zeros - 1) + '1';
+    // Replace zeros BEFORE year to avoid matching zeros inside year digits
+    let ex = pattern.replace(/A+/g, 'REB');
+    ex = ex.replace(/0+/g, padded);
+    ex = ex.replace(/Y{4}/g, year).replace(/Y+/g, String(year).slice(-2));
     document.getElementById('qtnExample').textContent = ex;
+
+    const hasZeros = /0+/.test(pattern);
+    const errEl = document.getElementById('qtnError');
+    const inputEl = document.getElementById('qtnPattern');
+    if (!hasZeros) {
+        errEl.classList.remove('hidden');
+        inputEl.classList.add('border-red-500');
+    } else {
+        errEl.classList.add('hidden');
+        inputEl.classList.remove('border-red-500');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -428,6 +437,19 @@ function applyRename() {
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     switchTab(params.get('tab') || 'setup');
+
+    // Block form save if qtn pattern is invalid
+    const generalForm = document.getElementById('panel-general')?.querySelector('form');
+    if (generalForm) {
+        generalForm.addEventListener('submit', function(e) {
+            const pattern = document.getElementById('qtnPattern')?.value || '';
+            if (pattern && !/0+/.test(pattern)) {
+                e.preventDefault();
+                document.getElementById('qtnPattern').focus();
+                document.getElementById('qtnError').classList.remove('hidden');
+            }
+        });
+    }
 });
 </script>
 @endsection

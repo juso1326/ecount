@@ -51,9 +51,9 @@
         <div><span class="text-gray-600 dark:text-gray-400">廠商：</span><span class="font-medium">{{ $payable->company->name ?? '-' }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">負責人：</span><span class="font-medium">{{ $payable->responsibleUser->name ?? '-' }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">內容：</span><span class="font-medium">{{ $payable->content ?? '-' }}</span></div>
-        <div><span class="text-gray-600 dark:text-gray-400">總金額：</span><span class="font-medium text-blue-600 dark:text-blue-400">NT$ {{ number_format($payable->amount, 0) }}</span></div>
-        <div><span class="text-gray-600 dark:text-gray-400">已付款：</span><span class="font-medium text-green-600 dark:text-green-400">NT$ {{ number_format($payable->paid_amount ?? 0, 0) }}</span></div>
-        <div><span class="text-gray-600 dark:text-gray-400">剩餘應付：</span><span class="font-medium text-red-600 dark:text-red-400">NT$ {{ number_format($payable->remaining_amount, 0) }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">總金額：</span><span class="font-medium text-blue-600 dark:text-blue-400">NT$ {{ fmt_num($payable->amount) }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">已付款：</span><span class="font-medium text-green-600 dark:text-green-400">NT$ {{ fmt_num($payable->paid_amount ?? 0) }}</span></div>
+        <div><span class="text-gray-600 dark:text-gray-400">剩餘應付：</span><span class="font-medium text-red-600 dark:text-red-400">NT$ {{ fmt_num($payable->remaining_amount) }}</span></div>
         <div><span class="text-gray-600 dark:text-gray-400">狀態：</span>
             @if($payable->status === 'paid')
                 <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">已付</span>
@@ -91,7 +91,7 @@
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="text-right">
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white">NT$ {{ number_format($payment->amount, 0) }}</div>
+                                <div class="text-sm font-semibold text-gray-900 dark:text-white">NT$ {{ fmt_num($payment->amount) }}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ round($payment->amount / $payable->amount * 100, 1) }}%</div>
                             </div>
                             <form action="{{ route('tenant.payable-payments.destroy', $payment) }}" method="POST">
@@ -136,7 +136,7 @@
                     </label>
                     <input type="number" name="amount" value="{{ $payable->remaining_amount }}" required min="0" step="1"
                            class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2"
-                           placeholder="建議: {{ number_format($payable->remaining_amount, 0) }}">
+                           placeholder="建議: {{ fmt_num($payable->remaining_amount) }}">
                 </div>
                 
                 <div>
@@ -197,12 +197,12 @@
                 金額資訊
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div><span class="text-gray-600 dark:text-gray-400">應付金額：</span><span class="font-medium">NT$ {{ number_format($payable->amount, 0) }}</span></div>
-                <div><span class="text-gray-600 dark:text-gray-400">稅前金額：</span><span class="font-medium">NT$ {{ number_format($payable->amount_before_tax ?? 0, 0) }}</span></div>
+                <div><span class="text-gray-600 dark:text-gray-400">應付金額：</span><span class="font-medium">NT$ {{ fmt_num($payable->amount) }}</span></div>
+                <div><span class="text-gray-600 dark:text-gray-400">稅前金額：</span><span class="font-medium">NT$ {{ fmt_num($payable->amount_before_tax ?? 0) }}</span></div>
                 <div><span class="text-gray-600 dark:text-gray-400">稅率：</span><span class="font-medium">{{ $payable->tax_rate ?? 0 }}%</span></div>
-                <div><span class="text-gray-600 dark:text-gray-400">稅額：</span><span class="font-medium">NT$ {{ number_format($payable->tax_amount ?? 0, 0) }}</span></div>
-                <div><span class="text-gray-600 dark:text-gray-400">扣繳稅額：</span><span class="font-medium">NT$ {{ number_format($payable->withholding_tax ?? 0, 0) }}</span></div>
-                <div><span class="text-gray-600 dark:text-gray-400">實際給付：</span><span class="font-medium text-blue-600 dark:text-blue-400">NT$ {{ number_format($payable->net_amount, 0) }}</span></div>
+                <div><span class="text-gray-600 dark:text-gray-400">稅額：</span><span class="font-medium">NT$ {{ fmt_num($payable->tax_amount ?? 0) }}</span></div>
+                <div><span class="text-gray-600 dark:text-gray-400">扣繳稅額：</span><span class="font-medium">NT$ {{ fmt_num($payable->withholding_tax ?? 0) }}</span></div>
+                <div><span class="text-gray-600 dark:text-gray-400">實際給付：</span><span class="font-medium text-blue-600 dark:text-blue-400">NT$ {{ fmt_num($payable->net_amount) }}</span></div>
             </div>
         </div>
 

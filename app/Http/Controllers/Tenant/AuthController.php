@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Helpers\CaptchaHelper;
 use App\Http\Controllers\Controller;
+use App\Models\TenantSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,9 @@ class AuthController extends Controller
         $lockSeconds = $isLocked ? RateLimiter::availableIn($throttleKey) : 0;
         $attempts    = RateLimiter::attempts($throttleKey);
         $remaining   = max(0, 3 - $attempts);
-        return view('tenant.auth.login', compact('captchaSvg', 'isLocked', 'lockSeconds', 'attempts', 'remaining'));
+        $displayName = TenantSetting::get('display_name', '');
+        $logoPath    = TenantSetting::get('company_logo', '');
+        return view('tenant.auth.login', compact('captchaSvg', 'isLocked', 'lockSeconds', 'attempts', 'remaining', 'displayName', 'logoPath'));
     }
 
     public function refreshCaptcha()

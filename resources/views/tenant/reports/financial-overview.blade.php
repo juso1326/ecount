@@ -25,25 +25,25 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">總收入</div>
         <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-            NT$ {{ number_format($summary['total_revenue'], 0) }}
+            NT$ {{ fmt_num($summary['total_revenue']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">總支出</div>
         <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-            NT$ {{ number_format($summary['total_expense'], 0) }}
+            NT$ {{ fmt_num($summary['total_expense']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">淨利潤</div>
         <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            NT$ {{ number_format($summary['net_profit'], 0) }}
+            NT$ {{ fmt_num($summary['net_profit']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">預計帳回款</div>
         <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            NT$ {{ number_format($summary['expected_revenue'], 0) }}
+            NT$ {{ fmt_num($summary['expected_revenue']) }}
         </div>
     </div>
 </div>
@@ -87,13 +87,13 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $trend['month'] }}月</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        NT$ {{ number_format($trend['revenue'], 0) }}
+                        NT$ {{ fmt_num($trend['revenue']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                        NT$ {{ number_format($trend['expense'], 0) }}
+                        NT$ {{ fmt_num($trend['expense']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold {{ $trend['profit'] >= 0 ? 'text-blue-600' : 'text-red-600' }}">
-                        NT$ {{ number_format($trend['profit'], 0) }}
+                        NT$ {{ fmt_num($trend['profit']) }}
                     </td>
                 </tr>
                 @endforeach

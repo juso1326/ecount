@@ -41,7 +41,7 @@
                             應收總額
                         </dt>
                         <dd class="text-lg font-semibold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['total_receivable'], 2) }}
+                            ${{ fmt_num($summary['total_receivable']) }}
                         </dd>
                     </dl>
                 </div>
@@ -64,7 +64,7 @@
                             已收金額
                         </dt>
                         <dd class="text-lg font-semibold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['total_received'], 2) }}
+                            ${{ fmt_num($summary['total_received']) }}
                         </dd>
                     </dl>
                 </div>
@@ -87,7 +87,7 @@
                             應付總額
                         </dt>
                         <dd class="text-lg font-semibold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['total_payable'], 2) }}
+                            ${{ fmt_num($summary['total_payable']) }}
                         </dd>
                     </dl>
                 </div>
@@ -110,7 +110,7 @@
                             淨收入
                         </dt>
                         <dd class="text-lg font-semibold {{ $summary['net_income'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                            ${{ number_format($summary['net_income'], 2) }}
+                            ${{ fmt_num($summary['net_income']) }}
                         </dd>
                     </dl>
                 </div>

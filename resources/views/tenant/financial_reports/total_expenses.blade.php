@@ -41,10 +41,10 @@
                             員工薪資
                         </dt>
                         <dd class="text-xl font-bold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['employee_salary_total'], 2) }}
+                            ${{ fmt_num($summary['employee_salary_total']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            已付：${{ number_format($summary['employee_salary_paid'], 2) }}
+                            已付：${{ fmt_num($summary['employee_salary_paid']) }}
                         </dd>
                     </dl>
                 </div>
@@ -67,10 +67,10 @@
                             外包勞務
                         </dt>
                         <dd class="text-xl font-bold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['vendor_payable_total'], 2) }}
+                            ${{ fmt_num($summary['vendor_payable_total']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            已付：${{ number_format($summary['vendor_payable_paid'], 2) }}
+                            已付：${{ fmt_num($summary['vendor_payable_paid']) }}
                         </dd>
                     </dl>
                 </div>
@@ -93,10 +93,10 @@
                             其他支出
                         </dt>
                         <dd class="text-xl font-bold text-gray-900 dark:text-white">
-                            ${{ number_format($summary['other_payable_total'], 2) }}
+                            ${{ fmt_num($summary['other_payable_total']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            已付：${{ number_format($summary['other_payable_paid'], 2) }}
+                            已付：${{ fmt_num($summary['other_payable_paid']) }}
                         </dd>
                     </dl>
                 </div>
@@ -119,10 +119,10 @@
                             總支出
                         </dt>
                         <dd class="text-2xl font-bold text-white">
-                            ${{ number_format($summary['grand_total'], 2) }}
+                            ${{ fmt_num($summary['grand_total']) }}
                         </dd>
                         <dd class="text-xs text-white/80 mt-1">
-                            未付：${{ number_format($summary['grand_unpaid'], 2) }}
+                            未付：${{ fmt_num($summary['grand_unpaid']) }}
                         </dd>
                     </dl>
                 </div>
@@ -170,10 +170,10 @@
                             {{ $salary->content ?: $salary->type }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($salary->amount, 2) }}
+                            ${{ fmt_num($salary->amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($salary->paid_amount, 2) }}
+                            ${{ fmt_num($salary->paid_amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                             @if($salary->status === 'paid')
@@ -239,10 +239,10 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($payable->amount, 2) }}
+                            ${{ fmt_num($payable->amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($payable->paid_amount, 2) }}
+                            ${{ fmt_num($payable->paid_amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                             @if($payable->status === 'paid')
@@ -308,10 +308,10 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($payable->amount, 2) }}
+                            ${{ fmt_num($payable->amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                            ${{ number_format($payable->paid_amount, 2) }}
+                            ${{ fmt_num($payable->paid_amount) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                             @if($payable->status === 'paid')

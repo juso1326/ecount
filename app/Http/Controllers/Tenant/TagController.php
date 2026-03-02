@@ -149,6 +149,18 @@ class TagController extends Controller
     }
 
     /**
+     * Toggle is_active (allowed for system tags too)
+     */
+    public function toggleActive(Tag $tag)
+    {
+        $tag->update(['is_active' => !$tag->is_active]);
+
+        return redirect()
+            ->route('tenant.tags.index', ['type' => $tag->type])
+            ->with('success', "「{$tag->name}」已" . ($tag->is_active ? '停用' : '啟用'));
+    }
+
+    /**
      * Update sort order only (allowed for system tags too)
      */
     public function updateSort(Request $request, Tag $tag)

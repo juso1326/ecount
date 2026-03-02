@@ -361,6 +361,20 @@ class SalaryController extends Controller
     }
     
     /**
+     * 確認廠商撥款
+     */
+    public function confirmVendorPayment(Request $request, \App\Models\Payable $payable)
+    {
+        $payable->update([
+            'is_salary_paid'     => true,
+            'salary_paid_at'     => now(),
+            'salary_paid_amount' => $payable->amount,
+        ]);
+
+        return redirect()->back()->with('success', '已確認撥款');
+    }
+
+    /**
      * 移動薪資項目到上個月
      */
     public function moveToPrevMonth(Request $request)

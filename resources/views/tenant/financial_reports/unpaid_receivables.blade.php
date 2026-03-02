@@ -87,10 +87,10 @@
                             未收總額
                         </dt>
                         <dd class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                            ${{ number_format($summary['total_unpaid'], 2) }}
+                            ${{ fmt_num($summary['total_unpaid']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            應收：${{ number_format($summary['total_amount'], 2) }}
+                            應收：${{ fmt_num($summary['total_amount']) }}
                         </dd>
                     </dl>
                 </div>
@@ -113,7 +113,7 @@
                             逾期未收
                         </dt>
                         <dd class="text-2xl font-bold text-red-600 dark:text-red-400">
-                            ${{ number_format($summary['overdue_unpaid'], 2) }}
+                            ${{ fmt_num($summary['overdue_unpaid']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {{ $summary['overdue_count'] }} 筆
@@ -139,7 +139,7 @@
                             未到期
                         </dt>
                         <dd class="text-2xl font-bold text-green-600 dark:text-green-400">
-                            ${{ number_format($summary['upcoming_unpaid'], 2) }}
+                            ${{ fmt_num($summary['upcoming_unpaid']) }}
                         </dd>
                         <dd class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {{ $summary['upcoming_count'] }} 筆
@@ -178,13 +178,13 @@
                         {{ $summary['count'] }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        ${{ number_format($summary['total_amount'], 2) }}
+                        ${{ fmt_num($summary['total_amount']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        ${{ number_format($summary['total_received'], 2) }}
+                        ${{ fmt_num($summary['total_received']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-yellow-600 dark:text-yellow-400">
-                        ${{ number_format($summary['total_unpaid'], 2) }}
+                        ${{ fmt_num($summary['total_unpaid']) }}
                     </td>
                 </tr>
                 @endforeach
@@ -249,13 +249,13 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        ${{ number_format($receivable->amount, 2) }}
+                        ${{ fmt_num($receivable->amount) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        ${{ number_format($receivable->received_amount, 2) }}
+                        ${{ fmt_num($receivable->received_amount) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-yellow-600 dark:text-yellow-400">
-                        ${{ number_format($unpaidAmount, 2) }}
+                        ${{ fmt_num($unpaidAmount) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                         @if($isOverdue)

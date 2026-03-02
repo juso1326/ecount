@@ -31,19 +31,19 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">總預算</div>
         <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            NT$ {{ number_format($summary['total_budget'], 0) }}
+            NT$ {{ fmt_num($summary['total_budget']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">總收入</div>
         <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-            NT$ {{ number_format($summary['total_revenue'], 0) }}
+            NT$ {{ fmt_num($summary['total_revenue']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">總成本</div>
         <div class="text-2xl font-bold text-red-600 dark:text-red-400">
-            NT$ {{ number_format($summary['total_cost'], 0) }}
+            NT$ {{ fmt_num($summary['total_cost']) }}
         </div>
     </div>
 </div>
@@ -75,13 +75,13 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $project->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        NT$ {{ number_format($project->revenue, 0) }}
+                        NT$ {{ fmt_num($project->revenue) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                        NT$ {{ number_format($project->cost, 0) }}
+                        NT$ {{ fmt_num($project->cost) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold {{ $project->profit >= 0 ? 'text-blue-600' : 'text-red-600' }}">
-                        NT$ {{ number_format($project->profit, 0) }}
+                        NT$ {{ fmt_num($project->profit) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                         <span class="px-2 py-1 rounded {{ $project->margin >= 30 ? 'bg-green-100 text-green-800' : ($project->margin >= 10 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
@@ -122,13 +122,13 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $project->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        NT$ {{ number_format($project->budget, 0) }}
+                        NT$ {{ fmt_num($project->budget) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        NT$ {{ number_format($project->actual_cost, 0) }}
+                        NT$ {{ fmt_num($project->actual_cost) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right {{ $project->variance >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                        NT$ {{ number_format($project->variance, 0) }}
+                        NT$ {{ fmt_num($project->variance) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                         <span class="px-2 py-1 rounded {{ $project->usage_rate <= 80 ? 'bg-green-100 text-green-800' : ($project->usage_rate <= 100 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">

@@ -84,8 +84,10 @@
         
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: normal;
-            padding-left: 0.75rem;
-            padding-top: 0.5rem;
+        }
+
+        .select2-container .select2-selection--single .select2-selection__rendered {
+            padding-left: 0;
         }
         
         .select2-container--default .select2-selection--single .select2-selection__arrow {
@@ -550,10 +552,32 @@
     <script src="{{ asset('js/ecount-validator.js') }}"></script>
 
     <script>
-    // Global number formatter — always comma thousands separator, no decimals
-    window.fmtNum = function(n) {
-        return Math.round(Number(n)).toLocaleString('en-US');
+    // Global number formatter — respects Use 1000 separator setting
+    window._useThousandSep = {{ filter_var(\App\Models\TenantSetting::get('use_thousand_separator', 'true'), FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false' }};
+    window._decimalPlaces = {{ (int)\App\Models\TenantSetting::get('decimal_places', 0) }};
+    window.fmtNum = function(n, dp) {
+        const places = (dp !== undefined) ? dp : window._decimalPlaces;
+        const num = Number(n);
+        if (window._useThousandSep) {
+            return num.toLocaleString('en-US', { minimumFractionDigits: places, maximumFractionDigits: places });
+        }
+        return num.toFixed(places);
     };
+
+    // Global form submit loading state — disable submit button until response
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        const btn = form.querySelector('[type="submit"]');
+        if (!btn || btn.dataset.noLoading) return;
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="animate-spin inline w-4 h-4 mr-1 -mt-0.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>' + btn.textContent.trim();
+        // Re-enable on browser back / validation failure (pagehide or popstate)
+        window.addEventListener('pageshow', function() {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }, { once: true });
+    });
     </script>
 
     @stack('scripts')

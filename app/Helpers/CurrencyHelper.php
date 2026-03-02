@@ -27,8 +27,9 @@ class CurrencyHelper
         // 根據貨幣決定小數位數
         $decimals = self::getDecimalPlaces($currency);
 
-        // 格式化金額
-        $formatted = number_format((float)$amount, $decimals);
+        // 格式化金額（依系統千位分隔符設定）
+        $useThousandSep = filter_var(self::getThousandSeparatorSetting(), FILTER_VALIDATE_BOOLEAN);
+        $formatted = number_format((float)$amount, $decimals, '.', $useThousandSep ? ',' : '');
 
         // 添加貨幣符號
         if ($showSymbol) {
@@ -92,6 +93,20 @@ class CurrencyHelper
             return \App\Models\TenantSetting::get('currency', 'TWD') ?? 'TWD';
         } catch (\Exception $e) {
             return 'TWD';
+        }
+    }
+
+    /**
+     * 取得千位分隔符設定
+     *
+     * @return string
+     */
+    private static function getThousandSeparatorSetting(): string
+    {
+        try {
+            return \App\Models\TenantSetting::get('use_thousand_separator', 'true') ?? 'true';
+        } catch (\Exception $e) {
+            return 'true';
         }
     }
 

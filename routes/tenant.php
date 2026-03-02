@@ -178,6 +178,7 @@ Route::middleware([
         ]);
         Route::post('tags/{tag}/set-default-status', [\App\Http\Controllers\Tenant\TagController::class, 'setDefaultStatus'])->name('tenant.tags.set-default-status');
         Route::patch('tags/{tag}/sort', [\App\Http\Controllers\Tenant\TagController::class, 'updateSort'])->name('tenant.tags.sort');
+        Route::patch('tags/{tag}/toggle-active', [\App\Http\Controllers\Tenant\TagController::class, 'toggleActive'])->name('tenant.tags.toggle-active');
 
         // 支出項目管理
         Route::resource('expense-categories', \App\Http\Controllers\Tenant\ExpenseCategoryController::class)->names([
@@ -225,6 +226,7 @@ Route::middleware([
         Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SalaryController::class, 'index'])->name('index');
             Route::get('vendors', [\App\Http\Controllers\Tenant\SalaryController::class, 'vendors'])->name('vendors');
+            Route::post('vendors/{payable}/confirm', [\App\Http\Controllers\Tenant\SalaryController::class, 'confirmVendorPayment'])->name('vendors.confirm');
             Route::post('move-to-prev-month', [\App\Http\Controllers\Tenant\SalaryController::class, 'moveToPrevMonth'])->name('move-prev');
             Route::post('move-to-next-month', [\App\Http\Controllers\Tenant\SalaryController::class, 'moveToNextMonth'])->name('move-next');
             Route::get('{user}', [\App\Http\Controllers\Tenant\SalaryController::class, 'show'])->name('show');

@@ -31,19 +31,19 @@
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">年度總薪資</div>
         <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-            NT$ {{ number_format($summary['total_salary'], 0) }}
+            NT$ {{ fmt_num($summary['total_salary']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">平均月薪</div>
         <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            NT$ {{ number_format($summary['avg_monthly_salary'], 0) }}
+            NT$ {{ fmt_num($summary['avg_monthly_salary']) }}
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">人均年薪</div>
         <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-            NT$ {{ number_format($summary['avg_annual_salary'], 0) }}
+            NT$ {{ fmt_num($summary['avg_annual_salary']) }}
         </div>
     </div>
 </div>
@@ -80,19 +80,19 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $detail['month'] }}月</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        NT$ {{ number_format($detail['base_salary'], 0) }}
+                        NT$ {{ fmt_num($detail['base_salary']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        NT$ {{ number_format($detail['bonus'], 0) }}
+                        NT$ {{ fmt_num($detail['bonus']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400">
-                        NT$ {{ number_format($detail['other_additions'], 0) }}
+                        NT$ {{ fmt_num($detail['other_additions']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600 dark:text-red-400">
-                        NT$ {{ number_format($detail['deductions'], 0) }}
+                        NT$ {{ fmt_num($detail['deductions']) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-blue-600 dark:text-blue-400">
-                        NT$ {{ number_format($detail['net_pay'], 0) }}
+                        NT$ {{ fmt_num($detail['net_pay']) }}
                     </td>
                 </tr>
                 @endforeach
@@ -122,10 +122,10 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $index + 1 }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $employee->name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
-                        NT$ {{ number_format($employee->monthly_salary, 0) }}
+                        NT$ {{ fmt_num($employee->monthly_salary) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-blue-600 dark:text-blue-400">
-                        NT$ {{ number_format($employee->annual_salary, 0) }}
+                        NT$ {{ fmt_num($employee->annual_salary) }}
                     </td>
                 </tr>
                 @endforeach

@@ -57,19 +57,6 @@
     </form>
 </div>
 
-<!-- 成功訊息 -->
-@if(session('success'))
-    <div class="mb-2 bg-green-100 border border-green-400 text-green-700 px-4 py-1 rounded relative" role="alert">
-        <span class="block sm:inline">{{ session('success') }}</span>
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-1 rounded relative" role="alert">
-        <span class="block sm:inline">{{ session('error') }}</span>
-    </div>
-@endif
-
 <!-- 資料表格 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -143,9 +130,15 @@
                         {{ $tag->description ?? '-' }}
                     </td>
                     <td class="px-6 py-2 whitespace-nowrap text-center">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $tag->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                            {{ $tag->is_active ? '啟用' : '停用' }}
-                        </span>
+                        <form action="{{ route('tenant.tags.toggle-active', $tag) }}" method="POST" class="inline">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit"
+                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80 {{ $tag->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}"
+                                    title="{{ $tag->is_active ? '點擊停用' : '點擊啟用' }}">
+                                {{ $tag->is_active ? '啟用' : '停用' }}
+                            </button>
+                        </form>
                     </td>
                 </tr>
             @empty
