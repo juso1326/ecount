@@ -40,7 +40,7 @@ class Project extends Model
         'is_active' => 'boolean',
         'start_date' => 'date',
         'end_date' => 'date',
-        'budget' => 'integer',
+        'budget' => 'decimal:2',
         'actual_cost' => 'integer',
     ];
 
