@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>系統管理員登入 — ECount</title>
+    <title>系統管理員登入 — {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,7 +48,7 @@
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
         </div>
-        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">ECount 後台管理</h1>
+        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">{{ config('app.name') }} 後台管理</h1>
         <p style="font-size:.8125rem; color:#64748b; margin:0;">僅限授權人員登入</p>
     </div>
 
@@ -170,7 +170,7 @@
         @endforeach
     </div>
 
-    <p style="text-align:center; margin-top:1rem; font-size:.6875rem; color:#94a3b8;">© {{ date('Y') }} ECount. All rights reserved.</p>
+    <p style="text-align:center; margin-top:1rem; font-size:.6875rem; color:#94a3b8;">© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
 </div>
 
 <script>

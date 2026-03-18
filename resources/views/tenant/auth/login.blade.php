@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>登入 — ECount</title>
+    <title>登入 — {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -53,7 +53,7 @@
             </svg>
         </div>
         @endif
-        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">{{ $displayName ?: 'ECount 企業管理系統' }}</h1>
+        <h1 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0 0 .25rem;">{{ $displayName ?: config('app.name') }}</h1>
         <p style="font-size:.8125rem; color:#64748b; margin:0;">請登入您的帳號</p>
     </div>
 
@@ -159,7 +159,7 @@
         </form>
     </div>
 
-    <p style="text-align:center; margin-top:1.25rem; font-size:.6875rem; color:#94a3b8;">© {{ date('Y') }} ECount. All rights reserved.</p>
+    <p style="text-align:center; margin-top:1.25rem; font-size:.6875rem; color:#94a3b8;">© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
 </div>
 
 <script>

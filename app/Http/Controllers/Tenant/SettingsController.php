@@ -149,6 +149,17 @@ class SettingsController extends Controller
      */
     public function updateSystem(Request $request)
     {
+        // Logo delete — handle before validation so it always works independently
+        if ($request->input('_delete_logo')) {
+            $old = TenantSetting::get('company_logo', '');
+            if ($old) {
+                \Illuminate\Support\Facades\Storage::disk('central_public')->delete($old);
+            }
+            TenantSetting::set('company_logo', '', 'system', 'string');
+            return redirect()->route('tenant.settings.system', ['tab' => 'general'])
+                ->with('success', 'Logo 已刪除');
+        }
+
         $validated = $request->validate([
             'date_format'        => 'required|in:Y-m-d,Y/m/d,Y.m.d,m/d/Y,d/m/Y,Ymd',
             'time_format'        => 'required|in:H:i:s,H:i,h:i:s A,h:i A',
@@ -165,31 +176,6 @@ class SettingsController extends Controller
             'quotation_number_pattern'  => 'nullable|string|max:50',
             'logo'                      => 'nullable|mimes:jpeg,jpg,png,gif,webp,svg|max:2048',
         ]);
-
-        TenantSetting::set('date_format',      $validated['date_format'],      'system', 'string');
-        TenantSetting::set('time_format',      $validated['time_format'],      'system', 'string');
-        TenantSetting::set('timezone',         $validated['timezone'],         'system', 'string');
-        TenantSetting::set('default_currency', $validated['default_currency'], 'financial', 'string');
-        TenantSetting::set('tax_rate',         $validated['tax_rate'] ?? '5',  'system', 'string');
-        TenantSetting::set('tax_number',       $validated['tax_number'] ?? '', 'system', 'string');
-        TenantSetting::set('tax_rate_label',   $validated['tax_rate_label'] ?? 'Tax Rate',   'system', 'string');
-        TenantSetting::set('tax_number_label', $validated['tax_number_label'] ?? 'Tax Number', 'system', 'string');
-        TenantSetting::set('display_language',         $validated['display_language'] ?? 'zh_TW', 'system', 'string');
-        TenantSetting::set('display_name',             !empty($validated['display_name']) ? $validated['display_name'] : TenantSetting::get('display_name', 'ECount'), 'system', 'string');
-        TenantSetting::set('decimal_places',           $validated['decimal_places'] ?? 2,         'system', 'number');
-        TenantSetting::set('use_thousand_separator',   isset($validated['use_thousand_separator']) && $validated['use_thousand_separator'] ? 'true' : 'false', 'system', 'boolean');
-        TenantSetting::set('quotation_number_pattern', $validated['quotation_number_pattern'] ?? 'AAAYYYY0000', 'system', 'string');
-
-        // Logo delete
-        if ($request->input('_delete_logo')) {
-            $old = TenantSetting::get('company_logo', '');
-            if ($old && \Illuminate\Support\Facades\Storage::disk('central_public')->exists($old)) {
-                \Illuminate\Support\Facades\Storage::disk('central_public')->delete($old);
-            }
-            TenantSetting::set('company_logo', '', 'system', 'string');
-            return redirect()->route('tenant.settings.system', ['tab' => 'general'])
-                ->with('success', 'Logo 已刪除');
-        }
 
         // Logo upload
         if ($request->hasFile('logo')) {

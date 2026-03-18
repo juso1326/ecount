@@ -271,8 +271,9 @@
                         </div>
                         <div class="flex-1">
                             <input type="text" name="display_name" value="{{ $displayName }}" maxlength="30"
-                                placeholder="系統顯示名稱"
+                                placeholder="{{ config('app.name') }}"
                                 class="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <p class="text-xs text-gray-400 mt-1">空值預設為：{{ config('app.name') }}</p>
                         </div>
                     </div>
 

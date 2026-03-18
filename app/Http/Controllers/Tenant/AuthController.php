@@ -25,7 +25,7 @@ class AuthController extends Controller
         $lockSeconds = $isLocked ? RateLimiter::availableIn($throttleKey) : 0;
         $attempts    = RateLimiter::attempts($throttleKey);
         $remaining   = max(0, 3 - $attempts);
-        $displayName = TenantSetting::get('display_name', '');
+        $displayName = TenantSetting::get('display_name') ?: config('app.name');
         $logoPath    = TenantSetting::get('company_logo', '');
         return view('tenant.auth.login', compact('captchaSvg', 'isLocked', 'lockSeconds', 'attempts', 'remaining', 'displayName', 'logoPath'));
     }
