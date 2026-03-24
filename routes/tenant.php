@@ -227,6 +227,7 @@ Route::middleware([
         Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SalaryController::class, 'index'])->name('index');
             Route::get('vendors', [\App\Http\Controllers\Tenant\SalaryController::class, 'vendors'])->name('vendors');
+            Route::get('disbursement', [\App\Http\Controllers\Tenant\SalaryController::class, 'disbursement'])->name('disbursement');
             Route::post('vendors/{payable}/confirm', [\App\Http\Controllers\Tenant\SalaryController::class, 'confirmVendorPayment'])->name('vendors.confirm');
             Route::post('move-to-prev-month', [\App\Http\Controllers\Tenant\SalaryController::class, 'moveToPrevMonth'])->name('move-prev');
             Route::post('move-to-next-month', [\App\Http\Controllers\Tenant\SalaryController::class, 'moveToNextMonth'])->name('move-next');

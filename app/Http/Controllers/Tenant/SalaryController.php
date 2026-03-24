@@ -359,6 +359,56 @@ class SalaryController extends Controller
             'month' => $month,
         ]);
     }
+
+    /**
+     * 月結匯款彙總表
+     */
+    public function disbursement(Request $request)
+    {
+        [$defaultYear, $defaultMonth] = $this->defaultSalaryPeriod();
+        $year = $request->get('year', $defaultYear);
+        $month = $request->get('month', $defaultMonth);
+
+        if ($request->get('nav') === 'prev') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->subMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        } elseif ($request->get('nav') === 'next') {
+            $date = \Carbon\Carbon::createFromDate($year, $month, 1)->addMonth();
+            $year = $date->year;
+            $month = $date->format('m');
+        }
+
+        if ($year < 2014 || ($year == 2014 && $month < 9)) {
+            $year = 2014;
+            $month = '09';
+        }
+
+        $data = $this->salaryService->getMonthlySalaries($year, $month);
+
+        // 為每位員工附加銀行帳號資訊
+        foreach ($data['salaries'] as &$salary) {
+            $salary['bank'] = $salary['user']->bankAccounts()->where('is_default', true)->first()
+                           ?? $salary['user']->bankAccounts()->first();
+        }
+
+        try {
+            $tenant = tenancy()->tenant;
+            $tenantCreatedYear = $tenant?->created_at?->year ?? 2020;
+        } catch (\Throwable $e) {
+            $tenantCreatedYear = 2020;
+        }
+
+        return view('tenant.salaries.disbursement', [
+            'salaries' => $data['salaries'],
+            'period'   => $data['period'],
+            'total'    => $data['total'],
+            'year'     => $year,
+            'month'    => $month,
+            'startYear' => $tenantCreatedYear,
+            'endYear'   => date('Y') + 1,
+        ]);
+    }
     
     /**
      * 確認廠商撥款
