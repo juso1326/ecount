@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\SalaryAdjustment;
+use App\Models\SalaryDisbursement;
 use App\Models\TenantSetting;
 use App\Services\SalaryService;
 use Illuminate\Http\Request;
@@ -118,6 +119,14 @@ class SalaryController extends Controller
         $periodicAdjustments = $adjustmentsDetail->whereIn('recurrence', ['monthly', 'yearly']);
         $onceAdjustments = $adjustmentsDetail->where('recurrence', 'once');
 
+        // 取得撥款記錄
+        $disbursements = SalaryDisbursement::where('user_id', $user->id)
+            ->where('year', $year)
+            ->where('month', (int)$month)
+            ->with('paidByUser')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('tenant.salaries.show', [
             'user' => $user,
             'salary' => $salary,
@@ -128,6 +137,7 @@ class SalaryController extends Controller
             'currentMonth' => $month,
             'periodicAdjustments' => $periodicAdjustments,
             'onceAdjustments' => $onceAdjustments,
+            'disbursements' => $disbursements,
         ]);
     }
 

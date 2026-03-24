@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Payable;
 use App\Models\SalaryAdjustment;
+use App\Models\SalaryDisbursement;
 use App\Models\TenantSetting;
 use Carbon\Carbon;
 
@@ -126,6 +127,17 @@ class SalaryService
                 'salary_paid_remark' => $remark,
             ]);
         }
+
+        // 寫入撥款記錄
+        SalaryDisbursement::create([
+            'user_id'     => $userId,
+            'year'        => $year,
+            'month'       => (int)$month,
+            'paid_amount' => $actualAmount,
+            'paid_date'   => now()->toDateString(),
+            'remark'      => $remark,
+            'paid_by'     => auth()->id(),
+        ]);
         
         return true;
     }

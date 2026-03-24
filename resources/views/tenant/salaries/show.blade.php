@@ -340,6 +340,45 @@
     </div>
 </div>
 
+<!-- 撥款記錄 -->
+@if(isset($disbursements) && $disbursements->count() > 0)
+<div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-4">
+    <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">撥款記錄</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">撥款日期</th>
+                    <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300">撥款金額</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">經辦人</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">備註</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach($disbursements as $d)
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                        {{ $d->paid_date ? $d->paid_date->format('Y-m-d') : '—' }}
+                    </td>
+                    <td class="px-3 py-2 text-sm text-right font-semibold text-gray-900 dark:text-white">
+                        ${{ fmt_num($d->paid_amount) }}
+                    </td>
+                    <td class="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
+                        {{ $d->paidByUser->name ?? '—' }}
+                    </td>
+                    <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                        {{ $d->remark ?? '—' }}
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
 <!-- 撥款彈窗 -->
 <div id="payModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
