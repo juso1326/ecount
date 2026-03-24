@@ -92,19 +92,19 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">基本薪資</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">加項</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣項</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">實領薪資</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">員工</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">基本薪資</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">加項</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">扣項</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">實領薪資</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">狀態</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">操作</th>
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($salaries as $salary)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-3 py-2 whitespace-nowrap">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                             {{ mb_substr($salary['user']->name, 0, 1) }}
@@ -115,27 +115,27 @@
                         </div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right">
+                <td class="px-3 py-2 whitespace-nowrap text-right">
                     <div class="text-sm font-semibold text-gray-900 dark:text-white">${{ fmt_num($salary['base_salary']) }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right">
+                <td class="px-3 py-2 whitespace-nowrap text-right">
                     @if($salary['additions'] > 0)
                         <div class="text-sm font-semibold text-green-600">+${{ fmt_num($salary['additions']) }}</div>
                     @else
                         <div class="text-sm text-gray-400">-</div>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right">
+                <td class="px-3 py-2 whitespace-nowrap text-right">
                     @if($salary['deductions'] > 0)
                         <div class="text-sm font-semibold text-red-600">-${{ fmt_num($salary['deductions']) }}</div>
                     @else
                         <div class="text-sm text-gray-400">-</div>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right">
-                    <div class="text-base font-bold text-blue-600">${{ fmt_num($salary['total']) }}</div>
+                <td class="px-3 py-2 whitespace-nowrap text-right">
+                    <div class="text-sm font-bold text-blue-600">${{ fmt_num($salary['total']) }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center">
+                <td class="px-3 py-2 whitespace-nowrap text-center">
                     @if($salary['items']->where('is_salary_paid', true)->count() > 0)
                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -152,7 +152,7 @@
                         </span>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center">
+                <td class="px-3 py-2 whitespace-nowrap text-center">
                     <a href="{{ route('tenant.salaries.show', ['user' => $salary['user'], 'year' => $year, 'month' => $month]) }}" 
                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                         查看明細
@@ -176,7 +176,7 @@
         @if($salaries && count($salaries) > 0)
         <tfoot class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
             <tr>
-                <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-sm font-bold text-gray-900 dark:text-white">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
@@ -185,25 +185,25 @@
                         總計 ({{ count($salaries) }} 人)
                     </div>
                 </td>
-                <td class="px-6 py-4 text-right text-sm font-bold text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-right text-sm font-bold text-gray-900 dark:text-white">
                     ${{ fmt_num(collect($salaries)->sum('base_salary')) }}
                 </td>
-                <td class="px-6 py-4 text-right text-sm font-bold text-green-600">
+                <td class="px-3 py-2 text-right text-sm font-bold text-green-600">
                     @if(collect($salaries)->sum('additions') > 0)
                         +${{ fmt_num(collect($salaries)->sum('additions')) }}
                     @else
                         -
                     @endif
                 </td>
-                <td class="px-6 py-4 text-right text-sm font-bold text-red-600">
+                <td class="px-3 py-2 text-right text-sm font-bold text-red-600">
                     @if(collect($salaries)->sum('deductions') > 0)
                         -${{ fmt_num(collect($salaries)->sum('deductions')) }}
                     @else
                         -
                     @endif
                 </td>
-                <td class="px-6 py-4 text-right">
-                    <div class="text-lg font-bold text-blue-600">${{ fmt_num($total) }}</div>
+                <td class="px-3 py-2 text-right">
+                    <div class="text-sm font-bold text-blue-600">${{ fmt_num($total) }}</div>
                 </td>
                 <td colspan="2"></td>
             </tr>

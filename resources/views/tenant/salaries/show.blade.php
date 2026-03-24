@@ -72,38 +72,46 @@
 
 <!-- 薪資明細 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-3">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">薪資項目</h2>
     </div>
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">日期</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">專案</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">內容</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">金額</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">日期</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">專案</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">內容</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">來源/對象</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">備註</th>
+                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">金額</th>
                 @if(!$isPaid)
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">移動</th>
+                <th class="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">移動</th>
                 @endif
             </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @forelse($salary['items'] as $item)
             <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     @date($item->payment_date)
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
                     {{ $item->project->name ?? '-' }}
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
                     {{ $item->content ?? '-' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
+                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                    {{ $item->payeeCompany->short_name ?? $item->payeeCompany->name ?? ($item->payeeUser->name ?? '-') }}
+                </td>
+                <td class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 max-w-[150px]">
+                    <div class="truncate" title="{{ $item->note }}">{{ $item->note ?? '—' }}</div>
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-right text-sm text-gray-900 dark:text-white">
                     ${{ fmt_num($item->amount) }}
                 </td>
                 @if(!$isPaid && !$item->is_salary_paid)
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                <td class="px-3 py-2 whitespace-nowrap text-center text-sm">
                     <div class="flex justify-center gap-2">
                         <button onclick="moveItem({{ $item->id }}, 'prev')" 
                                 class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
@@ -121,7 +129,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="{{ !$isPaid ? 5 : 4 }}" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">無薪資項目</td>
+                <td colspan="{{ !$isPaid ? 7 : 6 }}" class="px-3 py-2 text-center text-gray-500 dark:text-gray-400">無薪資項目</td>
             </tr>
             @endforelse
         </tbody>
@@ -130,7 +138,7 @@
 
 <!-- 加扣項明細 -->
 <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-3">
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">加扣項明細</h2>
         @if(!$isPaid)
         <button onclick="openAddModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
@@ -688,7 +696,7 @@ async function deleteAdjustment(adjustmentId, title) {
 // Toast 提示
 function showToast(type, message) {
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity ${
+    toast.className = `fixed top-4 right-4 px-3 py-2 rounded-lg shadow-lg z-50 transition-opacity ${
         type === 'success' ? 'bg-green-500' : 'bg-red-500'
     } text-white`;
     toast.textContent = message;

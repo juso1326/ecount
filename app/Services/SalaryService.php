@@ -101,7 +101,7 @@ class SalaryService
         return Payable::where('payee_user_id', $userId)
             ->where('payee_type', 'user')
             ->whereBetween('payment_date', [$startDate, $endDate])
-            ->with(['project', 'responsibleUser'])
+            ->with(['project', 'responsibleUser', 'payeeCompany', 'payeeUser'])
             ->orderBy('payment_date')
             ->get();
     }
