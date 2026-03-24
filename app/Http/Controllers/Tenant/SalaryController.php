@@ -86,6 +86,47 @@ class SalaryController extends Controller
     }
 
     /**
+     * 匯出本月薪資表為 CSV
+     */
+    public function export(Request $request)
+    {
+        [$defaultYear, $defaultMonth] = $this->defaultSalaryPeriod();
+        $year  = $request->get('year', $defaultYear);
+        $month = $request->get('month', $defaultMonth);
+
+        $data = $this->salaryService->getMonthlySalaries($year, $month);
+        $salaries = $data['salaries'];
+
+        $filename = "salary_{$year}{$month}.csv";
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($salaries, $year, $month) {
+            $file = fopen('php://output', 'w');
+            // UTF-8 BOM for Excel
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($file, ['姓名', '基本薪資', '加項', '扣項', '實領金額', '撥款狀態']);
+            foreach ($salaries as $s) {
+                $isPaid = $s['items']->where('is_salary_paid', true)->count() > 0 ? '已撥款' : '未撥款';
+                fputcsv($file, [
+                    $s['user']->name,
+                    $s['base_salary'],
+                    $s['additions'],
+                    $s['deductions'],
+                    $s['total'],
+                    $isPaid,
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
      * 個人薪資明細
      */
     public function show(Request $request, User $user)

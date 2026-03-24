@@ -226,6 +226,7 @@ Route::middleware([
         // 薪資管理
         Route::prefix('salaries')->name('tenant.salaries.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Tenant\SalaryController::class, 'index'])->name('index');
+            Route::get('export', [\App\Http\Controllers\Tenant\SalaryController::class, 'export'])->name('export');
             Route::get('vendors', [\App\Http\Controllers\Tenant\SalaryController::class, 'vendors'])->name('vendors');
             Route::get('disbursement', [\App\Http\Controllers\Tenant\SalaryController::class, 'disbursement'])->name('disbursement');
             Route::post('vendors/{payable}/confirm', [\App\Http\Controllers\Tenant\SalaryController::class, 'confirmVendorPayment'])->name('vendors.confirm');
