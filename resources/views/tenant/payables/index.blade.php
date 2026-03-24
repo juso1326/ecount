@@ -135,21 +135,21 @@
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
                 <th class="px-3 py-2 text-center" style="width:36px"><input type="checkbox" id="select-all" class="rounded border-gray-300" onchange="toggleAllPayables(this)"></th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="width:40px">No.</th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="width:70px">操作</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">日期</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:70px">負責人</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:100px">案名</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:160px">支付內容</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:60px">類別</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:100px">對象/供應商</th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:50px">未稅</th>
-                <th class="px-3 py-2 text-right text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">應付</th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:60px">狀態</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:110px">憑證發票</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">發票日</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">實付日</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:100px">備註</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:40px">序號</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:70px">操作</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">日期</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:70px">負責人</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">案名</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:160px">支付內容</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">類別</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">對象/供應商</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:50px">未稅</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">應付</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">狀態</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:110px">憑證發票</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">發票日</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">實付日</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">備註</th>
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
@@ -175,10 +175,10 @@
                                onchange="updateBatchBar()">
                         @endif
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-500 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">
                         {{ ($payables->currentPage() - 1) * $payables->perPage() + $index + 1 }}
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs font-medium space-x-1">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium space-x-1">
                         <a href="{{ route('tenant.payables.edit', $payable) }}" class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400">編輯</a>
                         <button onclick="openQuickPayModal({{ $payable->id }},{{ (int)$payable->remaining_amount }},'{{ addslashes($payable->payment_no) }}','{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}','{{ addslashes($payable->content ?? '') }}','{{ addslashes($payable->project?->name ?? '') }}',{{ (int)$payable->amount }})" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
                     </td>
@@ -194,7 +194,7 @@
                     <td class="px-3 py-2 text-sm text-gray-900 dark:text-white">
                         <div class="truncate max-w-[180px]" title="{{ $payable->content }}">{{ Str::limit($payable->content ?? '-', 30) }}</div>
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-xs">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm">
                         @if(in_array($payable->payee_type, ['user','member']))
                             <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">成員</span>
                         @elseif(in_array($payable->payee_type, ['vendor','company']))
@@ -214,7 +214,7 @@
                             {{ $payable->payeeCompany?->short_name ?? $payable->payeeCompany?->name ?? '-' }}
                         @endif
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-xs">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-sm">
                         @if(!$payable->invoice_no && !$payable->invoice_date)
                             <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">未稅</span>
                         @else
@@ -262,20 +262,20 @@
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="width:40px">No.</th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="width:70px">操作</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:70px">負責人</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:100px">對象/供應商</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:60px">類別</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:100px">案名</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:160px">支付內容</th>
-                <th class="px-3 py-2 text-right text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">應付總計</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">預計付款日</th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:60px">狀態</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:100px">備註</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:140px">銀行/帳號</th>
-                <th class="px-3 py-2 text-left text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:90px">實付日</th>
-                <th class="px-3 py-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-300" style="min-width:70px">會計年度</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:40px">序號</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="width:70px">操作</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:70px">負責人</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">對象/供應商</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">類別</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">案名</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:160px">支付內容</th>
+                <th class="px-3 py-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">應付總計</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">預計付款日</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:60px">狀態</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:100px">備註</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:140px">銀行/帳號</th>
+                <th class="px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:90px">實付日</th>
+                <th class="px-3 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase" style="min-width:70px">會計年度</th>
             </tr>
             @if($payables->total() > 0)
             <tr class="bg-blue-50 dark:bg-blue-900/30">
@@ -300,10 +300,10 @@
                     }
                 @endphp
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    <td class="px-3 py-2 whitespace-nowrap text-xs text-center text-gray-500 dark:text-gray-400">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">
                         {{ ($payables->currentPage() - 1) * $payables->perPage() + $index + 1 }}
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-s font-medium space-x-1">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium space-x-1">
                         <a href="{{ route('tenant.payables.edit', $payable) }}" class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400">編輯</a>
                         <button onclick="openQuickPayModal({{ $payable->id }},{{ (int)$payable->remaining_amount }},'{{ addslashes($payable->payment_no) }}','{{ addslashes($payable->payeeUser?->name ?? $payable->payeeCompany?->short_name ?? $payable->expense_company_name ?? '') }}','{{ addslashes($payable->content ?? '') }}','{{ addslashes($payable->project?->name ?? '') }}',{{ (int)$payable->amount }})" class="text-green-600 hover:text-green-800 dark:text-green-400">出帳</button>
                     </td>
@@ -319,7 +319,7 @@
                             {{ $payable->payeeCompany?->short_name ?? $payable->payeeCompany?->name ?? '-' }}
                         @endif
                     </td>
-                    <td class="px-3 py-2 whitespace-nowrap text-xs">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm">
                         @if(in_array($payable->payee_type, ['user','member']))
                             <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">成員</span>
                         @elseif(in_array($payable->payee_type, ['vendor','company']))

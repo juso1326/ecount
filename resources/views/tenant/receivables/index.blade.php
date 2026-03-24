@@ -122,11 +122,11 @@
             @forelse($receivables as $index => $receivable)
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <!-- 序號 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-900 dark:text-gray-100">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">
                         {{ ($receivables->currentPage() - 1) * $receivables->perPage() + $index + 1 }}
                     </td>
                     <!-- 操作 -->
-                    <td class="px-3 py-2 whitespace-nowrap text-center text-s font-medium">
+                    <td class="px-3 py-2 whitespace-nowrap text-center text-sm font-medium">
                         <a href="{{ route('tenant.receivables.edit', $receivable) }}" 
                            class="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">編輯</a>
                         <button onclick="openQuickReceiveModal(
@@ -203,13 +203,13 @@
                     <!-- 狀態 -->
                     <td class="px-3 py-2 whitespace-nowrap text-center">
                         @if($receivable->status === 'paid')
-                            <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">已收</span>
+                            <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800">已收</span>
                         @elseif($receivable->status === 'partial')
-                            <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-blue-100 text-blue-800">部分</span>
+                            <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-blue-100 text-blue-800">部分</span>
                         @elseif($receivable->status === 'overdue')
-                            <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-red-100 text-red-800">逾期</span>
+                            <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-red-100 text-red-800">逾期</span>
                         @else
-                            <span class="px-2 py-1 inline-flex text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">待收</span>
+                            <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">待收</span>
                         @endif
                     </td>
                 </tr>
